@@ -474,10 +474,8 @@
     const y = currentYear();
     const wrap = $("#event-pills");
     wrap.innerHTML = "";
-    const phone = isPhoneLayout();
-    if (phone && !state.selectedId) return;
+    if (isPhoneLayout()) return;
     (state.events.events || []).forEach(function (ev) {
-      if (phone && ev.siteId && ev.siteId !== state.selectedId) return;
       const near = Math.abs(ev.year - y) <= 3;
       const span = document.createElement("button");
       span.type = "button";
@@ -489,10 +487,6 @@
       }
       span.addEventListener("click", function (e) {
         if (e.altKey && ev.sourceUrl) { window.open(ev.sourceUrl, "_blank", "noopener"); return; }
-        if (phone && (ev.year === 1976 || ev.year === 1984)) {
-          showAerialCompare();
-          return;
-        }
         const idx = state.years.indexOf(ev.year);
         if (idx >= 0) { state.yearIndex = idx; $("#year-slider").value = String(idx); onYearChange(); }
         if (ev.siteId) selectSite(ev.siteId, true);
@@ -908,11 +902,22 @@
     const tools = $("#chrome-tools");
     const home = $("#top-meta");
     const slot = $("#sheet-tools-slot");
-    if (!tools || !home || !slot) return;
-    if (isPhoneLayout()) {
-      if (tools.parentNode !== slot) slot.appendChild(tools);
-    } else if (tools.parentNode !== home) {
-      home.appendChild(tools);
+    const layer = $("#dock-source");
+    const dock = document.querySelector("#app > .dock");
+    const layerSlot = $("#sheet-layer-slot");
+    if (tools && home && slot) {
+      if (isPhoneLayout()) {
+        if (tools.parentNode !== slot) slot.appendChild(tools);
+      } else if (tools.parentNode !== home) {
+        home.appendChild(tools);
+      }
+    }
+    if (layer && dock && layerSlot) {
+      if (isPhoneLayout()) {
+        if (layer.parentNode !== layerSlot) layerSlot.appendChild(layer);
+      } else if (layer.parentNode !== dock) {
+        dock.appendChild(layer);
+      }
     }
   }
 
