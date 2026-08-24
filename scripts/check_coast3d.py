@@ -320,12 +320,23 @@ def main() -> int:
         errors.append("3D must build a carved coast mesh (water / terrace / till)")
     apply_m = re.search(r"function applyCoastMeshes\(\) \{([\s\S]*?)\n  function ", js)
     apply_body = apply_m.group(1) if apply_m else ""
-    if 'modeForYear(year) === "D"' not in apply_body:
-        errors.append("applyCoastMeshes must no-op when modeForYear(year) === D")
-    if "year === 1996" not in apply_body:
-        errors.append("applyCoastMeshes must no-op on 1996 (lighthouse deed)")
-    if "clearCoastMeshes" not in apply_body and "hide" not in apply_body.lower():
-        errors.append("1996 Mode D must hide/clear the coast mesh, not lerp a waterline")
+    if not re.search(r"if \(year === 1996\)", apply_body):
+        errors.append("applyCoastMeshes must unconditionally no-op when year === 1996")
+    if "hwlStatus" in apply_body:
+        errors.append("1996 no-op must be unconditional — no nested hwlStatus check")
+    if "hideCoastMeshes" not in apply_body and "clearCoastMeshes" not in apply_body:
+        errors.append("1996 Mode D must hide/clear every coast mesh, not lerp a waterline")
+    if "addSolidWaterPlanes" not in js or "pushBboxQuad" not in js:
+        errors.append("water must be solid bbox planes, not a transect triangle strip")
+    if re.search(r"toward\(h0,\s*s0,\s*920\)", js):
+        errors.append("do not build hide/water as transect fans — those become shards")
+    ditch_look = (cfg.get("look") or {}).get("ditch_plains") or {}
+    if not (80 <= float(ditch_look.get("inlandM") or 0) <= 120):
+        errors.append("Ditch camera must sit 80–120 m inland on the beach")
+    if not (68 <= float(ditch_look.get("pitch") or 0) <= 72):
+        errors.append("Ditch pitch must be ~68–72 so the terrace reads as a platform")
+    if abs(float(ditch_look.get("bearing") or 0) - 168) > 2:
+        errors.append("Ditch bearing must stay ~168 (looking south)")
     spec_m = re.search(r"function coastSpecForYear\(y\) \{([\s\S]*?)\n  function ", js)
     spec_body = spec_m.group(1) if spec_m else ""
     if not re.search(r"y === 1996", spec_body) or not re.search(r"return null", spec_body[:280]):

@@ -7,7 +7,7 @@
     "northYears": [1933, 2000],
     "demYear": 2014,
     "meshes": "data/coast_meshes.json",
-    "carve": "2014 relief is hidden seaward of each year's HWL by a mesh at sampled 2014 height (zCut). Terrace is only the labeled 1.2–2.0 m sand between the 2014 waterline and a seaward HWL. Not a historic DEM.",
+    "carve": "2014 relief seaward of each year's HWL is hidden by a SOLID water plane (south ocean + north sound bbox quads at constant z) — not a transect triangle strip. Terrace is a thick extruded sand body from the 2014 waterline out to a seaward HWL. Not a historic DEM.",
     "source": "USGS OFR 2010-1119 Himmelstoss et al. 2010 LongIsland_shorelines.shp clipped to Montauk. Decade south/Point lines are interpolated along LongIsland_LT transects or held at 2000. North HWL is never interpolated. 1891 and 1991 Long Island lines are not Montauk surveys. Carved meshes compare each year to the 2000 HWL (2014 waterline proxy).",
     "surveyHint": "USGS surveyed high-water line — carved 3D coast (beach width / lost land / till face). Not a 10-year surveyed model.",
     "modeledHint": "Modeled from USGS high-water-line trend. Not a surveyed shoreline."
@@ -135,9 +135,9 @@
     }
   ],
   "look": {
-    "ditch_plains": { "bearing": 168, "pitch": 62, "zoom": 16.45, "inlandM": 165 },
-    "ocean_beaches": { "bearing": 180, "pitch": 60, "zoom": 16.15, "inlandM": 200 },
-    "lighthouse": { "bearing": 125, "pitch": 64, "zoom": 16.2, "inlandM": 210 },
+    "ditch_plains": { "bearing": 168, "pitch": 70, "zoom": 16.85, "inlandM": 100 },
+    "ocean_beaches": { "bearing": 180, "pitch": 68, "zoom": 16.55, "inlandM": 120 },
+    "lighthouse": { "bearing": 125, "pitch": 70, "zoom": 16.7, "inlandM": 105 },
     "soundview": { "bearing": 0, "pitch": 60, "zoom": 15.45, "inlandM": 300 },
     "harbor_jetties": { "bearing": 8, "pitch": 58, "zoom": 15.5, "inlandM": 300 }
   },
