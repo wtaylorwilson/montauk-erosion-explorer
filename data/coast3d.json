@@ -1,13 +1,14 @@
 {
   "version": 4,
-  "note": "Year-worlds plus custom HWL coasts on the same 3D tab. Terrain is always 2014 NGS / Mapterhorn — visual only, not a change surface. Mode A dated ortho (NYSDOP / Wayback). Mode B local drapes at the reaches they show. Mode C walk-into stills at pins. Mode D: 1996 deed, CEHA, Moran/Great Pond, 1919 Hither Hills, usgs_2012_beach.jpg. Never current Esri World Imagery. Uncovered land is dim 2014 hillshade. Do not hang the PR5 gallery dump. 459 extra hunt-machine frames are a follow-up, not a mosaic.",
+  "note": "Year-worlds plus carved HWL coasts on the same 3D tab. Inland terrain is always 2014 NGS / Mapterhorn — visual only, not a change surface. The thing that changes with the year scrub is the Three.js carved coast (sand terrace / cut / till face / water plane) in data/coast_meshes.json. Mode A dated ortho (NYSDOP / Wayback) may drape inland; pre-2001 worlds are hillshade + period grade, never current Esri World Imagery. Mode B local drapes at the reaches they show. Mode C walk-into stills at pins. Mode D: 1996 deed, CEHA, Moran/Great Pond, 1919 Hither Hills, usgs_2012_beach.jpg. Do not hang the PR5 gallery dump.",
   "hwl": {
     "anchors": [1830, 1870, 1892, 1933, 1938, 1962, 1979, 1983, 1988, 2000],
     "decadeYears": [1871, 1881, 1891, 1901, 1911, 1921, 1931, 1941, 1951, 1961, 1971, 1981, 1991, 2001, 2011, 2021],
     "northYears": [1933, 2000],
     "demYear": 2014,
-    "source": "USGS OFR 2010-1119 Himmelstoss et al. 2010 LongIsland_shorelines.shp clipped to Montauk. Decade south/Point lines are interpolated along LongIsland_LT transects or held at 2000. North HWL is never interpolated. 1891 and 1991 Long Island lines are not Montauk surveys.",
-    "surveyHint": "Custom coast from USGS high-water line + 2014 elevation. Not a 10-year surveyed model.",
+    "meshes": "data/coast_meshes.json",
+    "source": "USGS OFR 2010-1119 Himmelstoss et al. 2010 LongIsland_shorelines.shp clipped to Montauk. Decade south/Point lines are interpolated along LongIsland_LT transects or held at 2000. North HWL is never interpolated. 1891 and 1991 Long Island lines are not Montauk surveys. Carved meshes compare each year to the 2000 HWL (2014 waterline proxy).",
+    "surveyHint": "USGS surveyed high-water line — carved 3D coast (beach width / lost land / till face). Not a 10-year surveyed model.",
     "modeledHint": "Modeled from USGS high-water-line trend. Not a surveyed shoreline."
   },
   "pins": {
