@@ -827,6 +827,13 @@
           "text": "At the 6 July 2026 Montauk Citizens Advisory Committee, Councilman Lys reported the Army Corps was still fixing beach crossovers and would then demobilize from the Kirk Park Lot. Minutes also note a Beach Guardians program at Ditch and Atlantic Avenue and thanks for the dead-whale removal (the extra 600 cy at Ditch).",
           "status": "sourced",
           "sourceUrl": "http://www.ehamptonny.gov/AgendaCenter/ViewFile/Minutes/_07062026-1354"
+        },
+        {
+          "year": 2024,
+          "title": "January 9 storm strips downtown sand and exposes the 2015 geobags",
+          "text": "A 9 January 2024 storm eroded the recreational sand cover and damaged the 2015 geotextile-bag dune. NYSDEC Enclosure 2 (letter dated 12 Jan 2024) shows the bags fully exposed with a scarp and motel-row stair. This is the DEC enclosure, not the Town Natural Resources late-January vs post-fill pair the Star published. February FIMP fill followed.",
+          "status": "sourced",
+          "sourceUrl": "https://extapps.dec.ny.gov/fs/programs/press/USACE/usaceletter-dec.pdf"
         }
       ],
       "photos": [
@@ -906,6 +913,13 @@
           "caption": "South Edison / downtown oceanfront (SOUTH / Atlantic)",
           "credit": "Wikimedia Commons",
           "kind": "commons"
+        },
+        {
+          "year": 2024,
+          "src": "assets/photos/nysdec_2024_01_09_downtown_montauk_geobags_encl2.jpg",
+          "caption": "Downtown Montauk after the 9 January 2024 storm — 2015 geobags exposed, scarp, motel-row stair",
+          "credit": "NYSDEC Enclosure 2, P.L. 84-99 letter (12 Jan 2024)",
+          "kind": "nysdec"
         }
       ],
       "keyNumbers": [
