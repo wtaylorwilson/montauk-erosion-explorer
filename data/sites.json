@@ -697,10 +697,10 @@
           "kind": "usgs"
         },
         {
-          "year": null,
-          "src": "assets/photos/commons_south_edison_02.jpg",
-          "caption": "South Edison / downtown oceanfront (SOUTH / Atlantic)",
-          "credit": "Wikimedia Commons",
+          "year": 2026,
+          "src": "assets/photos/commons_ocean_beaches_2026_downtown-aerial.jpg",
+          "caption": "Downtown / Kirk Park motel row and south-facing strand, 6 Jun 2026. GPS 41.035025, −71.9478.",
+          "credit": "Wikimedia Commons, CC BY 4.0",
           "kind": "commons"
         },
         {
@@ -709,6 +709,13 @@
           "caption": "NYSDEC Coastal Erosion Hazard Area — East Hampton sheet 13 of 59 (downtown / ocean beaches)",
           "credit": "NYSDEC CEHA legal map",
           "kind": "ceha"
+        },
+        {
+          "year": null,
+          "src": "assets/photos/commons_south_edison_02.jpg",
+          "caption": "South Edison / downtown oceanfront (SOUTH / Atlantic)",
+          "credit": "Wikimedia Commons",
+          "kind": "commons"
         }
       ],
       "keyNumbers": [
