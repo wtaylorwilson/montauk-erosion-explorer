@@ -17,10 +17,9 @@
   var HWL_ANCHORS = [1830, 1870, 1892, 1933, 1938, 1962, 1979, 1983, 1988, 2000];
   var HWL_DECADES = [1871, 1881, 1891, 1901, 1911, 1921, 1931, 1941, 1951, 1961, 1971, 1981, 1991, 2001, 2011, 2021];
   var HWL_NORTH_YEARS = { 1933: 1, 2000: 1 };
-  var HWL_HINT_SURVEY = "USGS surveyed high-water line — carved 3D coast (beach width / lost land / till face). Not a 10-year surveyed model.";
+  var HWL_HINT_SURVEY = "USGS surveyed high-water line — 2014 relief is cut at this HWL (sand terrace / lost land / till face). Not a historic DEM.";
   var HWL_HINT_MODEL = "Modeled from USGS high-water-line trend. Not a surveyed shoreline.";
   var HWL_HINT_HELD = "Held at the 2000 USGS high-water line — no later Montauk HWL in OFR 2010-1119. Not a surveyed shoreline.";
-  var MODERN_BEACH_M = 12;
 
   var WATER_LOOK = {
     soundview: 0,
@@ -436,7 +435,7 @@
       if (dw != null && hwl) {
         coastBits.push(dw >= 8
           ? "Ditch terrace ~" + Math.round(dw) + " m seaward of 2014"
-          : "Ditch terrace gone · thin modern beach");
+          : "Ditch terrace gone · land ends at HWL");
       }
       if (HWL_NORTH_YEARS[year]) coastBits.push("north HWL only this year");
       if (year === 1871) coastBits.push("1871 walk-into still");
@@ -727,11 +726,11 @@
     if (!coastMeshes || !coastMeshes.years) return null;
     if (y > 2000 && coastMeshes.years["2000"]) {
       var held = coastMeshes.years["2000"];
-      return { status: "held", hwl: held.hwl, ref: held.ref, w: held.w.slice(), year: y };
+      return { status: "held", hwl: held.hwl, ref: held.ref, w: held.w.slice(), zCut: held.zCut, year: y };
     }
     if (coastMeshes.years[String(y)]) {
       var row = coastMeshes.years[String(y)];
-      return { status: row.status, hwl: row.hwl, ref: row.ref, w: row.w, year: y };
+      return { status: row.status, hwl: row.hwl, ref: row.ref, w: row.w, zCut: row.zCut, year: y };
     }
     var keys = meshYearKeys();
     var earlier = null;
@@ -746,17 +745,22 @@
     if (earlier == null) return null;
     var A = coastMeshes.years[String(earlier)];
     if (earlier === later) {
-      return { status: A.status, hwl: A.hwl, ref: A.ref, w: A.w, year: y };
+      return { status: A.status, hwl: A.hwl, ref: A.ref, w: A.w, zCut: A.zCut, year: y };
     }
     var t = (y - earlier) / (later - earlier);
     var B = coastMeshes.years[String(later)];
     var w = [];
+    var zCut = [];
     for (i = 0; i < A.w.length; i++) w.push(A.w[i] + (B.w[i] - A.w[i]) * t);
+    if (A.zCut && B.zCut) {
+      for (i = 0; i < A.zCut.length; i++) zCut.push(A.zCut[i] + (B.zCut[i] - A.zCut[i]) * t);
+    }
     return {
       status: "modeled",
       hwl: lerpPacked(A.hwl, B.hwl, t),
       ref: A.ref,
       w: w,
+      zCut: zCut.length ? zCut : A.zCut,
       year: y
     };
   }
@@ -812,7 +816,10 @@
       side: THREE.DoubleSide,
       transparent: opacity < 0.99,
       opacity: opacity,
-      depthWrite: opacity > 0.7
+      depthWrite: true,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2
     });
     var mesh = new THREE.Mesh(geom, mat);
     mesh.userData.coast = true;
@@ -885,8 +892,8 @@
     var sandCol = [];
     var tillPos = [];
     var tillCol = [];
-    var cutPos = [];
-    var cutCol = [];
+    var hidePos = [];
+    var hideCol = [];
     var waterPos = [];
     var waterCol = [];
     var i;
@@ -904,16 +911,35 @@
       var w1 = spec.w[i + 1];
       var terrace = w0 > 5 || w1 > 5;
       var cut = w0 < -5 || w1 < -5;
-      var shore0 = w0 >= 0 ? h0 : toward(h0, s0, MODERN_BEACH_M);
-      var shore1 = w1 >= 0 ? h1 : toward(h1, s1, MODERN_BEACH_M);
-      var far0 = toward(shore0, s0, 920);
-      var far1 = toward(shore1, s1, 920);
-      pushQuad(waterPos, waterCol,
-        mercatorVtx(shore0[0], shore0[1], altZ(0.05)),
-        mercatorVtx(shore1[0], shore1[1], altZ(0.05)),
-        mercatorVtx(far1[0], far1[1], altZ(0.04)),
-        mercatorVtx(far0[0], far0[1], altZ(0.04)),
+      var zc0 = spec.zCut && spec.zCut[i] != null ? spec.zCut[i] : 0;
+      var zc1 = spec.zCut && spec.zCut[i + 1] != null ? spec.zCut[i + 1] : 0;
+      var hide0 = Math.max(0.42, zc0 + 0.55);
+      var hide1 = Math.max(0.42, zc1 + 0.55);
+      var drop0 = toward(h0, s0, 70);
+      var drop1 = toward(h1, s1, 70);
+      var far0 = toward(h0, s0, 920);
+      var far1 = toward(h1, s1, 920);
+      /* Hide 2014 land/hillshade seaward of this year's HWL. Not a historic DEM. */
+      pushQuad(hidePos, hideCol,
+        mercatorVtx(h0[0], h0[1], altZ(hide0)),
+        mercatorVtx(h1[0], h1[1], altZ(hide1)),
+        mercatorVtx(drop1[0], drop1[1], altZ(0.4)),
+        mercatorVtx(drop0[0], drop0[1], altZ(0.4)),
         colors.water);
+      pushQuad(waterPos, waterCol,
+        mercatorVtx(drop0[0], drop0[1], altZ(0.4)),
+        mercatorVtx(drop1[0], drop1[1], altZ(0.4)),
+        mercatorVtx(far1[0], far1[1], altZ(0.08)),
+        mercatorVtx(far0[0], far0[1], altZ(0.08)),
+        colors.water);
+      if (cut) {
+        pushQuad(hidePos, hideCol,
+          mercatorVtx(h0[0], h0[1], altZ(hide0)),
+          mercatorVtx(h1[0], h1[1], altZ(hide1)),
+          mercatorVtx(r1[0], r1[1], altZ(hide1)),
+          mercatorVtx(r0[0], r0[1], altZ(hide0)),
+          colors.water);
+      }
       if (terrace) {
         var t0 = mercatorVtx(r0[0], r0[1], altZ(2.15));
         var t1 = mercatorVtx(r1[0], r1[1], altZ(2.15));
@@ -941,52 +967,26 @@
           mercatorVtx(it0[0], it0[1], altZ(th0 * 0.88)),
           colors.cobble);
       } else if (cut) {
-        var c0 = mercatorVtx(h0[0], h0[1], altZ(0.2));
-        var c1 = mercatorVtx(h1[0], h1[1], altZ(0.2));
-        var d0 = mercatorVtx(r0[0], r0[1], altZ(0.2));
-        var d1 = mercatorVtx(r1[0], r1[1], altZ(0.2));
-        pushQuad(cutPos, cutCol, c0, c1, d1, d0, colors.cut);
-        var cover0 = mercatorVtx(h0[0], h0[1], altZ(2.6));
-        var cover1 = mercatorVtx(h1[0], h1[1], altZ(2.6));
-        var cover2 = mercatorVtx(r1[0], r1[1], altZ(2.2));
-        var cover3 = mercatorVtx(r0[0], r0[1], altZ(2.2));
-        pushQuad(cutPos, cutCol, cover0, cover1, cover2, cover3, colors.cut);
-        var mb0 = toward(h0, s0, MODERN_BEACH_M);
-        var mb1 = toward(h1, s1, MODERN_BEACH_M);
-        pushQuad(sandPos, sandCol,
-          mercatorVtx(h0[0], h0[1], altZ(1.7)),
-          mercatorVtx(h1[0], h1[1], altZ(1.7)),
-          mercatorVtx(mb1[0], mb1[1], altZ(1.2)),
-          mercatorVtx(mb0[0], mb0[1], altZ(1.2)),
-          colors.sand);
         var ct0 = toward(h0, l0, 3);
         var ct1 = toward(h1, l1, 3);
-        var ch0 = tillHeight(h0[0]);
-        var ch1 = tillHeight(h1[0]);
+        var ch0 = Math.max(tillHeight(h0[0]), hide0 + 3.2);
+        var ch1 = Math.max(tillHeight(h1[0]), hide1 + 3.2);
         pushQuad(tillPos, tillCol,
-          mercatorVtx(h0[0], h0[1], altZ(1.7)),
-          mercatorVtx(h1[0], h1[1], altZ(1.7)),
+          mercatorVtx(h0[0], h0[1], altZ(hide0)),
+          mercatorVtx(h1[0], h1[1], altZ(hide1)),
           mercatorVtx(ct1[0], ct1[1], altZ(ch1)),
           mercatorVtx(ct0[0], ct0[1], altZ(ch0)),
           colors.till);
       } else {
-        var thin0 = toward(r0, s0, MODERN_BEACH_M);
-        var thin1 = toward(r1, s1, MODERN_BEACH_M);
-        pushQuad(sandPos, sandCol,
-          mercatorVtx(r0[0], r0[1], altZ(1.7)),
-          mercatorVtx(r1[0], r1[1], altZ(1.7)),
-          mercatorVtx(thin1[0], thin1[1], altZ(1.2)),
-          mercatorVtx(thin0[0], thin0[1], altZ(1.2)),
-          colors.sand);
-        var tb0 = toward(r0, l0, 3);
-        var tb1 = toward(r1, l1, 3);
-        var tt0 = toward(r0, l0, 11);
-        var tt1 = toward(r1, l1, 11);
-        var zh0 = tillHeight(r0[0]);
-        var zh1 = tillHeight(r1[0]);
+        var tb0 = toward(h0, l0, 3);
+        var tb1 = toward(h1, l1, 3);
+        var tt0 = toward(h0, l0, 11);
+        var tt1 = toward(h1, l1, 11);
+        var zh0 = tillHeight(h0[0]);
+        var zh1 = tillHeight(h1[0]);
         pushQuad(tillPos, tillCol,
-          mercatorVtx(r0[0], r0[1], altZ(1.7)),
-          mercatorVtx(r1[0], r1[1], altZ(1.7)),
+          mercatorVtx(h0[0], h0[1], altZ(1.7)),
+          mercatorVtx(h1[0], h1[1], altZ(1.7)),
           mercatorVtx(tb1[0], tb1[1], altZ(zh1)),
           mercatorVtx(tb0[0], tb0[1], altZ(zh0)),
           colors.till);
@@ -998,14 +998,14 @@
           colors.cobble);
       }
     }
+    var hide = makeColorMesh(hidePos, hideCol, 1);
     var sand = makeColorMesh(sandPos, sandCol, 1);
     var till = makeColorMesh(tillPos, tillCol, 1);
-    var cutMesh = makeColorMesh(cutPos, cutCol, 0.92);
-    var water = makeColorMesh(waterPos, waterCol, 0.9);
+    var water = makeColorMesh(waterPos, waterCol, 1);
+    if (hide) group.add(hide);
     if (water) group.add(water);
     if (sand) group.add(sand);
     if (till) group.add(till);
-    if (cutMesh) group.add(cutMesh);
     northRibbonMeshes(colors).forEach(function (m) { group.add(m); });
     return group;
   }

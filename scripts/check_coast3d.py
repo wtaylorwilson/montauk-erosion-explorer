@@ -318,10 +318,14 @@ def main() -> int:
         errors.append("painted HWL fill/line layers must not be the 3D coast — use carved meshes")
     if "function applyCoastMeshes" not in js or "function buildCoastGroup" not in js:
         errors.append("3D must build a carved coast mesh (water / terrace / till)")
-    if "tillHeight" not in js or "MODERN_BEACH_M" not in js:
-        errors.append("carved coast must include a till face and a thin modern beach")
+    if "tillHeight" not in js:
+        errors.append("carved coast must include a till face")
+    if "zCut" not in js or "Hide 2014 land" not in js:
+        errors.append("2014 relief seaward of the HWL must be hidden by a mesh, not left showing")
     if "is-era-cyano" not in js:
         errors.append("pre-ortho years need a period grade, not Esri World Imagery")
+    if "server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" in js:
+        errors.append("3D must not load current Esri World Imagery")
 
     mesh_path = ROOT / "data" / "coast_meshes.json"
     if not mesh_path.is_file():
@@ -335,9 +339,15 @@ def main() -> int:
         missing = sorted(want_years - got_years)
         if missing:
             errors.append(f"coast_meshes.json missing years {missing}")
+        sample = (meshes.get("years") or {}).get("1871") or {}
+        if "zCut" not in sample:
+            errors.append("coast_meshes.json must store 2014 zCut so seaward land can be hidden")
         north = sorted(int(y) for y in (meshes.get("north") or {}))
         if north != [1933, 2000]:
             errors.append(f"mesh north years {north} != [1933, 2000]")
+        extra_north = [y for y in (meshes.get("north") or {}) if int(y) not in (1933, 2000)]
+        if extra_north:
+            errors.append("north mesh only in 1933 and 2000")
         ditch = ((meshes.get("properties") or {}).get("ditchWidthM") or {})
         if float(ditch.get("1871") or 0) < 15:
             errors.append("1871 Ditch terrace must be a wide seaward beach, not a painted line")

@@ -124,6 +124,120 @@ def pack_xy(pts: list[tuple[float, float]]) -> list[float]:
     return out
 
 
+def lnglat_to_tile(lng: float, lat: float, z: int) -> tuple[float, float]:
+    n = 2.0 ** z
+    x = (lng + 180.0) / 360.0 * n
+    lat_rad = math.radians(lat)
+    y = (1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad)) / math.pi) / 2.0 * n
+    return x, y
+
+
+def _read_png_rgb(path: Path) -> list[list[tuple[int, int, int]]]:
+    """Stdlib PNG reader for 8-bit RGB/RGBA tiles (no Pillow)."""
+    import struct
+    import zlib
+
+    raw = path.read_bytes()
+    if raw[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("not a png")
+    pos = 8
+    width = height = 0
+    bit_depth = 8
+    color_type = 2
+    idat = b""
+    while pos + 8 <= len(raw):
+        length = struct.unpack(">I", raw[pos:pos + 4])[0]
+        ctype = raw[pos + 4:pos + 8]
+        data = raw[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if ctype == b"IHDR":
+            width, height, bit_depth, color_type = struct.unpack(">IIBB", data[:10])
+        elif ctype == b"IDAT":
+            idat += data
+        elif ctype == b"IEND":
+            break
+    if bit_depth != 8 or color_type not in (2, 6) or not width:
+        raise ValueError("unsupported png")
+    bpp = 3 if color_type == 2 else 4
+    rows = zlib.decompress(idat)
+    stride = 1 + width * bpp
+    out = []
+    prev = bytes(width * bpp)
+    i = 0
+    for _y in range(height):
+        filt = rows[i]
+        scan = bytearray(rows[i + 1:i + stride])
+        i += stride
+        if filt == 1:
+            for x in range(bpp, len(scan)):
+                scan[x] = (scan[x] + scan[x - bpp]) & 255
+        elif filt == 2:
+            for x in range(len(scan)):
+                scan[x] = (scan[x] + prev[x]) & 255
+        elif filt == 3:
+            for x in range(len(scan)):
+                left = scan[x - bpp] if x >= bpp else 0
+                scan[x] = (scan[x] + ((left + prev[x]) // 2)) & 255
+        elif filt == 4:
+            def paeth(a, b, c):
+                p = a + b - c
+                pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                if pa <= pb and pa <= pc:
+                    return a
+                if pb <= pc:
+                    return b
+                return c
+            for x in range(len(scan)):
+                a = scan[x - bpp] if x >= bpp else 0
+                scan[x] = (scan[x] + paeth(a, prev[x], prev[x - bpp] if x >= bpp else 0)) & 255
+        prev = bytes(scan)
+        row = []
+        for x in range(width):
+            o = x * bpp
+            row.append((scan[o], scan[o + 1], scan[o + 2]))
+        out.append(row)
+    return out
+
+
+class TerrariumSampler:
+    """2014 NGS crop only — used to hide that year's land seaward of the HWL.
+    Not a historic DEM and not written back as elevation tiles."""
+
+    def __init__(self) -> None:
+        self.root = ROOT / "assets" / "terrain" / "2014-ngs"
+        self.cache: dict[Path, list] = {}
+
+    def elev(self, lng: float, lat: float, z: int = 14) -> float | None:
+        xf, yf = lnglat_to_tile(lng, lat, z)
+        tx, ty = int(math.floor(xf)), int(math.floor(yf))
+        path = self.root / str(z) / str(tx) / f"{ty}.png"
+        if not path.is_file():
+            return None
+        if path not in self.cache:
+            self.cache[path] = _read_png_rgb(path)
+        img = self.cache[path]
+        px = min(255, max(0, int((xf - tx) * 256)))
+        py = min(255, max(0, int((yf - ty) * 256)))
+        r, g, b = img[py][px]
+        return r * 256.0 + g + b / 256.0 - 32768.0
+
+
+def lerp_pt(a, b, t: float):
+    return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+
+
+def z_cut_seaward(sampler: TerrariumSampler, hwl, sea, steps: int = 12) -> float:
+    """Max 2014 elevation from this year's HWL out to the transect sea end."""
+    zmax = 0.0
+    for i in range(steps + 1):
+        t = i / steps
+        pt = lerp_pt(hwl, sea, t)
+        z = sampler.elev(pt[0], pt[1])
+        if z is not None:
+            zmax = max(zmax, z)
+    return round(max(0.0, zmax), 2)
+
+
 def main() -> int:
     transects = load_transects()
     south, north, status = load_hwl_lines()
@@ -136,12 +250,14 @@ def main() -> int:
     if len(canonical) < 80:
         raise SystemExit(f"too few 2000 transect hits: {len(canonical)}")
 
+    sampler = TerrariumSampler()
     year_out = {}
     for y in years:
         yh = hits.get(y) or {}
         hwl_pts = []
         ref_pts = []
         sea_w = []
+        z_cut = []
         for tr in canonical:
             r = ref[tr["id"]]
             h = yh.get(tr["id"], r)
@@ -150,6 +266,7 @@ def main() -> int:
             # + seaward of 2000 (historic beach to build); − landward (cut)
             sign = 1.0 if inland_amt(h, tr) < inland_amt(r, tr) else -1.0
             sea_w.append(round(hypot_m(h, r) * sign, 1))
+            z_cut.append(z_cut_seaward(sampler, h, tr["a"]))
         st = status.get(y)
         if y > 2000:
             st = "held"
@@ -162,6 +279,7 @@ def main() -> int:
             "hwl": pack_xy(hwl_pts),
             "ref": pack_xy(ref_pts),
             "w": sea_w,
+            "zCut": z_cut,
         }
 
     north_out = {}
@@ -203,11 +321,11 @@ def main() -> int:
         "north": north_out,
         "properties": {
             "source": "USGS OFR 2010-1119 Himmelstoss et al. 2010",
-            "credit": "South/Point carved coasts from sourced HWL vs the 2000 USGS HWL (2014 waterline proxy). Inland relief is 2014 NOAA NGS / Mapterhorn — visual only, not a change surface. Not a surveyed historic DEM.",
+            "credit": "South/Point carved coasts from sourced HWL vs the 2000 USGS HWL (2014 waterline proxy). zCut is the 2014 NGS height seaward of that HWL so the hide mesh can cover 2014 land — not a historic DEM and not invented inland hills.",
             "anchors": ANCHORS,
             "decadeYears": DECADE_YEARS,
             "northYears": sorted(NORTH_YEARS),
-            "note": "North HWL only in 1933 and 2000. No Soundview/harbor invented waterline. No peninsula loop. 2001–2021 held at 2000.",
+            "note": "North HWL only in 1933 and 2000. No Soundview/harbor invented waterline. No peninsula loop. 2001–2021 held at 2000. 2014 relief is hidden seaward of each year's HWL.",
             "ditchWidthM": {"1871": round(d1871, 1), "1962": round(d1962, 1), "2000": round(d2000, 1)},
         },
     }

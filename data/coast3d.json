@@ -7,6 +7,7 @@
     "northYears": [1933, 2000],
     "demYear": 2014,
     "meshes": "data/coast_meshes.json",
+    "carve": "2014 relief is hidden seaward of each year's HWL by a mesh at sampled 2014 height (zCut). Terrace is only the labeled 1.2–2.0 m sand between the 2014 waterline and a seaward HWL. Not a historic DEM.",
     "source": "USGS OFR 2010-1119 Himmelstoss et al. 2010 LongIsland_shorelines.shp clipped to Montauk. Decade south/Point lines are interpolated along LongIsland_LT transects or held at 2000. North HWL is never interpolated. 1891 and 1991 Long Island lines are not Montauk surveys. Carved meshes compare each year to the 2000 HWL (2014 waterline proxy).",
     "surveyHint": "USGS surveyed high-water line — carved 3D coast (beach width / lost land / till face). Not a 10-year surveyed model.",
     "modeledHint": "Modeled from USGS high-water-line trend. Not a surveyed shoreline."
