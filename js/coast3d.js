@@ -462,7 +462,7 @@
       renderingMode: "3d",
       onAdd: function (mapInst, gl) {
         this.map = mapInst;
-        this.camera = new THREE.Camera();
+        this.camera = new THREE.PerspectiveCamera();
         this.scene = new THREE.Scene();
         this.raycaster = new THREE.Raycaster();
         this.renderer = new THREE.WebGLRenderer({
@@ -490,21 +490,45 @@
     map.addLayer(planeLayer);
   }
 
+  function metersBetween(aLat, aLng, bLat, bLng) {
+    var R = 6371000;
+    var dLat = (bLat - aLat) * Math.PI / 180;
+    var dLng = (bLng - aLng) * Math.PI / 180;
+    var s = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(aLat * Math.PI / 180) * Math.cos(bLat * Math.PI / 180) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
+  }
+
   function hitPlanes(point) {
-    if (!planeLayer || !planeLayer.raycaster || !map) return null;
-    var canvas = map.getCanvas();
-    var ndc = new THREE.Vector2(
-      (point.x / canvas.clientWidth) * 2 - 1,
-      -(point.y / canvas.clientHeight) * 2 + 1
-    );
-    planeLayer.raycaster.setFromCamera(ndc, planeLayer.camera);
-    var hits = planeLayer.raycaster.intersectObjects(planeLayer.scene.children, true);
-    var i, rec;
-    for (i = 0; i < hits.length; i++) {
-      rec = hits[i].object && hits[i].object.userData && hits[i].object.userData.rec;
-      if (rec && cardVisible(rec)) return rec;
+    if (!map) return null;
+    if (planeLayer && planeLayer.raycaster && planeLayer.camera) {
+      var canvas = map.getCanvas();
+      var ndc = new THREE.Vector2(
+        (point.x / canvas.clientWidth) * 2 - 1,
+        -(point.y / canvas.clientHeight) * 2 + 1
+      );
+      planeLayer.raycaster.setFromCamera(ndc, planeLayer.camera);
+      var hits = planeLayer.raycaster.intersectObjects(planeLayer.scene.children, true);
+      var i, rec;
+      for (i = 0; i < hits.length; i++) {
+        rec = hits[i].object && hits[i].object.userData && hits[i].object.userData.rec;
+        if (rec && cardVisible(rec)) return rec;
+      }
     }
-    return null;
+    var ll = map.unproject(point);
+    var best = null;
+    var bestD = 1e9;
+    cards.forEach(function (rec) {
+      if (!cardVisible(rec)) return;
+      var d = metersBetween(ll.lat, ll.lng, rec.lat, rec.lng);
+      var limit = rec.kind === "aerial" ? 110 : 55;
+      if (d <= limit && d < bestD) {
+        best = rec;
+        bestD = d;
+      }
+    });
+    return best;
   }
 
   function openCard(rec) {
