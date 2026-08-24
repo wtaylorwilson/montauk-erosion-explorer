@@ -741,6 +741,12 @@ body.ac-open .leaflet-control-layers {
   padding: 6px 9px;
 }
 .coast3d-count { color: var(--seafoam); }
+.coast3d-view.is-walkin {
+  background:
+    radial-gradient(900px 420px at 50% 10%, rgba(226, 196, 154, 0.08), transparent 50%),
+    #060e16;
+}
+.coast3d-view.is-drape-only #coast3d { filter: saturate(0.92); }
 
 .coast3d-view .maplibregl-marker { pointer-events: auto; }
 .photo-plane {
@@ -1136,6 +1142,13 @@ body.ac-open .leaflet-control-layers {
   .coast3d-hint, .coast3d-count {
     font-size: 10px;
     padding: 5px 8px;
+    max-width: 100%;
+  }
+  .coast3d-hint {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
   }
   .photo-plane { width: 76px; }
   .photo-plane img { width: 76px; height: 54px; }
