@@ -1035,6 +1035,7 @@ body {
     padding: 7px 9px;
     font-size: 10px;
     min-height: 32px;
+    letter-spacing: 0.04em;
   }
   .coast3d-hint, .coast3d-count {
     font-size: 10px;
