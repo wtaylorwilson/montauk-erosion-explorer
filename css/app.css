@@ -567,6 +567,11 @@ body {
   overflow-wrap: anywhere;
 }
 .aerial-compare .compare-divider { z-index: 5; }
+body.ac-open .leaflet-control-scale,
+body.ac-open .leaflet-control-attribution,
+body.ac-open .leaflet-control-layers {
+  visibility: hidden;
+}
 
 .lightbox {
   position: fixed; inset: 0;

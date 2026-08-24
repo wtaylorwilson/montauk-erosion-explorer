@@ -831,6 +831,7 @@
     $("#ac-left").src = "assets/aerials/1976-harbor-wide.jpg";
     $("#ac-right").src = "assets/aerials/1984-harbor.jpg";
     box.hidden = false;
+    document.body.classList.add("ac-open");
     requestAnimationFrame(function () { setAerialClip(box.querySelector(".ac-frame").clientWidth / 2); });
     if (!state.selectedId || (state.selectedId !== "harbor_jetties" && state.selectedId !== "soundview")) {
       selectSite("harbor_jetties", true, false);
@@ -840,6 +841,7 @@
 
   function hideAerialCompare() {
     $("#aerial-compare").hidden = true;
+    document.body.classList.remove("ac-open");
   }
 
   function initAerialCompare() {
