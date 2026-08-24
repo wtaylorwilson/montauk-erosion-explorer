@@ -870,6 +870,40 @@
     return w0 >= 4 && w1 >= 4;
   }
 
+  function sandRunsForSpec(spec) {
+    var n = spec.w.length;
+    var ok = [];
+    var i;
+    for (i = 0; i < n - 1; i++) {
+      var h0 = xyAt(spec.hwl, i);
+      var h1 = xyAt(spec.hwl, i + 1);
+      var r0 = xyAt(spec.ref, i);
+      var r1 = xyAt(spec.ref, i + 1);
+      var far = metersBetween(h0[1], h0[0], h1[1], h1[0]) > 140 &&
+        metersBetween(r0[1], r0[0], r1[1], r1[0]) > 140;
+      var span0 = metersBetween(r0[1], r0[0], h0[1], h0[0]);
+      var span1 = metersBetween(r1[1], r1[0], h1[1], h1[0]);
+      ok[i] = !far && sandWidthOk(spec.w[i], spec.w[i + 1]) && span0 >= 4 && span1 >= 4;
+    }
+    var runs = [];
+    i = 0;
+    while (i < ok.length) {
+      if (!ok[i]) {
+        i += 1;
+        continue;
+      }
+      var start = i;
+      while (i < ok.length && ok[i]) i += 1;
+      var end = i - 1;
+      /* Drop one-segment leftovers — they become floating ribbons. */
+      if (end - start + 1 < 2) continue;
+      /* Trim a trailing knife-edge so the last face is a real block. */
+      while (end - start + 1 >= 2 && spec.w[end + 1] < 16) end -= 1;
+      if (end - start + 1 >= 2) runs.push({ start: start, end: end });
+    }
+    return runs;
+  }
+
   function northRibbonMeshes(colors) {
     if (skipSandMesh()) return [];
     if (!HWL_NORTH_YEARS[year] || !coastMeshes || !coastMeshes.north) return [];
@@ -1010,7 +1044,6 @@
     var colors = eraCoastColors();
     var waterZ = addSolidWaterPlanes(group, spec, colors);
     if (skipSandMesh()) return group;
-    var n = spec.w.length;
     var land = coastMeshes.land;
     var sandPos = [];
     var sandCol = [];
@@ -1018,62 +1051,37 @@
     var tillCol = [];
     var topIn = altZ(3.15);
     var topOut = altZ(2.55);
-    var deckZ = altZ(Math.max(waterZ + 0.55, 1.7));
     var toeZ = altZ(waterZ);
-    var i;
-    for (i = 0; i < n - 1; i++) {
-      var h0 = xyAt(spec.hwl, i);
-      var h1 = xyAt(spec.hwl, i + 1);
-      var r0 = xyAt(spec.ref, i);
-      var r1 = xyAt(spec.ref, i + 1);
-      if (metersBetween(h0[1], h0[0], h1[1], h1[0]) > 140 &&
-          metersBetween(r0[1], r0[0], r1[1], r1[0]) > 140) continue;
-      var l0 = xyAt(land, i);
-      var l1 = xyAt(land, i + 1);
-      var w0 = spec.w[i];
-      var w1 = spec.w[i + 1];
-      /* Both ends must be a real seaward beach. OR-gating drew taper slivers. */
-      if (sandWidthOk(w0, w1)) {
-        var span0 = metersBetween(r0[1], r0[0], h0[1], h0[0]);
-        var span1 = metersBetween(r1[1], r1[0], h1[1], h1[0]);
-        if (span0 < 4 || span1 < 4) continue;
-        /* Thick extruded sand BODY — seaward of the 2014/2000 HWL only. */
+    var runs = sandRunsForSpec(spec);
+    var ri;
+    for (ri = 0; ri < runs.length; ri++) {
+      var run = runs[ri];
+      var i;
+      for (i = run.start; i <= run.end; i++) {
+        var h0 = xyAt(spec.hwl, i);
+        var h1 = xyAt(spec.hwl, i + 1);
+        var r0 = xyAt(spec.ref, i);
+        var r1 = xyAt(spec.ref, i + 1);
+        var l0 = xyAt(land, i);
+        var l1 = xyAt(land, i + 1);
         var a = mercatorVtx(r0[0], r0[1], topIn);
         var b = mercatorVtx(r1[0], r1[1], topIn);
         var c = mercatorVtx(h1[0], h1[1], topOut);
         var d = mercatorVtx(h0[0], h0[1], topOut);
-        pushQuad(sandPos, sandCol, a, b, c, d, colors.sand);
         var e = mercatorVtx(h0[0], h0[1], toeZ);
         var f = mercatorVtx(h1[0], h1[1], toeZ);
-        pushQuad(sandPos, sandCol, d, c, f, e, colors.sand);
         var g = mercatorVtx(r0[0], r0[1], toeZ);
         var h = mercatorVtx(r1[0], r1[1], toeZ);
-        pushQuad(sandPos, sandCol, a, d, e, g, colors.sand);
-        pushQuad(sandPos, sandCol, b, h, f, c, colors.sand);
-        var nextOk = i + 2 < n && sandWidthOk(w1, spec.w[i + 2]);
-        if (!nextOk) {
-          /* Close the east end as a block — do not leave an open taper. */
-          pushQuad(sandPos, sandCol, b, c, f, h, colors.sand);
-        }
+        pushQuad(sandPos, sandCol, a, b, c, d, colors.sand);
+        pushQuad(sandPos, sandCol, d, c, f, e, colors.sand);
+        if (i === run.start) pushQuad(sandPos, sandCol, a, d, e, g, colors.sand);
+        if (i === run.end) pushQuad(sandPos, sandCol, b, c, f, h, colors.sand);
         var ib0 = toward(r0, l0, 4);
         var ib1 = toward(r1, l1, 4);
-        var th0 = tillHeight(r0[0]);
-        var th1 = tillHeight(r1[0]);
         pushQuad(tillPos, tillCol,
           a, b,
-          mercatorVtx(ib1[0], ib1[1], altZ(th1)),
-          mercatorVtx(ib0[0], ib0[1], altZ(th0)),
-          colors.till);
-      } else if (w0 < -5 && w1 < -5) {
-        var ct0 = toward(h0, l0, 4);
-        var ct1 = toward(h1, l1, 4);
-        var ch0 = tillHeight(h0[0]);
-        var ch1 = tillHeight(h1[0]);
-        pushQuad(tillPos, tillCol,
-          mercatorVtx(h0[0], h0[1], deckZ),
-          mercatorVtx(h1[0], h1[1], deckZ),
-          mercatorVtx(ct1[0], ct1[1], altZ(ch1)),
-          mercatorVtx(ct0[0], ct0[1], altZ(ch0)),
+          mercatorVtx(ib1[0], ib1[1], altZ(tillHeight(r1[0]))),
+          mercatorVtx(ib0[0], ib0[1], altZ(tillHeight(r0[0]))),
           colors.till);
       }
     }

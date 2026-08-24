@@ -330,6 +330,8 @@ def main() -> int:
         errors.append("water must be solid flat-shaded bbox planes, not a transect triangle strip")
     if "function skipSandMesh" not in js or "function sandWidthOk" not in js:
         errors.append("2000 / held years must skip all sand; segments under ~4 m must not draw tan")
+    if "function sandRunsForSpec" not in js or "end - start + 1 < 2" not in js:
+        errors.append("sand must be drawn only on contiguous runs of at least 2 segments")
     if "w0 > 5 || w1 > 5" in js:
         errors.append("do not OR-gate terrace width — that tapers the east end into slivers")
     if re.search(r"toward\(h0,\s*s0,\s*920\)", js):
