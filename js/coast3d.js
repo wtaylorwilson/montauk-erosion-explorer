@@ -31,6 +31,7 @@
   var orbit = { on: false, lastX: 0, lastY: 0, pointerId: null };
   var selectedId = null;
   var pendingFly = null;
+  var terrainErrors = 0;
 
   function $(sel, root) { return (root || document).querySelector(sel); }
 
@@ -274,7 +275,7 @@
           }
         }
       ],
-      terrain: { source: "terrain", exaggeration: (cfg.terrain && cfg.terrain.exaggeration) || 2.4 },
+      terrain: { source: "terrain", exaggeration: (cfg.terrain && cfg.terrain.exaggeration) || 4.2 },
       sky: {
         "sky-color": "#0a1a28",
         "horizon-color": "#8aa7b8",
@@ -300,11 +301,9 @@
       '<span class="photo-plane-cap">' + escapeHtml(rec.photo.caption || rec.photo.credit || "") + "</span>";
     btn.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
     btn.addEventListener("click", function (e) {
+      e.preventDefault();
       e.stopPropagation();
-      selectedId = rec.siteId;
-      updateCardStates();
-      if (opts.onPhoto) opts.onPhoto(rec.photo, rec.site);
-      if (opts.onSite) opts.onSite(rec.siteId, { fly: false, sheet: false });
+      openCard(rec);
     });
     return btn;
   }
@@ -356,6 +355,10 @@
     canvas.addEventListener("pointerdown", function (e) {
       if (e.button != null && e.button !== 0) return;
       if (e.target.closest && e.target.closest(".photo-plane, .coast3d-pin, .coast3d-chrome")) return;
+      try {
+        var rect = canvas.getBoundingClientRect();
+        if (nearestCardAt({ x: e.clientX - rect.left, y: e.clientY - rect.top }, 56)) return;
+      } catch (err) { /* ignore */ }
       orbit.on = true;
       orbit.pointerId = e.pointerId;
       orbit.lastX = e.clientX;
@@ -388,6 +391,76 @@
         else playPath(id);
       });
     });
+  }
+
+  function nearestCardAt(point, maxDist) {
+    if (!map || !point) return null;
+    var best = null;
+    var bestD = maxDist;
+    cards.forEach(function (rec) {
+      if (!cardVisible(rec)) return;
+      var p = map.project([rec.lng, rec.lat]);
+      var dx = point.x - p.x;
+      var dy = point.y - p.y;
+      var d = Math.sqrt(dx * dx + dy * dy);
+      if (dy < 0 && dy > -100) d = Math.min(d, Math.abs(dx) + Math.abs(dy + 40) * 0.35);
+      if (d < bestD) {
+        bestD = d;
+        best = rec;
+      }
+    });
+    return best;
+  }
+
+  function openCard(rec) {
+    if (!rec) return;
+    selectedId = rec.siteId;
+    updateCardStates();
+    if (opts.onPhoto) opts.onPhoto(rec.photo, rec.site);
+    if (opts.onSite) opts.onSite(rec.siteId, { fly: false, sheet: false });
+  }
+
+  function tryFallbackTerrain() {
+    var fb = cfg && cfg.terrain && cfg.terrain.fallback;
+    if (!map || !fb || !map.getSource("terrain")) return;
+    try {
+      map.setTerrain(null);
+      if (map.getSource("terrain")) map.removeSource("terrain");
+      if (map.getSource("hillshadeDem")) {
+        if (map.getLayer("hills")) map.removeLayer("hills");
+        map.removeSource("hillshadeDem");
+      }
+      map.addSource("terrain", {
+        type: "raster-dem",
+        tiles: fb.tiles,
+        encoding: fb.encoding || "terrarium",
+        tileSize: fb.tileSize || 256,
+        maxzoom: fb.maxzoom || 15,
+        attribution: fb.attribution
+      });
+      map.addSource("hillshadeDem", {
+        type: "raster-dem",
+        tiles: fb.tiles,
+        encoding: fb.encoding || "terrarium",
+        tileSize: fb.tileSize || 256,
+        maxzoom: fb.maxzoom || 15
+      });
+      if (!map.getLayer("hills")) {
+        map.addLayer({
+          id: "hills",
+          type: "hillshade",
+          source: "hillshadeDem",
+          paint: {
+            "hillshade-exaggeration": 0.5,
+            "hillshade-shadow-color": "#142018",
+            "hillshade-highlight-color": "#f3ead6"
+          }
+        });
+      }
+      map.setTerrain({ source: "terrain", exaggeration: 4.2 });
+    } catch (e) {
+      dropTerrain();
+    }
   }
 
   function dropTerrain() {
@@ -433,7 +506,9 @@
     }
     map.on("error", function (e) {
       var id = e && e.sourceId;
-      if (id === "terrain" || id === "hillshadeDem") dropTerrain();
+      if (id !== "terrain" && id !== "hillshadeDem") return;
+      terrainErrors += 1;
+      if (terrainErrors === 8) tryFallbackTerrain();
     });
     map.on("load", function () {
       ready = true;
@@ -449,6 +524,11 @@
       if (opts.onReady) opts.onReady();
     });
     map.on("zoom", function () { setFarClass(map.getZoom()); });
+    map.on("click", function (e) {
+      var hit = nearestCardAt(e.point, 72);
+      if (!hit) return;
+      openCard(hit);
+    });
     map.on("move", function () {
       if (!visible) return;
       var c = map.getCenter();

@@ -1001,17 +1001,17 @@
   function applyHash() {
     const hash = (location.hash || "").replace(/^#/, "");
     const params = new URLSearchParams(hash.includes("=") ? hash : "");
-    const viewFromHash = params.get("view");
-    if (viewFromHash === "3d" || viewFromHash === "coast3d") setView("coast3d");
-    const siteFromHash = params.get("site") || (hash && FOCUS.indexOf(hash) >= 0 ? hash : "");
-    if (siteFromHash) selectSite(siteFromHash, true);
     const y = Number(params.get("year"));
     if (y && state.years.indexOf(y) >= 0) {
       state.yearIndex = state.years.indexOf(y);
       onYearChange();
     }
-    if (params.get("compare") === "1") $("#btn-compare").click();
-    if (params.get("aerials") === "1") showAerialCompare();
+    const viewFromHash = params.get("view");
+    if (viewFromHash === "3d" || viewFromHash === "coast3d") setView("coast3d");
+    const siteFromHash = params.get("site") || (hash && FOCUS.indexOf(hash) >= 0 ? hash : "");
+    if (siteFromHash) selectSite(siteFromHash, true);
+    if (params.get("compare") === "1" && !state.compare) $("#btn-compare").click();
+    if (params.get("aerials") === "1" && $("#aerial-compare").hidden) showAerialCompare();
   }
 
   async function boot() {
@@ -1072,6 +1072,11 @@
         },
         onSite: function (id, extra) {
           selectSite(id, extra && extra.fly === true, extra);
+        },
+        onReady: function () {
+          if (state.view !== "coast3d") return;
+          const site = state.sites.find(function (s) { return s.id === state.selectedId; });
+          if (site) window.MontaukCoast3D.flyToSite(site);
         }
       });
     }
@@ -1082,6 +1087,7 @@
     highlightEvents();
     $("#year-source").textContent = sourceLabel(currentYear(), state.layerPref);
     applyHash();
+    window.addEventListener("hashchange", applyHash);
   }
 
   boot();

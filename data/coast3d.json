@@ -18,7 +18,7 @@
       "maxzoom": 15,
       "attribution": "AWS Terrain Tiles / Mapzen"
     },
-    "exaggeration": 2.4,
+    "exaggeration": 4.2,
     "exaggerationNote": "Visual only. Montauk bluffs are tens of meters; exaggeration makes them readable in the browser."
   },
   "imagery": {

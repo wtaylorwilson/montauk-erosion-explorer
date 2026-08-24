@@ -717,6 +717,7 @@ body {
 }
 .coast3d-count { color: var(--seafoam); }
 
+.coast3d-view .maplibregl-marker { pointer-events: auto; }
 .photo-plane {
   appearance: none;
   width: 92px;
