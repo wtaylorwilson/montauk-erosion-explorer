@@ -71,6 +71,20 @@
           "text": "The 1928 McCaffray house sat on this till bluff; the town bought the dangling estate in 1972. In August 2026 crews removed the long-defunct septic from the Rheinstein Preserve bluff ($14,700 emergency).",
           "status": "sourced",
           "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_a8f5f6da-570e-4106-8625-d21491f9f456.html"
+        },
+        {
+          "year": 2025,
+          "title": "Hurricane Erin: Highway sand at the Ditch lots; rack line to the dune toe",
+          "text": "On 21 August 2025 the East Hampton Star reported a Highway payloader placing and shaping sand at two Ditch Plains parking lots as Hurricane Erin passed offshore. Councilman David Lys said the rack line reached the toe of the dunes. Forecast waves of 15–20 ft were a prep-meeting figure, not a surveyed shoreline change. Star news photos (Durell Godfrey) stay link-only.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/government/2025821/hurricane-erin-offshore-still-packing-punch"
+        },
+        {
+          "year": 2026,
+          "title": "Late June 2026: extra 600 cy placed to remove a stranded whale",
+          "text": "After the winter 20,000 cy / 16-ft engineered dune, the town placed about 600 extra cubic yards in late June 2026 to remove a decomposing humpback whale; the extra sand was left on the beach. The East Hampton Star restated that on 9 July 2026; 6 July 2026 MCAC minutes also thank crews for the whale removal. News photo stays link-only.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/sports/202679/big-weekend-delivers-gentle-surf-ditch-plain"
         }
       ],
       "photos": [
@@ -243,6 +257,13 @@
           "unit": "cy",
           "status": "sourced",
           "note": "Maximum permitted fill; crest +16 ft NAVD along ~2,200 ft (Town 2024 / 2025\u201326 as-built)."
+        },
+        {
+          "label": "June 2026 whale fill",
+          "value": "600",
+          "unit": "cy",
+          "status": "sourced",
+          "note": "Extra sand placed late June 2026 to remove a decomposing humpback; left on the beach (East Hampton Star 2026-07-09). On top of the 20,000 cy / +16 ft NAVD winter dune."
         }
       ],
       "related": [
@@ -601,6 +622,13 @@
           "text": "By 15 January 2026 the Town Board was told nearly 90,000 cy had been removed from the Lake Montauk dredge. Inlet-floor sand piled on Sunset Beach west of the jetty totaled 95,000-plus cy; a March 2026 blizzard cut the new feeder beach about 12 feet. NORTH harbor.",
           "status": "sourced",
           "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_9c15de50-a658-4b91-8248-dc04d71cfc5e.html"
+        },
+        {
+          "year": 1954,
+          "title": "Hurricane Carol hits the Fort Pond Bay / Navy Road village",
+          "text": "Alice Houseknecht ground stills (NY Heritage) show street-to-bay damage along Navy Road, Sunrise cottages, and the Maisonettes, plus a grainy Fishangri-la frame during Carol. These are the east shore of Fort Pond Bay / the old fishing village, not Soundview Drive or the Culloden bluff. In copyright; link-only.",
+          "status": "sourced",
+          "sourceUrl": "https://nyheritage.contentdm.oclc.org/digital/collection/p15281coll78/id/3118"
         }
       ],
       "photos": [
@@ -785,6 +813,20 @@
           "text": "Just before the Army Corps sandbag dune, people walked a narrow strip of dry sand on downtown Montauk\u2019s ocean beach \u2014 about 20 feet of dry sand left at the motel-row toe.",
           "status": "sourced",
           "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-beach-project-looms"
+        },
+        {
+          "year": 2025,
+          "title": "Hurricane Erin: downtown FIMP holding; Kirk Park described as shrunken",
+          "text": "On 21 August 2025, as Erin passed offshore, Lys said downtown was holding up in the area of the Army Corps project, while other stretches saw a sand-profile drop through two recent high tides. Kirk Park Beach was described as shrunken. Not a surveyed shoreline-change rate. Star news photos (Durell Godfrey) stay link-only.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/government/2025821/hurricane-erin-offshore-still-packing-punch"
+        },
+        {
+          "year": 2026,
+          "title": "July 2026: ACOE still fixing crossovers, then off Kirk Park Lot",
+          "text": "At the 6 July 2026 Montauk Citizens Advisory Committee, Councilman Lys reported the Army Corps was still fixing beach crossovers and would then demobilize from the Kirk Park Lot. Minutes also note a Beach Guardians program at Ditch and Atlantic Avenue and thanks for the dead-whale removal (the extra 600 cy at Ditch).",
+          "status": "sourced",
+          "sourceUrl": "http://www.ehamptonny.gov/AgendaCenter/ViewFile/Minutes/_07062026-1354"
         }
       ],
       "photos": [
