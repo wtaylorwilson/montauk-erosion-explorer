@@ -44,9 +44,17 @@ No tile for 1938 / 1976 / 1984 / 1996 / 2012 — those years highlight photos or
 - USGS DS 858, 5 Nov 2012 (Ditch, Point, Camp Hero/Turtle Cove, Montauk Beach)
 - Library of Congress, Carol M. Highsmith (lighthouse)
 
+## GIS overlays
+
+Toggleable on the map (south-shore USGS rates are **not** for Soundview / Block Island Sound):
+
+- Town of East Hampton Coastal Erosion Overlay Zones — `data/eh_ceha_zones.geojson` (ArcGIS layer 8, WGS84, Montauk bbox).
+- Town shoreline (simplified for the web) — `data/eh_shoreline.geojson` (layer 17).
+- USGS OFR 2010-1119 long-term LRR transects, Montauk bbox only — `data/usgs_lt_montauk.geojson` from `LongIsland_LT.shp`.
+
 ## Sourced rates (agency + period)
 
-- USGS OFR 2010-1119 LRR site boxes: Point/Turtle Cove −0.20 m/yr (−0.67 ft/yr); Ditch Plains −0.08 m/yr; Montauk south shore −0.11 m/yr. Computed from official shapefiles; not official USGS site averages.
+- USGS OFR 2010-1119 LRR site boxes (computed from the official shapefile, not published USGS site averages): Point/Turtle Cove −0.20 m/yr (−0.67 ft/yr); Ditch Plains −0.08 m/yr (−0.25 ft/yr); Downtown south −0.04 m/yr (−0.14 ft/yr); Montauk south shore −0.11 m/yr (−0.35 ft/yr). South shore / Point only.
 - CARP (GZA) 1983–2016 Downtown & Ditch: 0.5–2.5 ft/yr (different method).
 - Shadmoor bluff 1962–2023: 0.94 ft/yr.
 - Downtown FIMP 2024 as-built ~500,000 cy.

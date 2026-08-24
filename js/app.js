@@ -15,6 +15,8 @@
     lighthouse: { shore: "east", waterbody: "Atlantic Ocean / Turtle Cove", setting: "Turtle Hill bluff and light" },
   };
 
+  const ZONE_COLORS = { 1: "#5ee0c8", 2: "#f0c14b", 3: "#e67a3a", 4: "#d94b4b" };
+
   const state = {
     sites: [],
     imagery: null,
@@ -30,7 +32,7 @@
     storyOpen: false,
   };
 
-  let map, baseLayers, markers = {};
+  let map, baseLayers, markers = {}, overlayLayers = {};
   let histLayer = null;
   let compareLeft = null;
   let compareRight = null;
@@ -530,13 +532,153 @@
     }).join("");
   }
 
+  function zoneColor(zone) {
+    const z = Number(zone);
+    return ZONE_COLORS[z] || "#9aafb8";
+  }
+
+  function lrrColor(lrr) {
+    if (lrr == null || isNaN(lrr)) return "#9aafb8";
+    const t = Math.max(0, Math.min(1, (Number(lrr) + 0.5) / 1.0));
+    const stops = [
+      [0.00, [194, 59, 34]],
+      [0.28, [224, 122, 74]],
+      [0.50, [226, 196, 154]],
+      [0.78, [126, 208, 192]],
+      [1.00, [47, 143, 134]],
+    ];
+    let a = stops[0], b = stops[stops.length - 1];
+    for (let i = 0; i < stops.length - 1; i++) {
+      if (t >= stops[i][0] && t <= stops[i + 1][0]) { a = stops[i]; b = stops[i + 1]; break; }
+    }
+    const u = (t - a[0]) / (b[0] - a[0] || 1);
+    const rgb = a[1].map(function (c, i) { return Math.round(c + (b[1][i] - c) * u); });
+    return "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+  }
+
+  function toggleOverlay(id, on) {
+    const layer = overlayLayers[id];
+    if (!layer || !map) return;
+    if (on) {
+      if (!map.hasLayer(layer)) layer.addTo(map);
+    } else if (map.hasLayer(layer)) {
+      map.removeLayer(layer);
+    }
+  }
+
+  async function addGisOverlays() {
+    const ceha = await tryFetch("data/eh_ceha_zones.geojson");
+    const usgs = await tryFetch("data/usgs_lt_montauk.geojson");
+    const shore = await tryFetch("data/eh_shoreline.geojson");
+
+    if (ceha && ceha.features && ceha.features.length) {
+      overlayLayers.ceha = L.geoJSON(ceha, {
+        style: function (feat) {
+          return {
+            color: zoneColor(feat.properties && feat.properties.Zone),
+            weight: 3.2,
+            opacity: 0.92,
+            lineCap: "round",
+            lineJoin: "round",
+          };
+        },
+        onEachFeature: function (feat, layer) {
+          const z = feat.properties && feat.properties.Zone;
+          layer.bindPopup("<strong>Coastal Erosion Overlay Zone " + escapeHtml(z) + "</strong><br>Town of East Hampton GIS");
+        },
+      });
+    }
+
+    if (usgs && usgs.features && usgs.features.length) {
+      overlayLayers.usgs = L.geoJSON(usgs, {
+        style: function (feat) {
+          const lrr = feat.properties && feat.properties.LRR;
+          return {
+            color: lrrColor(lrr),
+            weight: 2.6,
+            opacity: 0.95,
+            lineCap: "butt",
+          };
+        },
+        onEachFeature: function (feat, layer) {
+          const p = feat.properties || {};
+          const lrr = p.LRR;
+          const ft = (lrr == null) ? "—" : (lrr * 3.28084).toFixed(2);
+          const lrrTxt = (lrr == null) ? "—" : Number(lrr).toFixed(2);
+          const dir = lrr == null ? "" : (lrr < 0 ? "eroding" : lrr > 0 ? "accreting" : "near zero");
+          layer.bindPopup(
+            "<strong>USGS long-term LRR</strong> " + lrrTxt + " m/yr (" + ft + " ft/yr)" +
+            (dir ? " · " + dir : "") +
+            "<br>Transect " + escapeHtml(p.TRANSECTID || p.OBJECTID || "") +
+            "<br>South shore / Point only — USGS OFR 2010-1119. Not a Soundview rate."
+          );
+        },
+      });
+    }
+
+    if (shore && shore.features && shore.features.length) {
+      overlayLayers.shore = L.geoJSON(shore, {
+        style: { color: "#d7f3ec", weight: 1.4, opacity: 0.7, dashArray: "3 6" },
+      });
+    }
+
+    const overlays = {};
+    if (overlayLayers.ceha) overlays["E. Hampton CEHA zones"] = overlayLayers.ceha;
+    if (overlayLayers.usgs) overlays["USGS LT rates (south shore)"] = overlayLayers.usgs;
+    if (overlayLayers.shore) overlays["Town shoreline"] = overlayLayers.shore;
+    L.control.layers(baseLayers, overlays, { position: "topright", collapsed: true }).addTo(map);
+
+    if (overlayLayers.ceha && $("#tog-ceha").checked) overlayLayers.ceha.addTo(map);
+    if (overlayLayers.usgs && $("#tog-usgs").checked) overlayLayers.usgs.addTo(map);
+    if (overlayLayers.shore && $("#tog-shore").checked) overlayLayers.shore.addTo(map);
+
+    ["ceha", "usgs", "shore"].forEach(function (id) {
+      const el = $("#tog-" + id);
+      if (!el) return;
+      if (!overlayLayers[id]) {
+        el.disabled = true;
+        el.checked = false;
+        return;
+      }
+      el.addEventListener("change", function () { toggleOverlay(id, el.checked); });
+    });
+
+    function syncToggle(layer, id, on) {
+      if (overlayLayers[id] !== layer) return;
+      const el = $("#tog-" + id);
+      if (el) el.checked = on;
+    }
+    map.on("overlayadd", function (e) {
+      ["ceha", "usgs", "shore"].forEach(function (id) { syncToggle(e.layer, id, true); });
+    });
+    map.on("overlayremove", function (e) {
+      ["ceha", "usgs", "shore"].forEach(function (id) { syncToggle(e.layer, id, false); });
+    });
+
+    const loaded = [];
+    if (overlayLayers.ceha) loaded.push("CEHA " + ceha.features.length);
+    if (overlayLayers.usgs) loaded.push("USGS LT " + usgs.features.length);
+    if (overlayLayers.shore) loaded.push("shoreline");
+    state.dataOrigin.overlays = loaded.join(", ") || "none";
+  }
+
+  function initRateStrip() {
+    document.querySelectorAll(".rate-chip").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const id = btn.getAttribute("data-site");
+        const z = Number(btn.getAttribute("data-zoom"));
+        if (z && map) map.flyTo(CENTER, z, { duration: 1.0 });
+        else if (id) selectSite(id, true);
+      });
+    });
+  }
+
   function initMap() {
     map = L.map("map", { center: CENTER, zoom: 13, zoomControl: true });
     const esri = state.imagery.basemaps.find(function (b) { return b.id === "esri-world-imagery"; });
     const osm = state.imagery.basemaps.find(function (b) { return b.id === "osm"; });
     baseLayers = { "Esri World Imagery": tileLayerFrom(esri), OpenStreetMap: tileLayerFrom(osm) };
     baseLayers["Esri World Imagery"].addTo(map);
-    L.control.layers(baseLayers, {}, { position: "topright", collapsed: true }).addTo(map);
     L.control.scale({ metric: true, imperial: true, position: "bottomleft" }).addTo(map);
     map.on("mousemove", function (e) {
       const lat = Math.abs(e.latlng.lat).toFixed(4);
@@ -708,6 +850,8 @@
     renderList();
     renderStudies();
     initMap();
+    await addGisOverlays();
+    initRateStrip();
     initAerialCompare();
     highlightEvents();
     $("#year-source").textContent = sourceLabel(currentYear(), state.layerPref);

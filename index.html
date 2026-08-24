@@ -55,7 +55,7 @@
         </div>
 
         <footer class="panel-credits">
-          <p>Tiles: Esri World Imagery Wayback · NYS ITS Geospatial Services (NYSDOP). Photos: family collection, BJ Old Montauk aerials (24 MAR 76 / Apr 1984) · USACE 1938 · USGS DS 858 (5 Nov 2012) · Library of Congress (Highsmith). Rates labeled by agency and period — no invented numbers.</p>
+          <p>Tiles: Esri World Imagery Wayback · NYS ITS Geospatial Services (NYSDOP). Overlays: Town of East Hampton GIS (Coastal Erosion Overlay Zones); USGS OFR 2010-1119 Himmelstoss et al. 2010 (south-shore LT rates). Photos: family collection, BJ Old Montauk aerials (24 MAR 76 / Apr 1984) · USACE 1938 · USGS DS 858 (5 Nov 2012) · Library of Congress (Highsmith). Site-box rates computed from the official shapefile — not published USGS site averages.</p>
         </footer>
       </aside>
 
@@ -91,7 +91,38 @@
         </div>
 
         <div id="year-banner" class="year-banner" hidden></div>
+
+        <aside id="gis-panel" class="gis-panel" aria-label="GIS overlays">
+          <p class="gis-kicker">Overlays</p>
+          <label class="gis-toggle"><input type="checkbox" id="tog-ceha" checked /> Coastal Erosion Overlay Zones</label>
+          <label class="gis-toggle"><input type="checkbox" id="tog-usgs" checked /> USGS LT rates <span class="gis-note">south shore</span></label>
+          <label class="gis-toggle"><input type="checkbox" id="tog-shore" /> Town shoreline</label>
+          <div class="gis-legend" id="gis-legend">
+            <div class="leg-block">
+              <p class="leg-title">Town overlay zones</p>
+              <div class="leg-row"><span class="sw z1"></span> Zone 1</div>
+              <div class="leg-row"><span class="sw z2"></span> Zone 2</div>
+              <div class="leg-row"><span class="sw z3"></span> Zone 3</div>
+              <div class="leg-row"><span class="sw z4"></span> Zone 4</div>
+            </div>
+            <div class="leg-block">
+              <p class="leg-title">USGS LRR (m/yr)</p>
+              <div class="ramp" aria-hidden="true"></div>
+              <div class="ramp-labels"><span>eroding</span><span>accreting</span></div>
+              <p class="gis-note">Atlantic / Point only. Not Soundview.</p>
+            </div>
+          </div>
+          <p class="gis-caption">Town of East Hampton GIS; USGS OFR 2010-1119 Himmelstoss et al. 2010. Site-box rates are computed from the official shapefile, not published USGS site averages.</p>
+        </aside>
       </main>
+    </div>
+
+    <div id="rates-strip" class="rates-strip" aria-label="USGS south-shore site-box rates">
+      <span class="rates-kicker">USGS LT · south shore</span>
+      <button type="button" class="rate-chip" data-site="lighthouse"><strong>Point / Turtle Cove</strong> −0.20 m/yr <em>(−0.67 ft/yr)</em></button>
+      <button type="button" class="rate-chip" data-site="ditch_plains"><strong>Ditch Plains</strong> −0.08 m/yr <em>(−0.25 ft/yr)</em></button>
+      <button type="button" class="rate-chip" data-site="ocean_beaches"><strong>Downtown south</strong> −0.04 m/yr <em>(−0.14 ft/yr)</em></button>
+      <button type="button" class="rate-chip" data-site="ocean_beaches" data-zoom="13"><strong>Montauk south shore</strong> −0.11 m/yr <em>(−0.35 ft/yr)</em></button>
     </div>
 
     <footer class="dock">
