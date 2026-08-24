@@ -67,7 +67,7 @@ def main() -> int:
 
     if any("usgs_2012_beach" in p["file"] for p in planes):
         errors.append("usgs_2012_beach.jpg is the till-bluff house reach — not Kirk Park")
-    if any(p["siteId"] == "soundview" and p.get("kind") in ("usgs-oblique", "aerial") and "usgs" in p["file"]):
+    if any(pl["siteId"] == "soundview" and pl.get("kind") in ("usgs-oblique", "aerial") and "usgs" in pl["file"] for pl in planes):
         errors.append("no USGS oblique on Soundview")
 
     ground = {
