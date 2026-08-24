@@ -916,9 +916,10 @@
   }
 
   function addSiteSandBoxes(group, spec, colors) {
-    /* Closed prisms only. Height ~2.7 m. East/west faces copy the mid width. */
-    var zTop = altZ(3.2);
-    var zBot = altZ(0.5);
+    /* Closed prisms only. Height 3.2 m, seated above the 2014 dune so every
+       face clears the hillshade. East/west faces copy the mid width. */
+    var zTop = altZ(8.0);
+    var zBot = altZ(4.8);
     var pos = [];
     var col = [];
     SAND_BOX_SITES.forEach(function (site) {
@@ -1082,6 +1083,14 @@
     }
     if (lastCoastYear === year && coastGroups.length) return;
     lastCoastYear = year;
+    /* 2000 / held: drop any previous tan immediately. Do not fade it out. */
+    if (skipSandMesh()) {
+      while (coastGroups.length) {
+        var prev = coastGroups.pop();
+        if (planeLayer.scene) planeLayer.scene.remove(prev);
+        disposeGroup(prev);
+      }
+    }
     if (waterGroup) {
       if (planeLayer.scene) planeLayer.scene.remove(waterGroup);
       disposeGroup(waterGroup);
@@ -1654,7 +1663,35 @@
     coastSpecForYear: coastSpecForYear,
     ditchTerraceM: ditchTerraceM,
     nysYears: NYS_YEARS,
-    noModeA: NO_MODE_A
+    noModeA: NO_MODE_A,
+    skipSandMesh: skipSandMesh,
+    lookAtDitchEast: function () {
+      if (!map) return;
+      var site = SAND_BOX_SITES[0];
+      var eastBr = (site.look + 270) % 360;
+      var east = destPoint(site.lat, site.lng, eastBr, site.alongM + 40);
+      map.jumpTo({
+        center: [east.lng, east.lat],
+        zoom: 17.3,
+        pitch: 68,
+        bearing: (eastBr + 180) % 360,
+        duration: 0
+      });
+    },
+    debugCoast: function () {
+      var meshes = [];
+      coastGroups.forEach(function (g) {
+        g.traverse(function (obj) {
+          if (!obj.geometry || !obj.geometry.attributes || !obj.geometry.attributes.position) return;
+          meshes.push({
+            water: !!obj.userData.waterPlane,
+            verts: obj.geometry.attributes.position.count,
+            boxes: obj.userData.waterPlane ? 0 : Math.round(obj.geometry.attributes.position.count / 36)
+          });
+        });
+      });
+      return { year: year, skipSand: skipSandMesh(), groups: coastGroups.length, meshes: meshes };
+    }
   };
 
   global.MontaukCoast3D = api;
