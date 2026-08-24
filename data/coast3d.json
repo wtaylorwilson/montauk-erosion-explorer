@@ -134,9 +134,9 @@
     }
   ],
   "look": {
-    "ditch_plains": { "bearing": 168, "pitch": 62, "zoom": 15.55, "inlandM": 320 },
-    "ocean_beaches": { "bearing": 180, "pitch": 60, "zoom": 15.45, "inlandM": 340 },
-    "lighthouse": { "bearing": 125, "pitch": 64, "zoom": 15.6, "inlandM": 380 },
+    "ditch_plains": { "bearing": 168, "pitch": 62, "zoom": 16.45, "inlandM": 165 },
+    "ocean_beaches": { "bearing": 180, "pitch": 60, "zoom": 16.15, "inlandM": 200 },
+    "lighthouse": { "bearing": 125, "pitch": 64, "zoom": 16.2, "inlandM": 210 },
     "soundview": { "bearing": 0, "pitch": 60, "zoom": 15.45, "inlandM": 300 },
     "harbor_jetties": { "bearing": 8, "pitch": 58, "zoom": 15.5, "inlandM": 300 }
   },

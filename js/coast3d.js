@@ -676,11 +676,11 @@
   function eraCoastColors() {
     if (year <= 1900) {
       return {
-        sand: [0.80, 0.62, 0.36],
-        till: [0.44, 0.28, 0.16],
-        cobble: [0.38, 0.30, 0.24],
-        cut: [0.12, 0.32, 0.40],
-        water: [0.16, 0.40, 0.48]
+        sand: [0.90, 0.74, 0.46],
+        till: [0.50, 0.32, 0.18],
+        cobble: [0.42, 0.32, 0.24],
+        cut: [0.14, 0.36, 0.44],
+        water: [0.20, 0.48, 0.56]
       };
     }
     if (year <= 1965) {
@@ -915,13 +915,13 @@
         mercatorVtx(far0[0], far0[1], altZ(0.04)),
         colors.water);
       if (terrace) {
-        var t0 = mercatorVtx(r0[0], r0[1], altZ(2.0));
-        var t1 = mercatorVtx(r1[0], r1[1], altZ(2.0));
-        var u0 = mercatorVtx(h0[0], h0[1], altZ(1.25));
-        var u1 = mercatorVtx(h1[0], h1[1], altZ(1.25));
+        var t0 = mercatorVtx(r0[0], r0[1], altZ(2.15));
+        var t1 = mercatorVtx(r1[0], r1[1], altZ(2.15));
+        var u0 = mercatorVtx(h0[0], h0[1], altZ(1.35));
+        var u1 = mercatorVtx(h1[0], h1[1], altZ(1.35));
         pushQuad(sandPos, sandCol, t0, t1, u1, u0, colors.sand);
-        var v0 = mercatorVtx(h0[0], h0[1], altZ(0.06));
-        var v1 = mercatorVtx(h1[0], h1[1], altZ(0.06));
+        var v0 = mercatorVtx(h0[0], h0[1], altZ(0.08));
+        var v1 = mercatorVtx(h1[0], h1[1], altZ(0.08));
         pushQuad(sandPos, sandCol, u0, u1, v1, v0, colors.sand);
         var ib0 = toward(r0, l0, 3);
         var ib1 = toward(r1, l1, 3);
@@ -1393,6 +1393,10 @@
         flyToSite(ditchSite());
       }
       if (opts.onReady) opts.onReady();
+      map.once("idle", function () {
+        if (!visible || pathPlaying) return;
+        if (!selectedId || selectedId === "ditch_plains") flyToSite(ditchSite());
+      });
     });
     map.on("click", function (e) {
       var hit = hitPlanes(e.point);
