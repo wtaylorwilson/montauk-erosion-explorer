@@ -329,20 +329,22 @@ def main() -> int:
     if "addSolidWaterPlanes" not in js or "pushBboxQuad" not in js or "pushQuadFlat" not in js:
         errors.append("water must be solid flat-shaded bbox planes, not a transect triangle strip")
     if "function skipSandMesh" not in js:
-        errors.append("2000 / held years must skip all sand boxes")
-    if "function addSiteSandBoxes" not in js or "SAND_BOX_SITES" not in js:
-        errors.append("sand must be a few closed site boxes, not a peninsula-long transect strip")
-    if "function sandRunsForSpec" in js or "function pushSandBox" in js or "function sandWidthOk" in js:
-        errors.append("delete the transect strip builder (sandRunsForSpec / pushSandBox / sandWidthOk)")
+        errors.append("2000 / held years must skip all sand solids")
+    if "function addBeachSolids" not in js or "function triangulateRing" not in js:
+        errors.append("sand must be an extruded HWL-minus-2000 polygon, not a transect loft")
+    if "function siteBeachSpan" not in js or "function beachRing" not in js:
+        errors.append("each site solid is historic HWL minus the 2000/ref waterline, clipped near the pin")
+    if "function sandRunsForSpec" in js or "function addSiteSandBoxes" in js or "SAND_BOX_SITES" in js:
+        errors.append("delete the transect strip builder and the guessed site boxes")
+    if "function pushRectPrism" in js or "function pushSandBox" in js:
+        errors.append("do not loft HWL/ref pairs or invent a rectangular site box")
     if "function northRibbonMeshes" in js:
         errors.append("no north-shore / Soundview sand ribbon")
-    box_block = js.split("var SAND_BOX_SITES = [", 1)[1].split("];", 1)[0] if "var SAND_BOX_SITES = [" in js else ""
-    if "soundview" in box_block or "harbor_jetties" in box_block:
-        errors.append("no Soundview/harbor sand box")
-    if "width >= 8" not in js:
-        errors.append("skip a site box when local mean width is under 8 m")
-    if "function pushRectPrism" not in js:
-        errors.append("each site box must be a closed rectangular prism (six faces)")
+    beach_block = js.split("var BEACH_SITES = [", 1)[1].split("];", 1)[0] if "var BEACH_SITES = [" in js else ""
+    if "soundview" in beach_block or "harbor_jetties" in beach_block:
+        errors.append("no Soundview/harbor sand solid")
+    if "mean >= 8" not in js:
+        errors.append("skip a site solid when mean seaward width is under 8 m")
     if "w0 > 5 || w1 > 5" in js:
         errors.append("do not OR-gate terrace width — that tapers the east end into slivers")
     if re.search(r"toward\(h0,\s*s0,\s*920\)", js):

@@ -866,80 +866,195 @@
     return year === 2000 || year > 2000;
   }
 
-  /* Three south-shore site boxes only. Not a peninsula-long transect strip. */
-  var SAND_BOX_SITES = [
-    { id: "ditch_plains", lat: 41.03948, lng: -71.91701, look: 168, alongM: 110 },
-    { id: "ocean_beaches", lat: 41.0315, lng: -71.946, look: 180, alongM: 90 },
-    { id: "lighthouse", lat: 41.07099, lng: -71.85709, look: 125, alongM: 90 }
+  /* Ditch / downtown / Point only. Lost/gained beach = this year's HWL
+     minus the 2000/ref waterline, clipped ~250 m along-shore of the pin.
+     One extruded solid per site-year. Not a transect loft. Not a guessed box. */
+  var BEACH_SITES = [
+    { id: "ditch_plains", lat: 41.03948, lng: -71.91701 },
+    { id: "ocean_beaches", lat: 41.0315, lng: -71.946 },
+    { id: "lighthouse", lat: 41.07099, lng: -71.85709, southOnly: true }
   ];
+  var BEACH_ALONG_M = 125;
 
-  function meanWidthNear(spec, lng, windowDeg) {
-    if (!spec || !spec.w || !spec.ref) return 0;
-    var sum = 0;
-    var n = 0;
+  function alongTrackM(packed, n) {
+    var along = [0];
     var i;
-    for (i = 0; i < spec.w.length; i++) {
-      if (Math.abs(spec.ref[i * 2] - lng) <= windowDeg) {
-        sum += spec.w[i];
-        n += 1;
+    for (i = 1; i < n; i++) {
+      along.push(along[i - 1] + metersBetween(
+        packed[i * 2 + 1], packed[i * 2],
+        packed[(i - 1) * 2 + 1], packed[(i - 1) * 2]
+      ));
+    }
+    return along;
+  }
+
+  function siteOnSouth(site, spec, i) {
+    if (!site.southOnly) return true;
+    return spec.hwl[i * 2 + 1] <= site.lat + 0.0004;
+  }
+
+  /* Contiguous HWL/ref span near the pin. Endpoints shared so the two
+     closing segments are straight vertical rectangles when extruded. */
+  function siteBeachSpan(spec, site) {
+    if (!spec || !spec.w || !spec.ref || !spec.hwl) return null;
+    var n = spec.w.length;
+    var along = alongTrackM(spec.ref, n);
+    var i0 = 0;
+    var best = 1e9;
+    var i;
+    var d;
+    for (i = 0; i < n; i++) {
+      if (!siteOnSouth(site, spec, i)) continue;
+      d = metersBetween(site.lat, site.lng, spec.ref[i * 2 + 1], spec.ref[i * 2]);
+      if (d < best) {
+        best = d;
+        i0 = i;
       }
     }
-    return n ? sum / n : 0;
+    if (!(best < 400)) return null;
+    var lo = i0;
+    var hi = i0;
+    while (lo > 0 && along[i0] - along[lo - 1] <= BEACH_ALONG_M && siteOnSouth(site, spec, lo - 1)) lo -= 1;
+    while (hi < n - 1 && along[hi + 1] - along[i0] <= BEACH_ALONG_M && siteOnSouth(site, spec, hi + 1)) hi += 1;
+    if (hi - lo < 1) return null;
+    var sum = 0;
+    for (i = lo; i <= hi; i++) sum += spec.w[i];
+    var mean = sum / (hi - lo + 1);
+    if (!(mean >= 8)) return null;
+    return { lo: lo, hi: hi, mean: mean };
   }
 
-  function siteBoxWidthM(spec, site) {
-    if (site.id === "ditch_plains" && coastMeshes && coastMeshes.properties &&
-        coastMeshes.properties.ditchWidthM) {
-      var dw = coastMeshes.properties.ditchWidthM[String(year)];
-      if (dw != null && isFinite(Number(dw))) return Number(dw);
+  function beachRing(spec, lo, hi) {
+    var ring = [];
+    var i;
+    for (i = lo; i <= hi; i++) ring.push([spec.hwl[i * 2], spec.hwl[i * 2 + 1]]);
+    for (i = hi; i >= lo; i--) ring.push([spec.ref[i * 2], spec.ref[i * 2 + 1]]);
+    return ring;
+  }
+
+  function ringArea(ring) {
+    var a = 0;
+    var i;
+    var n = ring.length;
+    var j;
+    for (i = 0; i < n; i++) {
+      j = (i + 1) % n;
+      a += ring[i][0] * ring[j][1] - ring[j][0] * ring[i][1];
     }
-    return meanWidthNear(spec, site.lng, 0.012);
+    return a / 2;
   }
 
-  /* Closed rectangular prism. East/west faces are vertical rectangles of the
-     same seaward width as the middle. No taper, no leftover verts. */
-  function pushRectPrism(pos, col, rgb, corners, zTop, zBot) {
-    var iw = mercatorVtx(corners[0][0], corners[0][1], zTop);
-    var ie = mercatorVtx(corners[1][0], corners[1][1], zTop);
-    var se = mercatorVtx(corners[2][0], corners[2][1], zTop);
-    var sw = mercatorVtx(corners[3][0], corners[3][1], zTop);
-    var iwB = mercatorVtx(corners[0][0], corners[0][1], zBot);
-    var ieB = mercatorVtx(corners[1][0], corners[1][1], zBot);
-    var seB = mercatorVtx(corners[2][0], corners[2][1], zBot);
-    var swB = mercatorVtx(corners[3][0], corners[3][1], zBot);
-    pushQuad(pos, col, iw, ie, se, sw, rgb);
-    pushQuad(pos, col, iwB, swB, seB, ieB, rgb);
-    pushQuad(pos, col, sw, se, seB, swB, rgb);
-    pushQuad(pos, col, iw, iwB, ieB, ie, rgb);
-    pushQuad(pos, col, ie, se, seB, ieB, rgb);
-    pushQuad(pos, col, iw, sw, swB, iwB, rgb);
+  function pointInTri(p, a, b, c) {
+    var denom = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1]);
+    if (Math.abs(denom) < 1e-18) return false;
+    var t1 = ((b[1] - c[1]) * (p[0] - c[0]) + (c[0] - b[0]) * (p[1] - c[1])) / denom;
+    var t2 = ((c[1] - a[1]) * (p[0] - c[0]) + (a[0] - c[0]) * (p[1] - c[1])) / denom;
+    var t3 = 1 - t1 - t2;
+    return t1 >= -1e-12 && t2 >= -1e-12 && t3 >= -1e-12;
   }
 
-  function addSiteSandBoxes(group, spec, colors) {
-    /* Closed prisms only. Height 3.2 m, seated above the 2014 dune so every
-       face clears the hillshade. East/west faces copy the mid width. */
-    var zTop = altZ(8.0);
-    var zBot = altZ(4.8);
-    var pos = [];
-    var col = [];
-    SAND_BOX_SITES.forEach(function (site) {
-      var width = siteBoxWidthM(spec, site);
-      if (!(width >= 8)) return;
-      var alongE = (site.look + 90) % 360;
-      var alongW = (site.look + 270) % 360;
-      var inlandW = destPoint(site.lat, site.lng, alongW, site.alongM);
-      var inlandE = destPoint(site.lat, site.lng, alongE, site.alongM);
-      var seaW = destPoint(inlandW.lat, inlandW.lng, site.look, width);
-      var seaE = destPoint(inlandE.lat, inlandE.lng, site.look, width);
-      pushRectPrism(pos, col, colors.sand, [
-        [inlandW.lng, inlandW.lat],
-        [inlandE.lng, inlandE.lat],
-        [seaE.lng, seaE.lat],
-        [seaW.lng, seaW.lat]
-      ], zTop, zBot);
+  function triangulateRing(ring) {
+    var pts = ring.slice();
+    if (pts.length < 3) return [];
+    if (ringArea(pts) < 0) pts.reverse();
+    var idx = [];
+    var i;
+    for (i = 0; i < pts.length; i++) idx.push(i);
+    var faces = [];
+    var guard = 0;
+    var k;
+    var ear;
+    var ia;
+    var ib;
+    var ic;
+    var t;
+    var ok;
+    var cross;
+    while (idx.length > 3 && guard < 400) {
+      guard += 1;
+      ear = -1;
+      for (k = 0; k < idx.length; k++) {
+        ia = idx[(k - 1 + idx.length) % idx.length];
+        ib = idx[k];
+        ic = idx[(k + 1) % idx.length];
+        cross = (pts[ib][0] - pts[ia][0]) * (pts[ic][1] - pts[ia][1]) -
+          (pts[ic][0] - pts[ia][0]) * (pts[ib][1] - pts[ia][1]);
+        if (cross <= 0) continue;
+        ok = true;
+        for (t = 0; t < idx.length; t++) {
+          if (idx[t] === ia || idx[t] === ib || idx[t] === ic) continue;
+          if (pointInTri(pts[idx[t]], pts[ia], pts[ib], pts[ic])) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) {
+          ear = k;
+          break;
+        }
+      }
+      if (ear < 0) break;
+      ia = idx[(ear - 1 + idx.length) % idx.length];
+      ib = idx[ear];
+      ic = idx[(ear + 1) % idx.length];
+      faces.push([pts[ia], pts[ib], pts[ic]]);
+      idx.splice(ear, 1);
+    }
+    if (idx.length === 3) faces.push([pts[idx[0]], pts[idx[1]], pts[idx[2]]]);
+    return faces;
+  }
+
+  function pushExtrudedSolid(pos, col, rgb, ring, zTop, zBot) {
+    var pts = ring.slice();
+    if (ringArea(pts) < 0) pts.reverse();
+    var faces = triangulateRing(pts);
+    var f;
+    var a;
+    var b;
+    var c;
+    var i;
+    var j;
+    for (f = 0; f < faces.length; f++) {
+      a = faces[f][0];
+      b = faces[f][1];
+      c = faces[f][2];
+      pushTri(pos, col,
+        mercatorVtx(a[0], a[1], zTop),
+        mercatorVtx(b[0], b[1], zTop),
+        mercatorVtx(c[0], c[1], zTop),
+        rgb);
+      pushTri(pos, col,
+        mercatorVtx(a[0], a[1], zBot),
+        mercatorVtx(c[0], c[1], zBot),
+        mercatorVtx(b[0], b[1], zBot),
+        rgb);
+    }
+    for (i = 0; i < pts.length; i++) {
+      j = (i + 1) % pts.length;
+      pushQuad(pos, col,
+        mercatorVtx(pts[i][0], pts[i][1], zTop),
+        mercatorVtx(pts[j][0], pts[j][1], zTop),
+        mercatorVtx(pts[j][0], pts[j][1], zBot),
+        mercatorVtx(pts[i][0], pts[i][1], zBot),
+        rgb);
+    }
+  }
+
+  function addBeachSolids(group, spec, colors) {
+    var zTop = altZ(3.3);
+    var zBot = altZ(0.8);
+    BEACH_SITES.forEach(function (site) {
+      var span = siteBeachSpan(spec, site);
+      if (!span) return;
+      var pos = [];
+      var col = [];
+      pushExtrudedSolid(pos, col, colors.sand, beachRing(spec, span.lo, span.hi), zTop, zBot);
+      var mesh = makeColorMesh(pos, col, 1);
+      if (mesh) {
+        mesh.userData.beachSolid = site.id;
+        group.add(mesh);
+      }
     });
-    var mesh = makeColorMesh(pos, col, 1);
-    if (mesh) group.add(mesh);
   }
 
   function hwlLatNear(spec, lng, windowDeg) {
@@ -1049,7 +1164,7 @@
     var colors = eraCoastColors();
     addSolidWaterPlanes(group, spec, colors);
     if (skipSandMesh()) return group;
-    addSiteSandBoxes(group, spec, colors);
+    addBeachSolids(group, spec, colors);
     return group;
   }
 
@@ -1667,17 +1782,16 @@
     skipSandMesh: skipSandMesh,
     lookAtDitchEast: function () {
       if (!map) return;
-      var site = SAND_BOX_SITES[0];
-      var eastBr = (site.look + 270) % 360;
-      var east = destPoint(site.lat, site.lng, eastBr, site.alongM + 40);
+      var east = destPoint(41.03948, -71.91701, 78, 150);
       map.jumpTo({
         center: [east.lng, east.lat],
         zoom: 17.3,
         pitch: 68,
-        bearing: (eastBr + 180) % 360,
+        bearing: 258,
         duration: 0
       });
     },
+    siteBeachSpan: siteBeachSpan,
     debugCoast: function () {
       var meshes = [];
       coastGroups.forEach(function (g) {
@@ -1685,8 +1799,8 @@
           if (!obj.geometry || !obj.geometry.attributes || !obj.geometry.attributes.position) return;
           meshes.push({
             water: !!obj.userData.waterPlane,
-            verts: obj.geometry.attributes.position.count,
-            boxes: obj.userData.waterPlane ? 0 : Math.round(obj.geometry.attributes.position.count / 36)
+            beach: obj.userData.beachSolid || null,
+            verts: obj.geometry.attributes.position.count
           });
         });
       });
