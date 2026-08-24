@@ -224,6 +224,15 @@
     return avail.reduce(function (best, y) { return Math.abs(y - year) < Math.abs(best - year) ? y : best; });
   }
 
+  function dockSourceNote(year, pref) {
+    const base = sourceLabel(year, pref);
+    if (layerForYear(year, pref)) return base;
+    const near = nearestTileYear(year);
+    if (year === 1976 || year === 1984) return base;
+    if (near) return base + " · nearest tile " + near;
+    return base;
+  }
+
   function setHistLayer() {
     const year = currentYear();
     const pref = state.layerPref;
@@ -231,12 +240,16 @@
     if (state.compare) { banner.hidden = true; return; }
     if (histLayer) { map.removeLayer(histLayer); histLayer = null; }
     const layer = layerForYear(year, pref);
-    $("#year-source").textContent = sourceLabel(year, pref);
+    $("#year-source").textContent = dockSourceNote(year, pref);
     if (layer) {
       histLayer = layer.addTo(map);
       banner.hidden = true;
     } else {
       histLayer = tileLayerFrom(state.imagery.basemaps.find(function (b) { return b.id === "esri-world-imagery"; })).addTo(map);
+      if (isPhoneLayout()) {
+        banner.hidden = true;
+        return;
+      }
       const near = nearestTileYear(year);
       banner.hidden = false;
       let extra = "";
@@ -429,7 +442,14 @@
   function selectSite(id, fly, extra) {
     const site = state.sites.find(function (s) { return s.id === id; });
     if (!site) return;
-    extra = extra || {};
+    var openSheet = true;
+    if (extra === false) {
+      openSheet = false;
+      extra = {};
+    } else {
+      extra = extra || {};
+      if (extra.sheet === false) openSheet = false;
+    }
     state.selectedId = id;
     state.storyOpen = false;
     $("#panel-list").hidden = true;
@@ -450,7 +470,8 @@
         if (markers[id]) markers[id].openPopup();
       }
     }
-    if (extra.sheet !== false && isPhoneLayout() && state.view !== "coast3d") openSitesSheet();
+    if (openSheet && isPhoneLayout() && state.view !== "coast3d") openSitesSheet();
+    highlightEvents();
   }
 
   function showList() {
@@ -458,12 +479,14 @@
     $("#panel-list").hidden = false;
     $("#panel-detail").hidden = true;
     renderList();
+    highlightEvents();
   }
 
   function highlightEvents() {
     const y = currentYear();
     const wrap = $("#event-pills");
     wrap.innerHTML = "";
+    if (isPhoneLayout()) return;
     (state.events.events || []).forEach(function (ev) {
       const near = Math.abs(ev.year - y) <= 3;
       const span = document.createElement("button");
@@ -757,14 +780,31 @@
     setHistLayer();
   }
 
-  function initSlider() {
-    const years = state.imagery.sliderYears || [];
+  function yearsForLayout() {
+    const all = (state.imagery && state.imagery.sliderYears) || [];
+    if (!isPhoneLayout()) return all.slice();
+    return all.filter(function (y) { return !!layerForYear(y, "auto"); });
+  }
+
+  function sameYearList(a, b) {
+    return a && b && a.length === b.length && a.every(function (y, i) { return y === b[i]; });
+  }
+
+  let sliderBound = false;
+  function buildYearSlider(preferredYear) {
+    const years = yearsForLayout();
     state.years = years;
     const slider = $("#year-slider");
     slider.min = 0;
     slider.max = String(Math.max(0, years.length - 1));
-    const preferred = years.indexOf(2016);
-    state.yearIndex = preferred >= 0 ? preferred : years.length - 1;
+    let idx = years.indexOf(preferredYear);
+    if (idx < 0) {
+      const near = nearestTileYear(preferredYear);
+      idx = years.indexOf(near);
+    }
+    if (idx < 0) idx = years.indexOf(2016);
+    if (idx < 0) idx = Math.max(0, years.length - 1);
+    state.yearIndex = idx;
     slider.value = String(state.yearIndex);
     $("#year-label").textContent = String(currentYear());
     const ticks = $("#year-ticks");
@@ -776,8 +816,21 @@
         s.textContent = y;
         ticks.appendChild(s);
       });
-    slider.addEventListener("input", function () {
-      state.yearIndex = Number(slider.value);
+    if (!sliderBound) {
+      slider.addEventListener("input", function () {
+        state.yearIndex = Number(slider.value);
+        onYearChange();
+      });
+      sliderBound = true;
+    }
+  }
+
+  function initSlider() {
+    buildYearSlider(2016);
+    window.addEventListener("resize", function () {
+      const next = yearsForLayout();
+      if (sameYearList(next, state.years)) return;
+      buildYearSlider(currentYear());
       onYearChange();
     });
   }
@@ -798,14 +851,17 @@
     $("#ac-left").src = "assets/aerials/1976-harbor-wide.jpg";
     $("#ac-right").src = "assets/aerials/1984-harbor.jpg";
     box.hidden = false;
+    document.body.classList.add("ac-open");
     requestAnimationFrame(function () { setAerialClip(box.querySelector(".ac-frame").clientWidth / 2); });
     if (!state.selectedId || (state.selectedId !== "harbor_jetties" && state.selectedId !== "soundview")) {
-      selectSite("harbor_jetties", true);
+      selectSite("harbor_jetties", true, false);
     }
+    closeSheets();
   }
 
   function hideAerialCompare() {
     $("#aerial-compare").hidden = true;
+    document.body.classList.remove("ac-open");
   }
 
   function initAerialCompare() {
@@ -820,8 +876,10 @@
     window.addEventListener("mouseup", function () { acDrag = false; });
     $("#ac-close").addEventListener("click", hideAerialCompare);
     $("#btn-photo-compare").addEventListener("click", function () {
-      if ($("#aerial-compare").hidden) showAerialCompare();
-      else hideAerialCompare();
+      if ($("#aerial-compare").hidden) {
+        closeSheets();
+        showAerialCompare();
+      } else hideAerialCompare();
     });
   }
 
@@ -844,7 +902,7 @@
         if (s.siteId) selectSite(s.siteId, true);
       });
     });
-    function show() { $("#ceha-viewer").hidden = false; }
+    function show() { closeSheets(); $("#ceha-viewer").hidden = false; }
     function hide() { $("#ceha-viewer").hidden = true; }
     $("#btn-ceha").addEventListener("click", function () {
       if ($("#ceha-viewer").hidden) show();
@@ -860,6 +918,29 @@
 
   function refreshMapSize() {
     if (map) setTimeout(function () { map.invalidateSize(); }, 240);
+  }
+
+  function placeChromeTools() {
+    const tools = $("#chrome-tools");
+    const home = $("#top-meta");
+    const slot = $("#sheet-tools-slot");
+    const layer = $("#dock-source");
+    const dock = document.querySelector("#app > .dock");
+    const layerSlot = $("#sheet-layer-slot");
+    if (tools && home && slot) {
+      if (isPhoneLayout()) {
+        if (tools.parentNode !== slot) slot.appendChild(tools);
+      } else if (tools.parentNode !== home) {
+        home.appendChild(tools);
+      }
+    }
+    if (layer && dock && layerSlot) {
+      if (isPhoneLayout()) {
+        if (layer.parentNode !== layerSlot) layerSlot.appendChild(layer);
+      } else if (layer.parentNode !== dock) {
+        dock.appendChild(layer);
+      }
+    }
   }
 
   function closeSheets() {
@@ -930,9 +1011,11 @@
       if (e.key === "Escape") closeSheets();
     });
     window.addEventListener("resize", function () {
+      placeChromeTools();
       if (!isPhoneLayout()) closeSheets();
       if (state.view === "coast3d" && window.MontaukCoast3D) window.MontaukCoast3D.resize();
     });
+    placeChromeTools();
   }
 
   function setView(view) {
@@ -982,7 +1065,7 @@
       state.compare = !state.compare;
       this.setAttribute("aria-pressed", state.compare ? "true" : "false");
       $("#compare-bar").hidden = !state.compare;
-      if (state.compare) { hideAerialCompare(); enableCompare(); }
+      if (state.compare) { closeSheets(); hideAerialCompare(); enableCompare(); }
       else { destroyCompare(); setHistLayer(); }
     });
     $("#compare-left").addEventListener("change", function () { if (state.compare) enableCompare(); });
@@ -1085,7 +1168,7 @@
     initAerialCompare();
     initCehaViewer();
     highlightEvents();
-    $("#year-source").textContent = sourceLabel(currentYear(), state.layerPref);
+    $("#year-source").textContent = dockSourceNote(currentYear(), state.layerPref);
     applyHash();
     window.addEventListener("hashchange", applyHash);
   }

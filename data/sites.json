@@ -166,6 +166,34 @@
           "kind": "usgs"
         },
         {
+          "year": 2024,
+          "src": "assets/photos/ditch_plains_2024_drone_project_area_oct7.jpg",
+          "caption": "Town Ditch Plains dune restoration project-area map. Imagery 7 Oct 2024. Printed: max fill 20,000 cy, crest +16 ft NAVD.",
+          "credit": "Town of East Hampton / Coastal Science & Engineering, sheet 02, 8 Nov 2024",
+          "kind": "town"
+        },
+        {
+          "year": 2024,
+          "src": "assets/photos/ditch_plains_2024_drone_oblique_oct7.jpg",
+          "caption": "Drone survey of Ditch Plains, 7 Oct 2024 \u2014 updated elevation and imagery (town dune packet slide).",
+          "credit": "Town of East Hampton / Coastal Science & Engineering, 15 Oct 2024",
+          "kind": "town"
+        },
+        {
+          "year": 2024,
+          "src": "assets/photos/ditch_plains_2024_dune_habitat_scarp.jpg",
+          "caption": "Scarped vegetated dune at Ditch Plains (SOUTH). Town slide 15 Oct 2024; photograph day not printed.",
+          "credit": "Town of East Hampton / Coastal Science & Engineering, 15 Oct 2024 slides",
+          "kind": "town"
+        },
+        {
+          "year": 2026,
+          "src": "assets/photos/ditch_plains_2026_newsletter_reconstruction.jpg",
+          "caption": "Planted and fenced reconstructed Ditch Plains dune. Town Winter 2026 newsletter: approximately 20,000 cy. Photograph day not printed.",
+          "credit": "Town of East Hampton, Winter 2026 Community Connection (View/27730)",
+          "kind": "town"
+        },
+        {
           "year": null,
           "src": "assets/ceha/ehamptont14of59.jpg",
           "caption": "NYSDEC Coastal Erosion Hazard Area \u2014 East Hampton sheet 14 of 59 (Ditch Plains)",
@@ -385,11 +413,39 @@
           "kind": "commons"
         },
         {
+          "year": 2015,
+          "src": "assets/photos/usda_naip_2015_0507_soundview_culloden.jpg",
+          "caption": "USDA NAIP 2015-05-07 \u2014 Culloden / Soundview / Fort Pond Bay (north shore). Widest beach of this NAIP set.",
+          "credit": "USDA-FSA-APFO NAIP, 2015-05-07 (public domain)",
+          "kind": "usda"
+        },
+        {
+          "year": 2017,
+          "src": "assets/photos/usda_naip_2017_0809_soundview_culloden.jpg",
+          "caption": "USDA NAIP 2017-08-09 \u2014 north-facing Culloden / Soundview beach on Block Island Sound",
+          "credit": "USDA-FSA-APFO NAIP, 2017-08-09 (public domain)",
+          "kind": "usda"
+        },
+        {
+          "year": 2019,
+          "src": "assets/photos/usda_naip_2019_0811_soundview_culloden.jpg",
+          "caption": "USDA NAIP 2019-08-11 \u2014 Culloden Point, Soundview, west jetty at the east edge. NORTH, not the Atlantic.",
+          "credit": "USDA-FSA-APFO NAIP via USGS The National Map, 2019-08-11 (public domain)",
+          "kind": "usda"
+        },
+        {
           "year": 2022,
           "src": "assets/photos/commons_soundview_2022_soundview-shore.jpg",
           "caption": "Soundview Drive shore (NORTH / Block Island Sound)",
           "credit": "Wikimedia Commons, 2022",
           "kind": "commons"
+        },
+        {
+          "year": 2022,
+          "src": "assets/photos/usda_naip_2022_1007_soundview_culloden.jpg",
+          "caption": "USDA NAIP 2022-10-07 \u2014 Soundview / Culloden north shore. Black nodata bar at the bottom of this clip.",
+          "credit": "USDA-FSA-APFO NAIP, 2022-10-07 (public domain)",
+          "kind": "usda"
         },
         {
           "year": null,
