@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Locked 3D placement: five pins, twelve planes, no gallery extras, no raw Block_140."""
+"""Year-worlds 3D: Mode A/B/C/D, no current Esri globe, no gallery dump."""
 from __future__ import annotations
 
 import json
@@ -9,20 +9,69 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-FIRST12 = [
+LOCKED12 = [
     ("nara_lighthouse_1928_18-AA-89-27.jpg", "lighthouse", "aerial"),
     ("dvids_1968_eroded_cliffs.jpg", "lighthouse", "aerial"),
     ("dvids_2023_aerial_revetment.jpg", "lighthouse", "aerial"),
     ("commons_ditch_plains_1883_association-cobble-bluff.jpg", "ditch_plains", "ground"),
     ("loc_ditch_plains_1955_beach-width-bluffs.jpg", "ditch_plains", "ground"),
-    ("usgs_2012_ditch.jpg", "ditch_plains", "aerial"),
-    ("usgs_ds858_2012_1105_134804d.jpg", "ocean_beaches", "aerial"),
+    ("usgs_2012_ditch.jpg", "ditch_plains", "oblique"),
+    ("usgs_ds858_2012_1105_134804d.jpg", "ocean_beaches", "oblique"),
     ("commons_ocean_beaches_2026_downtown-aerial.jpg", "ocean_beaches", "aerial"),
     ("commons_soundview_2006_culloden-point-bluff.jpg", "soundview", "ground"),
     ("commons_soundview_2022_soundview-shore.jpg", "soundview", "ground"),
     ("commons_harbor_jetties_2017_south-jetty.jpg", "harbor_jetties", "ground"),
     ("commons_harbor_jetties_2021_lake-montauk-inlet.jpg", "harbor_jetties", "aerial"),
 ]
+
+MUST_WORLDS = [
+    "usace_1938_fort_pond.jpg",
+    "usace_1938_lake_montauk.jpg",
+    "usace_1938_montauk_beach.jpg",
+    "usace_1938_montauk_point.jpg",
+    "usace_1941_fort_pond_bay.jpg",
+    "usace_1941_lake_montauk.jpg",
+    "usace_1941_montauk_park.jpg",
+    "usace_1941_montauk_pt.jpg",
+    "usace_1941_hither_hills_l20_5.jpg",
+    "usace_1962_camp_hero.jpg",
+    "usace_1962_ditch_plains_055.jpg",
+    "usace_1962_ditch_plains_057.jpg",
+    "usace_1962_fort_pond.jpg",
+    "usace_1962_lake_montauk.jpg",
+    "usace_1962_montauk_beach_051.jpg",
+    "usace_1962_montauk_point.jpg",
+    "soundview_suffolk_1962_northshore.jpg",
+    "1976-harbor-wide.jpg",
+    "1976-harbor-jetties.jpg",
+    "soundview_suffolk_1978_northshore.jpg",
+    "1984-harbor.jpg",
+    "soundview_suffolk_1984_northshore.jpg",
+    "usgs_2012_point.jpg",
+    "usgs_ds958_2014_ditch_plains.jpg",
+    "usgs_ds958_2014_lighthouse.jpg",
+    "usgs_ds1030_2016_ditch_plains.jpg",
+    "loc_1871_montauk_light.jpg",
+    "loc_1900_ditch_plain_lss.jpg",
+]
+
+DUMP = {
+    "commons_ditch_plains_1883_association-beach-bluffs.jpg",
+    "commons_ditch_plains_1883_association-rocky-cliffs.jpg",
+    "loc_1955_frissell_ditch_plains.jpg",
+    "usace_1962_montauk_beach.jpg",
+    "usgs_2012_beach.jpg",
+    "usgs_ds858_2012_1105_134026d.jpg",
+    "usgs_ds958_2014_camp_hero.jpg",
+    "usgs_ds995_2015_1008_171456d.jpg",
+    "dvids_lighthouse_1968_eroded_cliffs.jpg",
+    "library_1909_great_pond_moran.jpg",
+    "commons_1909_great_pond.jpg",
+    "loc_ocean_beaches_1919_hither_hills.jpg",
+    "usace_2024_03_08_downtown_240308-D-A1420-001.jpg",
+    "usace_2024_03_08_downtown_240308-D-A1420-002.jpg",
+    "ditch_plains_2024_drone_project_area_oct7.jpg",
+}
 
 PINS = {
     "soundview": (41.0755, -71.948),
@@ -49,9 +98,29 @@ BLOCKED = {
 }
 
 
+def parse_worlds(js: str) -> list[dict]:
+    block = js.split("var YEAR_WORLDS = [", 1)[1].split("\n  ];", 1)[0]
+    rows = []
+    for m in re.finditer(r"\{([^{}]+)\}", block):
+        body = m.group(1)
+        row = {}
+        for key in ("file", "siteId", "kind", "mode"):
+            km = re.search(rf'{key}:\s*"([^"]+)"', body)
+            if km:
+                row[key] = km.group(1)
+        for key in ("look", "altM", "tilt", "lat", "lng"):
+            km = re.search(rf"{key}:\s*(-?[0-9.]+)", body)
+            if km:
+                row[key] = float(km.group(1))
+        if row.get("file"):
+            rows.append(row)
+    return rows
+
+
 def main() -> int:
     sites = {s["id"]: s for s in json.loads((ROOT / "data" / "sites.json").read_text())["sites"]}
     cfg = json.loads((ROOT / "data" / "coast3d.json").read_text())
+    img = json.loads((ROOT / "data" / "imagery.json").read_text())
     js = (ROOT / "js" / "coast3d.js").read_text()
     errors = []
 
@@ -70,36 +139,93 @@ def main() -> int:
         if cfg["look"][sid]["bearing"] != LOOKS[sid]:
             errors.append(f"camera look {sid} {cfg['look'][sid]['bearing']} != {LOOKS[sid]}")
 
-    planes = cfg["planes"]
-    if len(planes) != 12:
-        errors.append(f"expected 12 planes, got {len(planes)}")
-    for spec, (fname, site_id, kind) in zip(planes, FIRST12):
-        if spec["file"].split("/")[-1] != fname:
-            errors.append(f"plane order {spec['file']} != {fname}")
-        if spec["siteId"] != site_id:
-            errors.append(f"{fname} site {spec['siteId']} != {site_id}")
-        if spec.get("kind") != kind:
-            errors.append(f"{fname} kind {spec.get('kind')} != {kind}")
-        if not (ROOT / spec["file"]).is_file():
-            errors.append(f"missing {spec['file']}")
-        if "dvids_lighthouse_1968" in spec["file"]:
-            errors.append("duplicate 1968 dvids used")
+    if "server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" in js:
+        errors.append("3D must not load current Esri World Imagery")
+    if cfg.get("imagery") and "World_Imagery/MapServer" in json.dumps(cfg.get("imagery")):
+        errors.append("coast3d.json must not default to current Esri World Imagery")
+    if "rec.year === year" not in js and "rec.year == year" not in js:
+        errors.append("stills must show only in their own year")
+    if "return rec.year <= year" in js:
+        errors.append("must not accumulate stills from earlier years")
+    if "YEAR_WORLDS.forEach" not in js:
+        errors.append("collectCards must iterate YEAR_WORLDS, not the site gallery")
+    if "site.photos || []" in js and "YEAR_WORLDS.forEach" not in js:
+        errors.append("3D must not iterate the site gallery to plant planes")
 
-    names = [p["file"].split("/")[-1] for p in planes]
-    for blocked in BLOCKED:
-        if blocked in names:
-            errors.append(f"blocked file planted: {blocked}")
-    if any("ceha" in p["file"].lower() for p in planes):
+    if "2018" not in js or "NO_MODE_A" not in js:
+        errors.append("2018 Wayback (null releaseNum) must be skipped")
+    if re.search(r"releaseNum:\s*\d+.*2018|2018.*releaseNum:\s*\d+", js):
+        errors.append("do not invent a 2018 Wayback releaseNum")
+
+    nys = {n["year"] for n in img.get("nys") or []}
+    for y in (2001, 2004, 2007, 2013, 2016, 2020, 2023):
+        if y not in nys:
+            errors.append(f"imagery.json missing NYSDOP {y}")
+        if f"wms/{y}/MapServer" not in js and "NYS_TMPL" not in js:
+            errors.append("NYSDOP URL pattern missing from 3D")
+    if "orthos.its.ny.gov/arcgis/rest/services/wms/{YEAR}/MapServer/tile/{z}/{y}/{x}" not in js:
+        errors.append("3D NYSDOP tiles must reuse the 2D HTTPS pattern")
+
+    worlds = parse_worlds(js)
+    names = [w["file"] for w in worlds]
+    if len(worlds) < 40:
+        errors.append(f"expected year-world allowlist, got {len(worlds)}")
+
+    for fname, site_id, kind in LOCKED12:
+        if fname not in names:
+            errors.append(f"locked-12 missing from YEAR_WORLDS: {fname}")
+        row = next((w for w in worlds if w["file"] == fname), None)
+        if row and row.get("siteId") != site_id:
+            errors.append(f"{fname} site {row.get('siteId')} != {site_id}")
+        if fname not in js:
+            errors.append(f"JS missing {fname}")
+
+    for fname in MUST_WORLDS:
+        if fname not in names:
+            errors.append(f"required year-world missing: {fname}")
+
+    for dump in DUMP | BLOCKED:
+        if dump in names:
+            errors.append(f"blocked/dump planted: {dump}")
+
+    if any("ceha" in n.lower() for n in names):
         errors.append("CEHA sheet planted as a 3D plane")
-    if any("moran" in p["file"].lower() for p in planes):
-        errors.append("1909 Moran planted as a 3D plane")
-
-    gps_planes = [p for p in planes if p.get("lat") is not None]
-    if len(gps_planes) != 1 or gps_planes[0]["lat"] != 41.035025 or gps_planes[0]["lng"] != -71.9478:
-        errors.append("only the 2026 downtown aerial may carry photo GPS")
-
-    if any(pl["siteId"] == "soundview" and "usgs" in pl["file"] for pl in planes):
+    if any("moran" in n.lower() or "great_pond" in n.lower() for n in names):
+        errors.append("1909 Moran / Great Pond planted")
+    if any(n.startswith("usgs") and w.get("siteId") == "soundview" for w, n in ((w, w["file"]) for w in worlds)):
         errors.append("no USGS frames on Soundview")
+
+    ditch1938 = [w for w in worlds if w["file"].startswith("usace_1938") and w.get("siteId") == "ditch_plains"]
+    if ditch1938:
+        errors.append("no 1938 Ditch frame")
+
+    hither = next((w for w in worlds if w["file"] == "usace_1941_hither_hills_l20_5.jpg"), None)
+    if not hither:
+        errors.append("1941 Hither Hills L20-5 must be hung")
+    else:
+        if hither.get("siteId") == "ocean_beaches":
+            errors.append("Hither Hills L20-5 is NOT Kirk Park")
+        if hither.get("lng") is not None and hither["lng"] > -71.97:
+            errors.append("Hither Hills drape is too far east (would read as Kirk Park)")
+
+    camp2014 = next((w for w in worlds if w["file"] == "usgs_ds958_2014_camp_hero.jpg"), None)
+    if camp2014:
+        errors.append("usgs_ds958_2014_camp_hero.jpg must not be assigned (may be north-of-point)")
+
+    downtown2012 = next((w for w in worlds if "134804d" in w["file"]), None)
+    if not downtown2012 or downtown2012.get("siteId") != "ocean_beaches":
+        errors.append("2012 downtown must be 134804d at Kirk Park")
+
+    ditch1883 = next(w for w in worlds if w["file"].endswith("association-cobble-bluff.jpg"))
+    if ditch1883.get("look") != 168 or ditch1883.get("kind") != "ground" or ditch1883.get("mode") != "C":
+        errors.append("1883 Ditch must be Mode C vertical toward the water (168)")
+    frissell = next(w for w in worlds if w["file"].endswith("beach-width-bluffs.jpg"))
+    if frissell.get("look") != 112 or frissell.get("kind") != "ground" or frissell.get("mode") != "C":
+        errors.append("1955 Frissell must be Mode C ground along-shore ESE (112)")
+
+    gps_worlds = [w for w in worlds if w.get("lat") == 41.035025]
+    if len(gps_worlds) != 1 or gps_worlds[0]["lng"] != -71.9478:
+        errors.append("only the 2026 downtown aerial may carry photo GPS 41.035025, -71.9478")
 
     photo_index = {}
     for site in sites.values():
@@ -107,51 +233,37 @@ def main() -> int:
             src = (photo.get("src") or "").split("/")[-1]
             if src:
                 photo_index[src] = photo
-    for fname, _site_id, _kind in FIRST12:
+    for w in worlds:
+        fname = w["file"]
         photo = photo_index.get(fname)
         if not photo:
             errors.append(f"{fname} missing from sites.json photos")
         elif photo.get("year") is None:
             errors.append(f"{fname} is year-null — must not be a 3D plane")
-
-    ditch1883 = next(p for p in planes if p["file"].endswith("association-cobble-bluff.jpg"))
-    if ditch1883.get("look") != 168 or ditch1883.get("tilt") != 0:
-        errors.append("1883 Ditch must be vertical with normal toward the water (168)")
-    frissell = next(p for p in planes if p["file"].endswith("beach-width-bluffs.jpg"))
-    if frissell.get("look") != 112 or frissell.get("kind") != "ground":
-        errors.append("1955 Frissell must be a ground plane along-shore ESE (112)")
-    jetty2017 = next(p for p in planes if p["file"].endswith("south-jetty.jpg"))
-    if jetty2017.get("look") != 8 or jetty2017.get("tilt") != 0:
-        errors.append("2017 south-jetty looks NORTH (8) at the inlet")
-    inlet2021 = next(p for p in planes if p["file"].endswith("lake-montauk-inlet.jpg"))
-    if inlet2021.get("look") != 180 or inlet2021.get("kind") != "aerial" or inlet2021.get("altM", 0) < 40:
-        errors.append("2021 inlet is an elevated card looking south from over the Sound")
-    nara = next(p for p in planes if "nara_lighthouse_1928" in p["file"])
-    if nara.get("kind") != "aerial" or not (320 <= nara.get("look", 0) <= 350) or nara.get("altM", 0) < 40:
-        errors.append("1928 NARA is an elevated card from the ocean looking NNW")
-    downtown2012 = next(p for p in planes if "134804d" in p["file"])
-    if downtown2012.get("siteId") != "ocean_beaches" or downtown2012.get("kind") != "aerial":
-        errors.append("2012 downtown must be 134804d at Kirk Park, aerial")
+        path = None
+        for folder in (ROOT / "assets" / "photos" / fname, ROOT / "assets" / "aerials" / fname):
+            if folder.is_file():
+                path = folder
+                break
+        if path is None:
+            errors.append(f"missing asset {fname}")
 
     if "LOCKED_PLANES" not in js:
-        errors.append("js/coast3d.js must hard-allowlist LOCKED_PLANES")
-    for fname, _site_id, _kind in FIRST12:
-        if fname not in js:
-            errors.append(f"JS allowlist missing {fname}")
+        errors.append("js/coast3d.js must keep LOCKED_PLANES")
     if re.search(r"if\s*\(\s*rec\.year\s*==\s*null\s*\)\s*return\s*true", js):
         errors.append("year-null cards must not stay visible")
-    if "return false" not in js.split("function cardVisible")[1][:400]:
+    if "function cardVisible" in js and "return false" not in js.split("function cardVisible")[1][:400]:
         errors.append("cardVisible must reject year-null")
-    if "site.gallery" in js or "site.photos || []" in js and "LOCKED_PLANES.forEach" not in js:
-        errors.append("3D must not iterate the site gallery to plant planes")
-    if "LOCKED_PLANES.forEach" not in js:
-        errors.append("collectCards must iterate LOCKED_PLANES, not cfg.planes")
 
     terrain_id = (cfg.get("terrain") or {}).get("primary", {}).get("id")
     if terrain_id != "mapterhorn":
         errors.append("Mapterhorn Terrarium must be the key-free interim primary terrain")
+    if "2014" not in ((cfg.get("terrain") or {}).get("fallback") or {}).get("id", ""):
+        errors.append("2014 NGS Block_140 must remain the local terrain fallback")
+    if "RELIEF_NOTE" not in js or "Relief 2014" not in js:
+        errors.append("UI must say relief is 2014")
 
-    print(f"pins 5 planes {len(planes)} allowlist {len(FIRST12)}")
+    print(f"pins 5 worlds {len(worlds)} locked12 {len(LOCKED12)}")
     if errors:
         print("FAIL")
         print("\n".join(errors))

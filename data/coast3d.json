@@ -1,14 +1,44 @@
 {
-  "version": 2,
-  "note": "ONLY these twelve planes. Do not hang CEHA, 1909 Moran, year-null cards, usgs_2012_beach, 1919 Hither Hills, or the rest of the gallery. Five sites.json pins only. Downtown (Kirk Park) is west of Ditch — that hop is inland. 1996 is a deed. Mapterhorn Terrarium is the key-free interim terrain.",
+  "version": 3,
+  "note": "Year-worlds, not a historic globe. Terrain is always 2014 NGS / Mapterhorn — visual only, not a change surface. Mode A dated ortho (NYSDOP / Wayback). Mode B local drapes at the reaches they show. Mode C walk-into stills at pins. Mode D: 1996 deed, CEHA, Moran/Great Pond, 1919 Hither Hills, usgs_2012_beach.jpg. Never current Esri World Imagery. Uncovered land is dim 2014 hillshade. Do not hang the PR5 gallery dump. 459 extra hunt-machine frames are a follow-up, not a mosaic.",
   "pins": {
     "soundview": { "lat": 41.0755, "lng": -71.948, "look": 0, "water": "NORTH / Block Island Sound" },
     "harbor_jetties": { "lat": 41.075, "lng": -71.9367, "look": 8, "water": "NORTH / inlet (west jetty)" },
-    "ocean_beaches": { "lat": 41.0315, "lng": -71.946, "look": 180, "water": "SOUTH / Kirk Park downtown Atlantic (NOT Ditch)" },
+    "ocean_beaches": { "lat": 41.0315, "lng": -71.946, "look": 180, "water": "SOUTH / Kirk Park downtown Atlantic (NOT Ditch, NOT Hither Hills)" },
     "ditch_plains": { "lat": 41.03948, "lng": -71.91701, "look": 168, "water": "SOUTH/SSE" },
     "lighthouse": { "lat": 41.07099, "lng": -71.85709, "look": 125, "water": "SOUTH/ESE Turtle Hill" }
   },
+  "yearModes": {
+    "A": {
+      "nysdop": [2001, 2004, 2007, 2013, 2016, 2020, 2023],
+      "wayback": [2014, 2015, 2016, 2017, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
+      "preferNysWhenBoth": [2016, 2020, 2023],
+      "skipWaybackNullRelease": [2018],
+      "noModeA": [1938, 1976, 1984, 1996, 2012]
+    },
+    "B": "Local drapes only: 1938/1941/1962 USACE, 1976/1984 family, 1978/1962/1984 Suffolk northshore, 2012–2016 USGS south/Point. 1962 is a five-site patchwork, not a seamless peninsula. USGS are obliques. 1941 Hither Hills L20-5 is not Kirk Park. usgs_ds958_2014_camp_hero.jpg is not Turtle Cove south.",
+    "C": "Walk-into stills at the pin: 1871, 1883 Ditch, 1900 LSS, 1919 lighthouse, 1928 NARA, 1937, 1955 Frissell, 1968 cliffs, 1997, 2006 ground stills, 2026 downtown aerial. 1909 Moran/Great Pond stays out.",
+    "D": "1996 deed. CEHA, Moran, 1919 Hither Hills, usgs_2012_beach.jpg, extra 459 frames."
+  },
   "planes": [
+    {
+      "file": "assets/photos/commons_ditch_plains_1883_association-cobble-bluff.jpg",
+      "siteId": "ditch_plains",
+      "kind": "ground",
+      "look": 168,
+      "altM": 8,
+      "tilt": 0,
+      "note": "Mode C. Vertical. Normal toward the water (168). Viewer looks inland at the till face."
+    },
+    {
+      "file": "assets/photos/loc_ditch_plains_1955_beach-width-bluffs.jpg",
+      "siteId": "ditch_plains",
+      "kind": "ground",
+      "look": 112,
+      "altM": 8,
+      "tilt": 0,
+      "note": "Mode C. Frissell. Vertical ground plane along-shore ESE."
+    },
     {
       "file": "assets/photos/nara_lighthouse_1928_18-AA-89-27.jpg",
       "siteId": "lighthouse",
@@ -16,7 +46,7 @@
       "look": 338,
       "altM": 52,
       "tilt": 42,
-      "note": "Print 8-10-28. From the ocean looking NNW. Elevated card, not a beach billboard."
+      "note": "Mode C. Print 8-10-28. From the ocean looking NNW."
     },
     {
       "file": "assets/photos/dvids_1968_eroded_cliffs.jpg",
@@ -26,52 +56,27 @@
       "altM": 56,
       "tilt": 40,
       "skip": "dvids_lighthouse_1968_eroded_cliffs.jpg",
-      "note": "Only this 1968 file. Elevated cliff card. SOUTH/ESE Turtle Hill."
-    },
-    {
-      "file": "assets/photos/dvids_2023_aerial_revetment.jpg",
-      "siteId": "lighthouse",
-      "kind": "aerial",
-      "look": 125,
-      "altM": 64,
-      "tilt": 58,
-      "note": "Elevated revetment card. SOUTH/ESE."
-    },
-    {
-      "file": "assets/photos/commons_ditch_plains_1883_association-cobble-bluff.jpg",
-      "siteId": "ditch_plains",
-      "kind": "ground",
-      "look": 168,
-      "altM": 8,
-      "tilt": 0,
-      "note": "Vertical ground plane. Normal toward the water (168). Viewer looks inland at the till face."
-    },
-    {
-      "file": "assets/photos/loc_ditch_plains_1955_beach-width-bluffs.jpg",
-      "siteId": "ditch_plains",
-      "kind": "ground",
-      "look": 112,
-      "altM": 8,
-      "tilt": 0,
-      "note": "Frissell. Vertical ground plane along-shore ESE."
-    },
-    {
-      "file": "assets/photos/usgs_2012_ditch.jpg",
-      "siteId": "ditch_plains",
-      "kind": "aerial",
-      "look": 180,
-      "altM": 58,
-      "tilt": 38,
-      "note": "Elevated south-looking storm oblique. Ditch / south shore only."
+      "note": "Mode C. Only this 1968 file."
     },
     {
       "file": "assets/photos/usgs_ds858_2012_1105_134804d.jpg",
       "siteId": "ocean_beaches",
-      "kind": "aerial",
+      "kind": "oblique",
       "look": 180,
       "altM": 58,
       "tilt": 38,
-      "note": "Downtown / Kirk Park (motels, tennis courts, Fort Pond behind, Atlantic at the bottom). Not usgs_2012_beach.jpg (till-bluff house reach)."
+      "note": "Mode B. Downtown / Kirk Park. Not usgs_2012_beach.jpg."
+    },
+    {
+      "file": "assets/photos/usace_1941_hither_hills_l20_5.jpg",
+      "siteId": "hither_hills",
+      "kind": "drape",
+      "look": 180,
+      "altM": 16,
+      "tilt": 82,
+      "lat": 41.021,
+      "lng": -71.992,
+      "note": "Mode B. Hither Hills is NOT Kirk Park. West of downtown on the south shore."
     },
     {
       "file": "assets/photos/commons_ocean_beaches_2026_downtown-aerial.jpg",
@@ -83,42 +88,6 @@
       "altM": 52,
       "tilt": 58,
       "note": "Only photo-level GPS. Caption GPS — not a new pin. Downtown / Kirk Park, not Ditch."
-    },
-    {
-      "file": "assets/photos/commons_soundview_2006_culloden-point-bluff.jpg",
-      "siteId": "soundview",
-      "kind": "ground",
-      "look": 270,
-      "altM": 8,
-      "tilt": 0,
-      "note": "Ground plane along-shore at Culloden. Site faces NORTH; this still looks along the Sound shore."
-    },
-    {
-      "file": "assets/photos/commons_soundview_2022_soundview-shore.jpg",
-      "siteId": "soundview",
-      "kind": "ground",
-      "look": 0,
-      "altM": 8,
-      "tilt": 0,
-      "note": "Blue-roof house + riprap. Ground plane looking NORTH."
-    },
-    {
-      "file": "assets/photos/commons_harbor_jetties_2017_south-jetty.jpg",
-      "siteId": "harbor_jetties",
-      "kind": "ground",
-      "look": 8,
-      "altM": 8,
-      "tilt": 0,
-      "note": "Name is the structure. Vertical ground plane, normal toward the water (look 8 / NORTH) at the inlet."
-    },
-    {
-      "file": "assets/photos/commons_harbor_jetties_2021_lake-montauk-inlet.jpg",
-      "siteId": "harbor_jetties",
-      "kind": "aerial",
-      "look": 180,
-      "altM": 52,
-      "tilt": 48,
-      "note": "From over the Sound looking south. North is open water / jetty tips. Elevated card."
     }
   ],
   "terrain": {
@@ -128,7 +97,7 @@
       "encoding": "terrarium",
       "tileSize": 512,
       "maxzoom": 15,
-      "attribution": "Mapterhorn Terrarium (key-free interim)"
+      "attribution": "Mapterhorn Terrarium (key-free interim) · relief 2014-equivalent visual only"
     },
     "fallback": {
       "id": "ngs-2014-block140-crop",
@@ -138,20 +107,10 @@
       "minzoom": 11,
       "maxzoom": 14,
       "bounds": [-71.965, 41.022, -71.845, 41.088],
-      "attribution": "2014 NOAA NGS Post-Sandy DEM Block_140 crop (Digital Coast 4967) · 10 m Terrarium"
+      "attribution": "2014 NOAA NGS Post-Sandy DEM Block_140 crop (Digital Coast 4967) · 10 m Terrarium · visual only"
     },
     "exaggeration": 2.6,
-    "exaggerationNote": "Visual only. Single 2014 surface — not a change map. 2020/2022 tiles are south-shore slivers and were not used."
-  },
-  "imagery": {
-    "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
-    "attribution": "Esri World Imagery",
-    "maxzoom": 19
-  },
-  "hillshade": {
-    "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"],
-    "attribution": "Esri World Hillshade",
-    "maxzoom": 16
+    "exaggerationNote": "Visual only. Single 2014 surface — not a change map. Do not invent a historic DEM. 2020/2022 tiles are south-shore slivers and were not used."
   },
   "paths": [
     {
