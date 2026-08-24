@@ -20,6 +20,20 @@ Deep links:
 - `http://127.0.0.1:8080/#site=lighthouse&year=1996`
 - `http://127.0.0.1:8080/#site=harbor_jetties&aerials=1`
 - `http://127.0.0.1:8080/#site=ditch_plains&year=2013`
+- `http://127.0.0.1:8080/#view=3d`
+- `http://127.0.0.1:8080/#view=3d&site=lighthouse&year=2016`
+
+## 3D coast
+
+The **3D** tab is an added view (the Leaflet 2D map stays). No Mapbox, Cesium ion, or paid key.
+
+- **Pins** (only these five, from `data/sites.json`): Soundview 41.0755, −71.948 (NORTH); harbor jetties 41.075, −71.9367 (NORTH / west jetty); downtown Kirk Park 41.0315, −71.946 (SOUTH — not Ditch); Ditch Plains 41.03948, −71.91701 (SOUTH/SSE); lighthouse 41.07099, −71.85709 (SOUTH/ESE Turtle Hill).
+- **Only these twelve planes** (hard-allowlisted in `js/coast3d.js`; CEHA sheets, 1909 Moran, year-null cards, `usgs_2012_beach.jpg`, 1919 Hither Hills, and the rest of the gallery stay out of 3D). Ground stills are vertical with the normal toward the water, except 1955 (along-shore ESE) and 2006 Culloden (along-shore). 1883 Ditch faces the water so you look inland at the till. 2022 Soundview and 2017 south-jetty look NORTH. Elevated cards: 1928 NARA (from the ocean looking NNW), 1968 cliffs (`dvids_1968_eroded_cliffs.jpg` only), 2023 revetment, 2012 Ditch `usgs_2012_ditch.jpg`, 2012 downtown `usgs_ds858_2012_1105_134804d.jpg` (not `usgs_2012_beach.jpg`), 2026 downtown at caption GPS 41.035025, −71.9478, 2021 inlet (from over the Sound looking south).
+- **Paths / looks:** Ditch 168, downtown 180, lighthouse 125, Soundview 0, harbor 8. Soundview + harbor face NORTH. Ditch, Kirk Park, lighthouse face SOUTH/ESE. Downtown is west of Ditch; that hop is inland, not a continuous beach.
+- **Terrain:** Mapterhorn Terrarium (key-free interim). Optional local fallback: 10 m Terrarium crop of 2014 NOAA NGS Post-Sandy Block_140 in `assets/terrain/2014-ngs`. The raw 121 MB GeoTIFF is not in this repo.
+- Year slider shows those twelve planes dated that year or earlier. Year-null cards are never shown. Tap a plane for the existing lightbox / credit.
+- 1996 at the lighthouse is a deed, not a move. Kirk Park is not snapped to Ditch or Hither Hills.
+- Phone: one-finger orbit, pinch/scroll zoom, tap a plane. Mobile header/drawers are unchanged.
 
 ## Tiles that work over Montauk
 
@@ -71,3 +85,5 @@ Toggleable on the map (south-shore USGS rates are **not** for Soundview / Block 
 
 - `/workspace/montauk-erosion-explorer/screenshots/overview.png`
 - `/workspace/montauk-erosion-explorer/screenshots/harbor-aerials.png`
+
+The 3D view is the `3D` tab on the live site (`#view=3d`).
