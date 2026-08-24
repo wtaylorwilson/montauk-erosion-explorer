@@ -484,12 +484,22 @@
   function lookFor(site) {
     var look = (cfg && cfg.look && cfg.look[site.id]) || {};
     var pin = (cfg && cfg.pins && cfg.pins[site.id]) || {};
-    return {
-      bearing: look.bearing != null ? look.bearing : (pin.look != null ? pin.look : (WATER_LOOK[site.id] != null ? WATER_LOOK[site.id] : 180)),
-      pitch: look.pitch != null ? look.pitch : 60,
-      zoom: look.zoom != null ? look.zoom : 15.4,
-      inlandM: look.inlandM != null ? look.inlandM : 100
-    };
+    var bearing = look.bearing != null ? look.bearing : (pin.look != null ? pin.look : (WATER_LOOK[site.id] != null ? WATER_LOOK[site.id] : 180));
+    var pitch = look.pitch != null ? look.pitch : 60;
+    var zoom = look.zoom != null ? look.zoom : 15.4;
+    var inlandM = look.inlandM != null ? look.inlandM : 100;
+    /* Beach look is locked in JS so a stale coast3d.json cannot sit 165–320 m inland. */
+    if (site.id === "ditch_plains") {
+      bearing = 168;
+      pitch = 70;
+      zoom = 16.9;
+      inlandM = 90;
+    } else if (site.id === "lighthouse") {
+      if (pitch < 68) pitch = 70;
+      if (inlandM > 110) inlandM = 105;
+      if (zoom < 16.5) zoom = 16.7;
+    }
+    return { bearing: bearing, pitch: pitch, zoom: zoom, inlandM: inlandM };
   }
 
   function walkInRec(site) {
@@ -519,7 +529,11 @@
       }
     }
     var inlandBr = (bearing + 180) % 360;
-    var cam = destPoint(site.lat, site.lng, inlandBr, inlandM);
+    var aim = site;
+    if (site.id === "ditch_plains" || site.id === "lighthouse") {
+      aim = destPoint(site.lat, site.lng, bearing, 24);
+    }
+    var cam = destPoint(aim.lat, aim.lng, inlandBr, inlandM);
     return {
       center: [cam.lng, cam.lat],
       zoom: zoom,
@@ -882,28 +896,37 @@
   function hwlLatNear(spec, lng, windowDeg) {
     if (!spec || !spec.hwl) return null;
     var n = spec.hwl.length / 2;
-    var sum = 0;
-    var c = 0;
+    var best = null;
+    var bestD = 1e9;
+    var i;
+    var d;
+    for (i = 0; i < n; i++) {
+      d = Math.abs(spec.hwl[i * 2] - lng);
+      if (d < bestD && d <= windowDeg) {
+        bestD = d;
+        best = spec.hwl[i * 2 + 1];
+      }
+    }
+    return best;
+  }
+
+  function zCutNear(spec, lng, windowDeg) {
+    if (!spec || !spec.zCut || !spec.hwl) return 0.6;
+    var n = spec.w ? spec.w.length : spec.zCut.length;
+    var mx = 0.6;
     var i;
     for (i = 0; i < n; i++) {
       if (Math.abs(spec.hwl[i * 2] - lng) <= windowDeg) {
-        sum += spec.hwl[i * 2 + 1];
-        c += 1;
-      }
-    }
-    return c ? sum / c : null;
-  }
-
-  function coverZMeters(spec) {
-    var mx = 0.5;
-    var i;
-    if (spec && spec.zCut) {
-      for (i = 0; i < spec.zCut.length; i++) {
         if (spec.zCut[i] > mx) mx = spec.zCut[i];
       }
     }
-    /* Just above the 2014 waterline, high enough to cover nearshore DEM lumps. */
-    return Math.max(1.15, Math.min(mx + 0.45, 1.85));
+    return mx;
+  }
+
+  function coverZMeters(spec) {
+    var ditchZ = zCutNear(spec, -71.917, 0.012);
+    /* High enough to cover 2014 DEM lumps seaward of the HWL, below the sand deck. */
+    return Math.max(1.25, Math.min(ditchZ + 0.9, 2.05));
   }
 
   function pushBboxQuad(pos, col, west, south, east, north, z, rgb) {
@@ -920,10 +943,10 @@
   function addSolidWaterPlanes(group, spec, colors) {
     var zM = coverZMeters(spec);
     var z = altZ(zM);
-    var ditchLat = hwlLatNear(spec, -71.917, 0.01) || 41.0387;
-    var pointLat = hwlLatNear(spec, -71.857, 0.018) || 41.0637;
-    var southNorth = ditchLat - 0.00006;
-    var pointNorth = pointLat - 0.00006;
+    var ditchLat = hwlLatNear(spec, -71.917, 0.02) || 41.03897;
+    var pointLat = hwlLatNear(spec, -71.857, 0.025) || 41.069;
+    var southNorth = ditchLat - 0.00002;
+    var pointNorth = pointLat - 0.00002;
     var pos = [];
     var col = [];
     /* South ocean — full west–east bbox, north edge just seaward of the Ditch HWL. */
@@ -954,8 +977,8 @@
     var sandCol = [];
     var tillPos = [];
     var tillCol = [];
-    var topIn = altZ(2.55);
-    var topOut = altZ(2.15);
+    var topIn = altZ(3.15);
+    var topOut = altZ(2.55);
     var deckZ = altZ(Math.max(waterZ + 0.55, 1.7));
     var toeZ = altZ(waterZ);
     var i;
