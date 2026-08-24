@@ -897,7 +897,8 @@
       var end = i - 1;
       /* Drop one-segment leftovers — they become floating ribbons. */
       if (end - start + 1 < 2) continue;
-      /* Trim a trailing knife-edge so the last face is a real block. */
+      /* Trim thin leading/trailing verts so both end-caps are real blocks. */
+      while (end - start + 1 >= 2 && spec.w[start] < 16) start += 1;
       while (end - start + 1 >= 2 && spec.w[end + 1] < 16) end -= 1;
       if (end - start + 1 >= 2) runs.push({ start: start, end: end });
     }
