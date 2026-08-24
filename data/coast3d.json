@@ -1,13 +1,15 @@
 {
   "version": 4,
-  "note": "Year-worlds plus custom HWL coasts on the same 3D tab. Terrain is always 2014 NGS / Mapterhorn — visual only, not a change surface. Mode A dated ortho (NYSDOP / Wayback). Mode B local drapes at the reaches they show. Mode C walk-into stills at pins. Mode D: 1996 deed, CEHA, Moran/Great Pond, 1919 Hither Hills, usgs_2012_beach.jpg. Never current Esri World Imagery. Uncovered land is dim 2014 hillshade. Do not hang the PR5 gallery dump. 459 extra hunt-machine frames are a follow-up, not a mosaic.",
+  "note": "Year-worlds plus carved HWL coasts on the same 3D tab. Inland terrain is always 2014 NGS / Mapterhorn — visual only, not a change surface. The thing that changes with the year scrub is the Three.js carved coast (sand terrace / cut / till face / water plane) in data/coast_meshes.json. Mode A dated ortho (NYSDOP / Wayback) may drape inland; pre-2001 worlds are hillshade + period grade, never current Esri World Imagery. Mode B local drapes at the reaches they show. Mode C walk-into stills at pins. Mode D: 1996 deed, CEHA, Moran/Great Pond, 1919 Hither Hills, usgs_2012_beach.jpg. Do not hang the PR5 gallery dump.",
   "hwl": {
     "anchors": [1830, 1870, 1892, 1933, 1938, 1962, 1979, 1983, 1988, 2000],
     "decadeYears": [1871, 1881, 1891, 1901, 1911, 1921, 1931, 1941, 1951, 1961, 1971, 1981, 1991, 2001, 2011, 2021],
     "northYears": [1933, 2000],
     "demYear": 2014,
-    "source": "USGS OFR 2010-1119 Himmelstoss et al. 2010 LongIsland_shorelines.shp clipped to Montauk. Decade south/Point lines are interpolated along LongIsland_LT transects or held at 2000. North HWL is never interpolated. 1891 and 1991 Long Island lines are not Montauk surveys.",
-    "surveyHint": "Custom coast from USGS high-water line + 2014 elevation. Not a 10-year surveyed model.",
+    "meshes": "data/coast_meshes.json",
+    "carve": "2014 relief seaward of each year's HWL is hidden by a SOLID water plane (south ocean + north sound bbox quads at constant z) — not a transect triangle strip. Sand is one extruded solid per site-year: that year's HWL minus the 2000/ref waterline, clipped ~250 m along-shore of the Ditch / downtown / Point pins. No peninsula loft. 2000 and held years draw zero sand. Not a historic DEM.",
+    "source": "USGS OFR 2010-1119 Himmelstoss et al. 2010 LongIsland_shorelines.shp clipped to Montauk. Decade south/Point lines are interpolated along LongIsland_LT transects or held at 2000. North HWL is never interpolated. 1891 and 1991 Long Island lines are not Montauk surveys. Carved meshes compare each year to the 2000 HWL (2014 waterline proxy).",
+    "surveyHint": "USGS surveyed high-water line — carved 3D coast (beach width / lost land / till face). Not a 10-year surveyed model.",
     "modeledHint": "Modeled from USGS high-water-line trend. Not a surveyed shoreline."
   },
   "pins": {
@@ -133,9 +135,9 @@
     }
   ],
   "look": {
-    "ditch_plains": { "bearing": 168, "pitch": 62, "zoom": 15.55, "inlandM": 320 },
-    "ocean_beaches": { "bearing": 180, "pitch": 60, "zoom": 15.45, "inlandM": 340 },
-    "lighthouse": { "bearing": 125, "pitch": 64, "zoom": 15.6, "inlandM": 380 },
+    "ditch_plains": { "bearing": 168, "pitch": 70, "zoom": 16.85, "inlandM": 100 },
+    "ocean_beaches": { "bearing": 180, "pitch": 68, "zoom": 16.55, "inlandM": 120 },
+    "lighthouse": { "bearing": 125, "pitch": 70, "zoom": 16.7, "inlandM": 105 },
     "soundview": { "bearing": 0, "pitch": 60, "zoom": 15.45, "inlandM": 300 },
     "harbor_jetties": { "bearing": 8, "pitch": 58, "zoom": 15.5, "inlandM": 300 }
   },

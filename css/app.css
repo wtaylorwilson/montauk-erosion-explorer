@@ -758,6 +758,11 @@ body.ac-open .leaflet-control-layers {
     #060e16;
 }
 .coast3d-view.is-drape-only #coast3d { filter: saturate(0.92); }
+.coast3d-view.is-era-cyano #coast3d { filter: sepia(0.28) saturate(0.82) contrast(1.05) brightness(1.04); }
+.coast3d-view.is-era-bw #coast3d { filter: grayscale(0.78) contrast(1.06) brightness(1.02); }
+.coast3d-view.is-era-muted #coast3d { filter: saturate(0.58) contrast(0.98); }
+.coast3d-view.is-era-natural #coast3d { filter: none; }
+.coast3d-view.is-mode-a.is-era-natural #coast3d { filter: none; }
 
 .coast3d-view .maplibregl-marker { pointer-events: auto; }
 .photo-plane {
@@ -1143,22 +1148,17 @@ body.ac-open .leaflet-control-layers {
     right: 6px;
     gap: 6px;
   }
-  .coast3d-paths { width: 100%; }
-  .coast3d-paths .ghost {
-    padding: 7px 9px;
-    font-size: 10px;
-    min-height: 32px;
-    letter-spacing: 0.04em;
-  }
-  .coast3d-hint, .coast3d-count, .coast3d-caption {
+  .coast3d-paths { display: none; }
+  .coast3d-count { display: none; }
+  .coast3d-hint, .coast3d-caption {
     font-size: 10px;
     padding: 5px 8px;
     max-width: 100%;
   }
-  .coast3d-hint {
+  .coast3d-hint, .coast3d-caption {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     overflow: hidden;
   }
   .photo-plane { width: 76px; }

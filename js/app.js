@@ -1067,10 +1067,8 @@
       if (window.MontaukCoast3D) {
         window.MontaukCoast3D.show();
         $("#year-source").textContent = coast3dYearLabel();
-        if (state.selectedId) {
-          const site = state.sites.find(function (s) { return s.id === state.selectedId; });
-          if (site) window.MontaukCoast3D.flyToSite(site);
-        }
+        const site = state.sites.find(function (s) { return s.id === (state.selectedId || "ditch_plains"); });
+        if (site) window.MontaukCoast3D.flyToSite(site);
       }
     } else {
       if (window.MontaukCoast3D) window.MontaukCoast3D.hide();
@@ -1200,7 +1198,7 @@
         },
         onReady: function () {
           if (state.view !== "coast3d") return;
-          const site = state.sites.find(function (s) { return s.id === state.selectedId; });
+          const site = state.sites.find(function (s) { return s.id === (state.selectedId || "ditch_plains"); });
           if (site) window.MontaukCoast3D.flyToSite(site);
         }
       });

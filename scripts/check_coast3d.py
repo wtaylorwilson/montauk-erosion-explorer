@@ -308,10 +308,101 @@ def main() -> int:
         errors.append("interpolated years must use the modeled-not-surveyed hint")
     if "USGS surveyed high-water line" not in js:
         errors.append("anchor years must be labeled as USGS surveyed HWL")
+    if "Held at 2000 USGS HWL · not a survey" not in js:
+        errors.append("2001–2021 must be labeled held at 2000, not a survey")
     if "HWL_DECADES" not in js or "HWL_ANCHORS" not in js:
         errors.append("3D slider must include sourced HWL anchors and decade worlds")
     if re.search(r"surveyed shoreline of 1891|USGS shoreline 1891|T-sheet 1891", js):
         errors.append("do not call 1891 a Montauk survey")
+    if "function applyHwlLayers" in js or 'id: "hwl-water"' in js:
+        errors.append("painted HWL fill/line layers must not be the 3D coast — use carved meshes")
+    if "function applyCoastMeshes" not in js or "function buildCoastGroup" not in js:
+        errors.append("3D must build a carved coast mesh (water / terrace / till)")
+    apply_m = re.search(r"function applyCoastMeshes\(\) \{([\s\S]*?)\n  function ", js)
+    apply_body = apply_m.group(1) if apply_m else ""
+    if not re.search(r"if \(year === 1996\)", apply_body):
+        errors.append("applyCoastMeshes must unconditionally no-op when year === 1996")
+    if "hwlStatus" in apply_body:
+        errors.append("1996 no-op must be unconditional — no nested hwlStatus check")
+    if "hideCoastMeshes" not in apply_body and "clearCoastMeshes" not in apply_body:
+        errors.append("1996 Mode D must hide/clear every coast mesh, not lerp a waterline")
+    if "addSolidWaterPlanes" not in js or "pushBboxQuad" not in js or "pushQuadFlat" not in js:
+        errors.append("water must be solid flat-shaded bbox planes, not a transect triangle strip")
+    if "function skipSandMesh" not in js:
+        errors.append("2000 / held years must skip all sand solids")
+    if "function addBeachSolids" not in js or "function triangulateRing" not in js:
+        errors.append("sand must be an extruded HWL-minus-2000 polygon, not a transect loft")
+    if "function siteBeachSpan" not in js or "function beachRing" not in js:
+        errors.append("each site solid is historic HWL minus the 2000/ref waterline, clipped near the pin")
+    if "function sandRunsForSpec" in js or "function addSiteSandBoxes" in js or "SAND_BOX_SITES" in js:
+        errors.append("delete the transect strip builder and the guessed site boxes")
+    if "function pushRectPrism" in js or "function pushSandBox" in js:
+        errors.append("do not loft HWL/ref pairs or invent a rectangular site box")
+    if "function northRibbonMeshes" in js:
+        errors.append("no north-shore / Soundview sand ribbon")
+    beach_block = js.split("var BEACH_SITES = [", 1)[1].split("];", 1)[0] if "var BEACH_SITES = [" in js else ""
+    if "soundview" in beach_block or "harbor_jetties" in beach_block:
+        errors.append("no Soundview/harbor sand solid")
+    if "mean >= 8" not in js:
+        errors.append("skip a site solid when mean seaward width is under 8 m")
+    if "w0 > 5 || w1 > 5" in js:
+        errors.append("do not OR-gate terrace width — that tapers the east end into slivers")
+    if re.search(r"toward\(h0,\s*s0,\s*920\)", js):
+        errors.append("do not build hide/water as transect fans — those become shards")
+    ditch_look = (cfg.get("look") or {}).get("ditch_plains") or {}
+    if not (80 <= float(ditch_look.get("inlandM") or 0) <= 120):
+        errors.append("Ditch camera must sit 80–120 m inland on the beach")
+    if not (68 <= float(ditch_look.get("pitch") or 0) <= 72):
+        errors.append("Ditch pitch must be ~68–72 so the terrace reads as a platform")
+    if abs(float(ditch_look.get("bearing") or 0) - 168) > 2:
+        errors.append("Ditch bearing must stay ~168 (looking south)")
+    spec_m = re.search(r"function coastSpecForYear\(y\) \{([\s\S]*?)\n  function ", js)
+    spec_body = spec_m.group(1) if spec_m else ""
+    if not re.search(r"y === 1996", spec_body) or not re.search(r"return null", spec_body[:280]):
+        errors.append("coastSpecForYear(1996) must return null, not a 1991–2000 lerp")
+    for skip_y in (1883, 1955, 1968):
+        if re.search(rf"\b{skip_y}\b", apply_body) or re.search(rf"\b{skip_y}\b", spec_body[:280]):
+            errors.append(f"do not special-case {skip_y} — silent lerp is watch, not this fix")
+    if "tillHeight" not in js:
+        errors.append("carved coast must include a till face")
+    if "zCut" not in js or "Hide 2014 land" not in js:
+        errors.append("2014 relief seaward of the HWL must be hidden by a mesh, not left showing")
+    if "is-era-cyano" not in js:
+        errors.append("pre-ortho years need a period grade, not Esri World Imagery")
+    if "server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" in js:
+        errors.append("3D must not load current Esri World Imagery")
+
+    mesh_path = ROOT / "data" / "coast_meshes.json"
+    if not mesh_path.is_file():
+        errors.append("missing data/coast_meshes.json")
+    elif mesh_path.stat().st_size > 2_000_000:
+        errors.append("coast_meshes.json is too large for GitHub Pages")
+    else:
+        meshes = json.loads(mesh_path.read_text())
+        want_years = {1871, 1892, 1933, 1938, 1962, 1979, 2000, 2021}
+        got_years = {int(y) for y in (meshes.get("years") or {})}
+        missing = sorted(want_years - got_years)
+        if missing:
+            errors.append(f"coast_meshes.json missing years {missing}")
+        sample = (meshes.get("years") or {}).get("1871") or {}
+        if "zCut" not in sample:
+            errors.append("coast_meshes.json must store 2014 zCut so seaward land can be hidden")
+        north = sorted(int(y) for y in (meshes.get("north") or {}))
+        if north != [1933, 2000]:
+            errors.append(f"mesh north years {north} != [1933, 2000]")
+        extra_north = [y for y in (meshes.get("north") or {}) if int(y) not in (1933, 2000)]
+        if extra_north:
+            errors.append("north mesh only in 1933 and 2000")
+        ditch = ((meshes.get("properties") or {}).get("ditchWidthM") or {})
+        if float(ditch.get("1871") or 0) < 15:
+            errors.append("1871 Ditch terrace must be a wide seaward beach, not a painted line")
+        w2000 = ditch.get("2000")
+        if w2000 is None or abs(float(w2000)) > 2:
+            errors.append("2000 Ditch terrace must be gone (2000 is the 2014 waterline proxy)")
+        if (meshes.get("properties") or {}).get("northYears") != [1933, 2000]:
+            errors.append("do not invent north-shore mesh years")
+        if "Soundview" in json.dumps(meshes.get("north") or {}) and "harbor" in json.dumps(meshes).lower():
+            errors.append("do not invent a Soundview harbor loop mesh")
 
     print(f"pins 5 worlds {len(worlds)} locked12 {len(LOCKED12)}")
     if errors:

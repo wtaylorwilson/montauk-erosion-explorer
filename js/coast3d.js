@@ -1,4 +1,6 @@
-/* 3D coast — year-worlds. Terrain is always 2014. Never hang CEHA, Moran, or a gallery dump. */
+/* 3D coast — year-worlds. Inland relief is always 2014. The carved
+   coast (sand terrace / cut / till face / water plane) is what changes.
+   Never hang CEHA, Moran, or a gallery dump. */
 (function (global) {
   "use strict";
 
@@ -15,7 +17,7 @@
   var HWL_ANCHORS = [1830, 1870, 1892, 1933, 1938, 1962, 1979, 1983, 1988, 2000];
   var HWL_DECADES = [1871, 1881, 1891, 1901, 1911, 1921, 1931, 1941, 1951, 1961, 1971, 1981, 1991, 2001, 2011, 2021];
   var HWL_NORTH_YEARS = { 1933: 1, 2000: 1 };
-  var HWL_HINT_SURVEY = "Custom coast from USGS high-water line + 2014 elevation. Not a 10-year surveyed model.";
+  var HWL_HINT_SURVEY = "USGS surveyed high-water line — 2014 relief is cut at this HWL (sand terrace / lost land / till face). Not a historic DEM.";
   var HWL_HINT_MODEL = "Modeled from USGS high-water-line trend. Not a surveyed shoreline.";
   var HWL_HINT_HELD = "Held at the 2000 USGS high-water line — no later Montauk HWL in OFR 2010-1119. Not a surveyed shoreline.";
 
@@ -144,6 +146,11 @@
   var terrainErrors = 0;
   var planeLayer = null;
   var hwlDoc = null;
+  var coastMeshes = null;
+  var coastGroups = [];
+  var waterGroup = null;
+  var lastCoastTick = 0;
+  var lastCoastYear = null;
 
   function $(sel, root) { return (root || document).querySelector(sel); }
 
@@ -365,7 +372,7 @@
     var mode = modeForYear(year);
     var hwl = hwlStatus(year);
     if (year === 1996) return "Deed only · relief 2014";
-    if (year === 2014) return "2014 NOAA NGS DEM · not a HWL · " + (spec ? spec.name : "relief 2014");
+    if (year === 2014) return "2014 NOAA NGS DEM · not a HWL · carved coast held at 2000";
     if (hwl === "surveyed") return "USGS surveyed high-water line · relief 2014";
     if (hwl === "modeled") return "Modeled from USGS HWL trend · not a survey";
     if (hwl === "held") return "Held at 2000 USGS HWL · not a survey";
@@ -410,7 +417,7 @@
       } else if (year === 2014) {
         hint.textContent = "2014 is the measured NOAA NGS DEM year — not a high-water line. " + RELIEF_NOTE + ".";
       } else if (mode === "A") {
-        hint.textContent = (spec ? spec.name : year) + " peninsula. " + RELIEF_NOTE + ". Tap a still for credit.";
+        hint.textContent = (spec ? spec.name : year) + " inland drape. Waterline is the carved 2000-held HWL mesh. " + RELIEF_NOTE + ".";
       } else if (mode === "B") {
         hint.textContent = year + " local drapes at the reaches they show — not a peninsula mosaic. " + RELIEF_NOTE + ".";
       } else if (mode === "C") {
@@ -421,16 +428,23 @@
     }
     if (count) {
       var coastBits = [];
+      var dw = ditchTerraceM();
       if (hwl === "surveyed") coastBits.push("USGS surveyed HWL · south/Point");
       if (hwl === "modeled") coastBits.push("Modeled south/Point waterline");
       if (hwl === "held") coastBits.push("Held 2000 HWL · south/Point");
+      if (dw != null && hwl) {
+        coastBits.push(dw >= 8
+          ? "Ditch terrace ~" + Math.round(dw) + " m seaward of 2014"
+          : "Ditch terrace gone · land ends at HWL");
+      }
       if (HWL_NORTH_YEARS[year]) coastBits.push("north HWL only this year");
       if (year === 1871) coastBits.push("1871 walk-into still");
       if (!shown.length) {
         coastBits.push(mode === "A" ? "dated ortho" : "no still");
         count.textContent = coastBits.join(" · ");
       } else if (year === 1962) {
-        count.textContent = "1962 patchwork · " + shown.length + " frames at the five sites · not a seamless 1962 peninsula";
+        count.textContent = (coastBits.length ? coastBits.join(" · ") + " · " : "") +
+          "1962 patchwork · " + shown.length + " frames at the five sites · not a seamless 1962 peninsula";
       } else {
         count.textContent = (coastBits.length ? coastBits.join(" · ") + " · " : "") +
           shown.length + " still" + (shown.length === 1 ? "" : "s") + " from " + year + " only";
@@ -447,6 +461,10 @@
       view.classList.toggle("is-drape-only", mode === "B" && !spec);
       view.classList.toggle("is-mode-a", !!spec);
       view.classList.toggle("is-hwl", !!hwl);
+      view.classList.toggle("is-era-cyano", !spec && year <= 1900);
+      view.classList.toggle("is-era-bw", !spec && year > 1900 && year <= 1965);
+      view.classList.toggle("is-era-muted", !spec && year > 1965 && year <= 1995);
+      view.classList.toggle("is-era-natural", !!spec || year >= 2000);
     }
   }
 
@@ -466,12 +484,22 @@
   function lookFor(site) {
     var look = (cfg && cfg.look && cfg.look[site.id]) || {};
     var pin = (cfg && cfg.pins && cfg.pins[site.id]) || {};
-    return {
-      bearing: look.bearing != null ? look.bearing : (pin.look != null ? pin.look : (WATER_LOOK[site.id] != null ? WATER_LOOK[site.id] : 180)),
-      pitch: look.pitch != null ? look.pitch : 60,
-      zoom: look.zoom != null ? look.zoom : 15.4,
-      inlandM: look.inlandM != null ? look.inlandM : 320
-    };
+    var bearing = look.bearing != null ? look.bearing : (pin.look != null ? pin.look : (WATER_LOOK[site.id] != null ? WATER_LOOK[site.id] : 180));
+    var pitch = look.pitch != null ? look.pitch : 60;
+    var zoom = look.zoom != null ? look.zoom : 15.4;
+    var inlandM = look.inlandM != null ? look.inlandM : 100;
+    /* Beach look is locked in JS so a stale coast3d.json cannot sit 165–320 m inland. */
+    if (site.id === "ditch_plains") {
+      bearing = 168;
+      pitch = 70;
+      zoom = 16.9;
+      inlandM = 90;
+    } else if (site.id === "lighthouse") {
+      if (pitch < 68) pitch = 70;
+      if (inlandM > 110) inlandM = 105;
+      if (zoom < 16.5) zoom = 16.7;
+    }
+    return { bearing: bearing, pitch: pitch, zoom: zoom, inlandM: inlandM };
   }
 
   function walkInRec(site) {
@@ -501,7 +529,11 @@
       }
     }
     var inlandBr = (bearing + 180) % 360;
-    var cam = destPoint(site.lat, site.lng, inlandBr, inlandM);
+    var aim = site;
+    if (site.id === "ditch_plains" || site.id === "lighthouse") {
+      aim = destPoint(site.lat, site.lng, bearing, 24);
+    }
+    var cam = destPoint(aim.lat, aim.lng, inlandBr, inlandM);
     return {
       center: [cam.lng, cam.lat],
       zoom: zoom,
@@ -609,107 +641,616 @@
       map.setPaintProperty("hills", "hillshade-highlight-color", tint.highlight);
       map.setPaintProperty("hills", "hillshade-shadow-color", tint.shadow);
     }
-    applyHwlLayers();
+    applyCoastMeshes();
   }
 
   function eraTint(spec) {
-    if (spec) return { exag: 0.3, highlight: "#f3ead6", shadow: "#101820" };
-    if (year <= 1900) return { exag: 0.62, highlight: "#d4b896", shadow: "#2a1e14" };
-    if (year <= 1945) return { exag: 0.58, highlight: "#b7c2c8", shadow: "#182028" };
-    if (year <= 1975) return { exag: 0.56, highlight: "#c8c4a4", shadow: "#1c2418" };
-    if (year <= 2000) return { exag: 0.54, highlight: "#c0c8b8", shadow: "#182018" };
-    return { exag: 0.58, highlight: "#7d8d96", shadow: "#101820" };
+    if (spec) return { exag: 0.28, highlight: "#f3ead6", shadow: "#101820" };
+    if (year <= 1900) return { exag: 0.64, highlight: "#c9a56a", shadow: "#2a1a10" };
+    if (year <= 1965) return { exag: 0.6, highlight: "#c8c8c4", shadow: "#161616" };
+    if (year <= 1995) return { exag: 0.56, highlight: "#c4b896", shadow: "#1a2018" };
+    return { exag: 0.52, highlight: "#8a9aa4", shadow: "#101820" };
   }
 
-  function emptyFC() {
-    return { type: "FeatureCollection", features: [] };
+  function terrainExag() {
+    return (cfg && cfg.terrain && cfg.terrain.exaggeration) || 2.6;
   }
 
-  function hwlFeatures(kind, reach) {
-    if (!hwlDoc || !hwlDoc.features) return [];
-    return hwlDoc.features.filter(function (f) {
-      var p = f.properties || {};
-      if (p.year !== year || p.kind !== kind) return false;
-      if (reach && p.reach !== reach) return false;
-      if (kind === "hwl" && p.reach === "north") return false;
-      return true;
+  function altZ(m) {
+    return Number(m) * terrainExag();
+  }
+
+  function xyAt(packed, i) {
+    return [packed[i * 2], packed[i * 2 + 1]];
+  }
+
+  function toward(from, to, meters) {
+    var d = metersBetween(from[1], from[0], to[1], to[0]);
+    if (!(d > 0.4)) return [from[0], from[1]];
+    var t = meters / d;
+    return [from[0] + (to[0] - from[0]) * t, from[1] + (to[1] - from[1]) * t];
+  }
+
+  function tooFar(a, b) {
+    return metersBetween(a[1], a[0], b[1], b[0]) > 380;
+  }
+
+  function mercatorVtx(lng, lat, altM) {
+    var mc = maplibregl.MercatorCoordinate.fromLngLat([lng, lat], altM);
+    return [mc.x, mc.y, mc.z];
+  }
+
+  function tillHeight(lng) {
+    if (lng < -71.93) return 5.2;
+    if (lng < -71.88) return 7.5;
+    return 10.8;
+  }
+
+  function eraCoastColors() {
+    if (year <= 1900) {
+      return {
+        sand: [0.90, 0.74, 0.46],
+        till: [0.50, 0.32, 0.18],
+        cobble: [0.42, 0.32, 0.24],
+        cut: [0.14, 0.36, 0.44],
+        water: [0.20, 0.48, 0.56]
+      };
+    }
+    if (year <= 1965) {
+      return {
+        sand: [0.72, 0.72, 0.68],
+        till: [0.36, 0.33, 0.29],
+        cobble: [0.42, 0.40, 0.36],
+        cut: [0.26, 0.30, 0.34],
+        water: [0.30, 0.34, 0.38]
+      };
+    }
+    if (year <= 1995) {
+      return {
+        sand: [0.76, 0.68, 0.48],
+        till: [0.42, 0.32, 0.22],
+        cobble: [0.40, 0.34, 0.26],
+        cut: [0.14, 0.34, 0.40],
+        water: [0.18, 0.36, 0.42]
+      };
+    }
+    return {
+      sand: [0.86, 0.76, 0.54],
+      till: [0.54, 0.36, 0.22],
+      cobble: [0.50, 0.40, 0.30],
+      cut: [0.08, 0.30, 0.40],
+      water: [0.06, 0.28, 0.38]
+    };
+  }
+
+  function meshYearKeys() {
+    if (!coastMeshes || !coastMeshes.years) return [];
+    return Object.keys(coastMeshes.years).map(Number).sort(function (a, b) { return a - b; });
+  }
+
+  function lerpPacked(a, b, t) {
+    var out = new Array(a.length);
+    var i;
+    for (i = 0; i < a.length; i++) out[i] = a[i] + (b[i] - a[i]) * t;
+    return out;
+  }
+
+  function coastSpecForYear(y) {
+    y = Number(y);
+    /* 1996 is Mode D (lighthouse deed). Do not lerp 1991→2000. */
+    if (y === 1996) return null;
+    if (!coastMeshes || !coastMeshes.years) return null;
+    if (y > 2000 && coastMeshes.years["2000"]) {
+      var held = coastMeshes.years["2000"];
+      return { status: "held", hwl: held.hwl, ref: held.ref, w: held.w.slice(), zCut: held.zCut, year: y };
+    }
+    if (coastMeshes.years[String(y)]) {
+      var row = coastMeshes.years[String(y)];
+      return { status: row.status, hwl: row.hwl, ref: row.ref, w: row.w, zCut: row.zCut, year: y };
+    }
+    var keys = meshYearKeys();
+    var earlier = null;
+    var later = null;
+    var i;
+    for (i = 0; i < keys.length; i++) {
+      if (keys[i] <= y) earlier = keys[i];
+      if (keys[i] >= y && later == null) later = keys[i];
+    }
+    if (earlier == null) earlier = later;
+    if (later == null) later = earlier;
+    if (earlier == null) return null;
+    var A = coastMeshes.years[String(earlier)];
+    if (earlier === later) {
+      return { status: A.status, hwl: A.hwl, ref: A.ref, w: A.w, zCut: A.zCut, year: y };
+    }
+    var t = (y - earlier) / (later - earlier);
+    var B = coastMeshes.years[String(later)];
+    var w = [];
+    var zCut = [];
+    for (i = 0; i < A.w.length; i++) w.push(A.w[i] + (B.w[i] - A.w[i]) * t);
+    if (A.zCut && B.zCut) {
+      for (i = 0; i < A.zCut.length; i++) zCut.push(A.zCut[i] + (B.zCut[i] - A.zCut[i]) * t);
+    }
+    return {
+      status: "modeled",
+      hwl: lerpPacked(A.hwl, B.hwl, t),
+      ref: A.ref,
+      w: w,
+      zCut: zCut.length ? zCut : A.zCut,
+      year: y
+    };
+  }
+
+  function ditchTerraceM() {
+    var spec = coastSpecForYear(year);
+    if (!spec || !spec.w) return null;
+    var sum = 0;
+    var n = 0;
+    var i;
+    for (i = 0; i < spec.w.length; i++) {
+      if (spec.ref[i * 2] >= -71.925 && spec.ref[i * 2] <= -71.910) {
+        sum += spec.w[i];
+        n += 1;
+      }
+    }
+    return n ? sum / n : null;
+  }
+
+  function faceShade(a, b, c) {
+    var ux = b[0] - a[0];
+    var uy = b[1] - a[1];
+    var uz = b[2] - a[2];
+    var vx = c[0] - a[0];
+    var vy = c[1] - a[1];
+    var vz = c[2] - a[2];
+    var nx = uy * vz - uz * vy;
+    var ny = uz * vx - ux * vz;
+    var nz = ux * vy - uy * vx;
+    var len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+    var d = (nx * -0.32 + ny * 0.52 + nz * 0.78) / len;
+    return 0.52 + 0.48 * Math.max(0, d);
+  }
+
+  function pushTri(pos, col, a, b, c, rgb) {
+    var s = faceShade(a, b, c);
+    pos.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
+    col.push(rgb[0] * s, rgb[1] * s, rgb[2] * s, rgb[0] * s, rgb[1] * s, rgb[2] * s, rgb[0] * s, rgb[1] * s, rgb[2] * s);
+  }
+
+  function pushQuad(pos, col, a, b, c, d, rgb) {
+    pushTri(pos, col, a, b, c, rgb);
+    pushTri(pos, col, a, c, d, rgb);
+  }
+
+  function pushTriFlat(pos, col, a, b, c, rgb) {
+    pos.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
+    col.push(rgb[0], rgb[1], rgb[2], rgb[0], rgb[1], rgb[2], rgb[0], rgb[1], rgb[2]);
+  }
+
+  function pushQuadFlat(pos, col, a, b, c, d, rgb) {
+    pushTriFlat(pos, col, a, b, c, rgb);
+    pushTriFlat(pos, col, a, c, d, rgb);
+  }
+
+  function makeColorMesh(pos, col, opacity) {
+    if (pos.length < 9) return null;
+    var geom = new THREE.BufferGeometry();
+    geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    geom.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    var mat = new THREE.MeshBasicMaterial({
+      vertexColors: true,
+      side: THREE.DoubleSide,
+      transparent: opacity < 0.99,
+      opacity: opacity,
+      depthWrite: true,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2
+    });
+    var mesh = new THREE.Mesh(geom, mat);
+    mesh.userData.coast = true;
+    mesh.userData.baseOp = opacity;
+    return mesh;
+  }
+
+  function disposeGroup(group) {
+    if (!group) return;
+    group.traverse(function (obj) {
+      if (obj.geometry) obj.geometry.dispose();
+      if (obj.material) obj.material.dispose();
     });
   }
 
-  function addHwlLayers() {
-    if (!map || map.getSource("hwl-water")) return;
-    ["hwl-water", "hwl-lost", "hwl-gained", "hwl-line", "hwl-north"].forEach(function (id) {
-      map.addSource(id, { type: "geojson", data: emptyFC() });
-    });
-    map.addLayer({
-      id: "hwl-water",
-      type: "fill",
-      source: "hwl-water",
-      paint: { "fill-color": "#0b3d55", "fill-opacity": 0.46 }
-    });
-    map.addLayer({
-      id: "hwl-lost",
-      type: "fill",
-      source: "hwl-lost",
-      paint: { "fill-color": "#c23b22", "fill-opacity": 0.34 }
-    });
-    map.addLayer({
-      id: "hwl-gained",
-      type: "fill",
-      source: "hwl-gained",
-      paint: { "fill-color": "#3d9a86", "fill-opacity": 0.3 }
-    });
-    map.addLayer({
-      id: "hwl-beach",
-      type: "line",
-      source: "hwl-line",
-      layout: { "line-join": "round", "line-cap": "round" },
-      paint: {
-        "line-color": "#e2c49a",
-        "line-width": 7.5,
-        "line-opacity": 0.55,
-        "line-blur": 0.6
+  /* 2000 is the 2014 waterline proxy. Held years share that line. No tan. */
+  function skipSandMesh() {
+    return year === 2000 || year > 2000;
+  }
+
+  /* Ditch / downtown / Point only. Lost/gained beach = this year's HWL
+     minus the 2000/ref waterline, clipped ~250 m along-shore of the pin.
+     One extruded solid per site-year. Not a transect loft. Not a guessed box. */
+  var BEACH_SITES = [
+    { id: "ditch_plains", lat: 41.03948, lng: -71.91701 },
+    { id: "ocean_beaches", lat: 41.0315, lng: -71.946 },
+    { id: "lighthouse", lat: 41.07099, lng: -71.85709, southOnly: true }
+  ];
+  var BEACH_ALONG_M = 125;
+
+  function alongTrackM(packed, n) {
+    var along = [0];
+    var i;
+    for (i = 1; i < n; i++) {
+      along.push(along[i - 1] + metersBetween(
+        packed[i * 2 + 1], packed[i * 2],
+        packed[(i - 1) * 2 + 1], packed[(i - 1) * 2]
+      ));
+    }
+    return along;
+  }
+
+  function siteOnSouth(site, spec, i) {
+    if (!site.southOnly) return true;
+    return spec.hwl[i * 2 + 1] <= site.lat + 0.0004;
+  }
+
+  /* Contiguous HWL/ref span near the pin. Endpoints shared so the two
+     closing segments are straight vertical rectangles when extruded. */
+  function siteBeachSpan(spec, site) {
+    if (!spec || !spec.w || !spec.ref || !spec.hwl) return null;
+    var n = spec.w.length;
+    var along = alongTrackM(spec.ref, n);
+    var i0 = 0;
+    var best = 1e9;
+    var i;
+    var d;
+    for (i = 0; i < n; i++) {
+      if (!siteOnSouth(site, spec, i)) continue;
+      d = metersBetween(site.lat, site.lng, spec.ref[i * 2 + 1], spec.ref[i * 2]);
+      if (d < best) {
+        best = d;
+        i0 = i;
+      }
+    }
+    if (!(best < 400)) return null;
+    var lo = i0;
+    var hi = i0;
+    while (lo > 0 && along[i0] - along[lo - 1] <= BEACH_ALONG_M && siteOnSouth(site, spec, lo - 1)) lo -= 1;
+    while (hi < n - 1 && along[hi + 1] - along[i0] <= BEACH_ALONG_M && siteOnSouth(site, spec, hi + 1)) hi += 1;
+    if (hi - lo < 1) return null;
+    var sum = 0;
+    for (i = lo; i <= hi; i++) sum += spec.w[i];
+    var mean = sum / (hi - lo + 1);
+    if (!(mean >= 8)) return null;
+    return { lo: lo, hi: hi, mean: mean };
+  }
+
+  function beachRing(spec, lo, hi) {
+    var ring = [];
+    var i;
+    for (i = lo; i <= hi; i++) ring.push([spec.hwl[i * 2], spec.hwl[i * 2 + 1]]);
+    for (i = hi; i >= lo; i--) ring.push([spec.ref[i * 2], spec.ref[i * 2 + 1]]);
+    return ring;
+  }
+
+  function ringArea(ring) {
+    var a = 0;
+    var i;
+    var n = ring.length;
+    var j;
+    for (i = 0; i < n; i++) {
+      j = (i + 1) % n;
+      a += ring[i][0] * ring[j][1] - ring[j][0] * ring[i][1];
+    }
+    return a / 2;
+  }
+
+  function pointInTri(p, a, b, c) {
+    var denom = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1]);
+    if (Math.abs(denom) < 1e-18) return false;
+    var t1 = ((b[1] - c[1]) * (p[0] - c[0]) + (c[0] - b[0]) * (p[1] - c[1])) / denom;
+    var t2 = ((c[1] - a[1]) * (p[0] - c[0]) + (a[0] - c[0]) * (p[1] - c[1])) / denom;
+    var t3 = 1 - t1 - t2;
+    return t1 >= -1e-12 && t2 >= -1e-12 && t3 >= -1e-12;
+  }
+
+  function triangulateRing(ring) {
+    var pts = ring.slice();
+    if (pts.length < 3) return [];
+    if (ringArea(pts) < 0) pts.reverse();
+    var idx = [];
+    var i;
+    for (i = 0; i < pts.length; i++) idx.push(i);
+    var faces = [];
+    var guard = 0;
+    var k;
+    var ear;
+    var ia;
+    var ib;
+    var ic;
+    var t;
+    var ok;
+    var cross;
+    while (idx.length > 3 && guard < 400) {
+      guard += 1;
+      ear = -1;
+      for (k = 0; k < idx.length; k++) {
+        ia = idx[(k - 1 + idx.length) % idx.length];
+        ib = idx[k];
+        ic = idx[(k + 1) % idx.length];
+        cross = (pts[ib][0] - pts[ia][0]) * (pts[ic][1] - pts[ia][1]) -
+          (pts[ic][0] - pts[ia][0]) * (pts[ib][1] - pts[ia][1]);
+        if (cross <= 0) continue;
+        ok = true;
+        for (t = 0; t < idx.length; t++) {
+          if (idx[t] === ia || idx[t] === ib || idx[t] === ic) continue;
+          if (pointInTri(pts[idx[t]], pts[ia], pts[ib], pts[ic])) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) {
+          ear = k;
+          break;
+        }
+      }
+      if (ear < 0) break;
+      ia = idx[(ear - 1 + idx.length) % idx.length];
+      ib = idx[ear];
+      ic = idx[(ear + 1) % idx.length];
+      faces.push([pts[ia], pts[ib], pts[ic]]);
+      idx.splice(ear, 1);
+    }
+    if (idx.length === 3) faces.push([pts[idx[0]], pts[idx[1]], pts[idx[2]]]);
+    return faces;
+  }
+
+  function pushExtrudedSolid(pos, col, rgb, ring, zTop, zBot) {
+    var pts = ring.slice();
+    if (ringArea(pts) < 0) pts.reverse();
+    var faces = triangulateRing(pts);
+    var f;
+    var a;
+    var b;
+    var c;
+    var i;
+    var j;
+    for (f = 0; f < faces.length; f++) {
+      a = faces[f][0];
+      b = faces[f][1];
+      c = faces[f][2];
+      pushTri(pos, col,
+        mercatorVtx(a[0], a[1], zTop),
+        mercatorVtx(b[0], b[1], zTop),
+        mercatorVtx(c[0], c[1], zTop),
+        rgb);
+      pushTri(pos, col,
+        mercatorVtx(a[0], a[1], zBot),
+        mercatorVtx(c[0], c[1], zBot),
+        mercatorVtx(b[0], b[1], zBot),
+        rgb);
+    }
+    for (i = 0; i < pts.length; i++) {
+      j = (i + 1) % pts.length;
+      pushQuad(pos, col,
+        mercatorVtx(pts[i][0], pts[i][1], zTop),
+        mercatorVtx(pts[j][0], pts[j][1], zTop),
+        mercatorVtx(pts[j][0], pts[j][1], zBot),
+        mercatorVtx(pts[i][0], pts[i][1], zBot),
+        rgb);
+    }
+  }
+
+  function addBeachSolids(group, spec, colors) {
+    var zTop = altZ(3.3);
+    var zBot = altZ(0.8);
+    BEACH_SITES.forEach(function (site) {
+      var span = siteBeachSpan(spec, site);
+      if (!span) return;
+      var pos = [];
+      var col = [];
+      pushExtrudedSolid(pos, col, colors.sand, beachRing(spec, span.lo, span.hi), zTop, zBot);
+      var mesh = makeColorMesh(pos, col, 1);
+      if (mesh) {
+        mesh.userData.beachSolid = site.id;
+        group.add(mesh);
       }
     });
-    map.addLayer({
-      id: "hwl-line",
-      type: "line",
-      source: "hwl-line",
-      layout: { "line-join": "round", "line-cap": "round" },
-      paint: {
-        "line-color": "#f6efe2",
-        "line-width": 2.4,
-        "line-opacity": 0.96
-      }
-    });
-    map.addLayer({
-      id: "hwl-north",
-      type: "line",
-      source: "hwl-north",
-      layout: { "line-join": "round", "line-cap": "round" },
-      paint: {
-        "line-color": "#7ec8ff",
-        "line-width": 2.2,
-        "line-dasharray": [1.2, 1.4],
-        "line-opacity": 0.95
-      }
-    });
   }
 
-  function applyHwlLayers() {
-    if (!map || !ready || !map.getSource("hwl-water")) return;
-    var hwl = hwlStatus(year);
-    var show = !!hwl;
-    var north = show && HWL_NORTH_YEARS[year] ? hwlDoc && hwlDoc.features.filter(function (f) {
-      var p = f.properties || {};
-      return p.year === year && p.kind === "hwl" && p.reach === "north";
-    }) : [];
-    map.getSource("hwl-water").setData({ type: "FeatureCollection", features: show ? hwlFeatures("water") : [] });
-    map.getSource("hwl-lost").setData({ type: "FeatureCollection", features: show ? hwlFeatures("lost") : [] });
-    map.getSource("hwl-gained").setData({ type: "FeatureCollection", features: show ? hwlFeatures("gained") : [] });
-    map.getSource("hwl-line").setData({ type: "FeatureCollection", features: show ? hwlFeatures("hwl") : [] });
-    map.getSource("hwl-north").setData({ type: "FeatureCollection", features: north || [] });
+  function hwlLatNear(spec, lng, windowDeg) {
+    if (!spec || !spec.hwl) return null;
+    var n = spec.hwl.length / 2;
+    var best = null;
+    var bestD = 1e9;
+    var i;
+    var d;
+    for (i = 0; i < n; i++) {
+      d = Math.abs(spec.hwl[i * 2] - lng);
+      if (d < bestD && d <= windowDeg) {
+        bestD = d;
+        best = spec.hwl[i * 2 + 1];
+      }
+    }
+    return best;
+  }
+
+  function zCutNear(spec, lng, windowDeg) {
+    if (!spec || !spec.zCut || !spec.hwl) return 0.6;
+    var n = spec.w ? spec.w.length : spec.zCut.length;
+    var mx = 0.6;
+    var i;
+    for (i = 0; i < n; i++) {
+      if (Math.abs(spec.hwl[i * 2] - lng) <= windowDeg) {
+        if (spec.zCut[i] > mx) mx = spec.zCut[i];
+      }
+    }
+    return mx;
+  }
+
+  function coverZMeters(spec) {
+    var mx = zCutNear(spec, -71.917, 0.04);
+    var i;
+    if (spec && spec.zCut) {
+      for (i = 0; i < spec.zCut.length; i++) {
+        if (spec.zCut[i] > mx) mx = spec.zCut[i];
+      }
+    }
+    /* Constant lid above 2014 DEM seaward of the HWL. Stops at the HWL so it
+       does not flood the sand deck. Not a transect strip. */
+    return Math.max(8.5, mx + 4);
+  }
+
+  function pushBboxQuad(pos, col, west, south, east, north, z, rgb) {
+    var cols = 8;
+    var rows = 6;
+    var c;
+    var r;
+    var x0;
+    var x1;
+    var y0;
+    var y1;
+    for (r = 0; r < rows; r++) {
+      y0 = south + (north - south) * (r / rows);
+      y1 = south + (north - south) * ((r + 1) / rows);
+      for (c = 0; c < cols; c++) {
+        x0 = west + (east - west) * (c / cols);
+        x1 = west + (east - west) * ((c + 1) / cols);
+        pushQuadFlat(pos, col,
+          mercatorVtx(x0, y0, z),
+          mercatorVtx(x1, y0, z),
+          mercatorVtx(x1, y1, z),
+          mercatorVtx(x0, y1, z),
+          rgb);
+      }
+    }
+  }
+
+  /* Hide 2014 land/hillshade seaward of this year's HWL. Not a historic DEM.
+     SOLID bbox planes — never a transect triangle strip (those fan into shards). */
+  function addSolidWaterPlanes(group, spec, colors) {
+    var zM = coverZMeters(spec);
+    var z = altZ(zM);
+    var ditchLat = hwlLatNear(spec, -71.917, 0.02) || 41.03897;
+    var pointLat = hwlLatNear(spec, -71.857, 0.025) || 41.069;
+    var southNorth = ditchLat - 0.00002;
+    var pointNorth = pointLat - 0.00002;
+    var pos = [];
+    var col = [];
+    var waterRgb = [
+      colors.water[0] * 0.62 + 0.10,
+      colors.water[1] * 0.62 + 0.18,
+      colors.water[2] * 0.62 + 0.24
+    ];
+    /* South ocean — full west–east bbox, north edge just seaward of the Ditch HWL. */
+    pushBboxQuad(pos, col, -72.02, 40.978, -71.818, southNorth, z, waterRgb);
+    /* Point south/east ocean — second solid quad, not a harbor / Soundview loop. */
+    pushBboxQuad(pos, col, -71.878, 40.978, -71.818, pointNorth, z, waterRgb);
+    /* North sound — north of the 2014 north shore. Jetties stay 2014 DEM. */
+    pushBboxQuad(pos, col, -72.00, 41.080, -71.845, 41.118, z, waterRgb);
+    var mesh = makeColorMesh(pos, col, 1);
+    if (mesh) {
+      mesh.userData.waterPlane = true;
+      mesh.userData.baseOp = 1;
+      group.add(mesh);
+    }
+    return zM;
+  }
+
+  function buildCoastGroup(spec) {
+    var group = new THREE.Group();
+    group.userData.coast = true;
+    group.userData.fade = 0;
+    if (!spec || !map) return group;
+    var colors = eraCoastColors();
+    addSolidWaterPlanes(group, spec, colors);
+    if (skipSandMesh()) return group;
+    addBeachSolids(group, spec, colors);
+    return group;
+  }
+
+  function hideCoastMeshes() {
+    clearCoastMeshes();
+    if (waterGroup) {
+      if (planeLayer && planeLayer.scene) planeLayer.scene.remove(waterGroup);
+      disposeGroup(waterGroup);
+      waterGroup = null;
+    }
+  }
+
+  function clearCoastMeshes() {
+    while (coastGroups.length) {
+      var g = coastGroups.pop();
+      if (planeLayer && planeLayer.scene) planeLayer.scene.remove(g);
+      disposeGroup(g);
+    }
+    lastCoastTick = 0;
+  }
+
+  function applyCoastMeshes() {
+    if (!planeLayer || !planeLayer.scene || !coastMeshes) return;
+    /* Mode D deed: year === 1996. Unconditional — hide/clear every coast mesh. */
+    if (year === 1996) {
+      if (lastCoastYear === year && !coastGroups.length) return;
+      hideCoastMeshes();
+      lastCoastYear = year;
+      if (map) map.triggerRepaint();
+      return;
+    }
+    if (lastCoastYear === year && coastGroups.length) return;
+    lastCoastYear = year;
+    /* 2000 / held: drop any previous tan immediately. Do not fade it out. */
+    if (skipSandMesh()) {
+      while (coastGroups.length) {
+        var prev = coastGroups.pop();
+        if (planeLayer.scene) planeLayer.scene.remove(prev);
+        disposeGroup(prev);
+      }
+    }
+    if (waterGroup) {
+      if (planeLayer.scene) planeLayer.scene.remove(waterGroup);
+      disposeGroup(waterGroup);
+      waterGroup = null;
+    }
+    var spec = coastSpecForYear(year);
+    var built = buildCoastGroup(spec);
+    built.userData.fade = 0;
+    planeLayer.scene.add(built);
+    coastGroups.push(built);
+    while (coastGroups.length > 2) {
+      var old = coastGroups.shift();
+      planeLayer.scene.remove(old);
+      disposeGroup(old);
+    }
     if (map) map.triggerRepaint();
+  }
+
+  function tickCoastFade() {
+    if (!coastGroups.length) return;
+    var now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    var dt = lastCoastTick ? Math.min(50, now - lastCoastTick) : 16;
+    lastCoastTick = now;
+    var i;
+    for (i = 0; i < coastGroups.length; i++) {
+      var g = coastGroups[i];
+      var last = i === coastGroups.length - 1;
+      g.userData.fade = Math.min(1, (g.userData.fade || 0) + dt / 380);
+      var op = last ? g.userData.fade : 1 - g.userData.fade;
+      g.traverse(function (obj) {
+        if (!obj.material) return;
+        if (obj.userData && obj.userData.waterPlane) {
+          obj.material.transparent = false;
+          obj.material.opacity = 1;
+          return;
+        }
+        obj.material.transparent = true;
+        obj.material.opacity = (obj.userData.baseOp == null ? 1 : obj.userData.baseOp) * Math.max(0, op);
+      });
+    }
+    if (coastGroups.length > 1 && coastGroups[coastGroups.length - 1].userData.fade >= 1) {
+      var dead = coastGroups.shift();
+      if (planeLayer && planeLayer.scene) planeLayer.scene.remove(dead);
+      disposeGroup(dead);
+    }
   }
 
   function makePinEl(site, i) {
@@ -828,6 +1369,7 @@
         });
         this.renderer.autoClear = false;
         cards.forEach(function (rec) { addPlaneMesh(this.scene, rec); }, this);
+        applyCoastMeshes();
         updateCardStates();
       },
       render: function (gl, args) {
@@ -839,6 +1381,7 @@
         this.camera.matrixWorld.identity();
         this.camera.matrixWorldInverse.identity();
         this.renderer.resetState();
+        tickCoastFade();
         this.renderer.render(this.scene, this.camera);
         this.map.triggerRepaint();
       }
@@ -869,6 +1412,7 @@
       var i, rec;
       for (i = 0; i < hits.length; i++) {
         rec = hits[i].object && hits[i].object.userData && hits[i].object.userData.rec;
+        if (hits[i].object && hits[i].object.userData && hits[i].object.userData.coast) continue;
         if (rec && cardVisible(rec)) return rec;
       }
     }
@@ -972,9 +1516,7 @@
         }
       });
       map.setTerrain({ source: "terrain", exaggeration: 2.6 });
-      ["hwl-water", "hwl-lost", "hwl-gained", "hwl-beach", "hwl-line", "hwl-north"].forEach(function (id) {
-        if (map.getLayer(id)) map.moveLayer(id);
-      });
+      applyYearImagery();
     } catch (e) {
       try { map.setTerrain(null); } catch (err) { /* ignore */ }
     }
@@ -988,14 +1530,14 @@
       encoding: "terrarium",
       tileSize: 512
     };
-    var ov = cfg.overview || {};
+    var ditchCam = cameraForSite(ditchSite());
     map = new maplibregl.Map({
       container: el,
       style: styleSpec(terrain),
-      center: overviewCenter(),
-      zoom: ov.zoom || 12.35,
-      pitch: ov.pitch || 52,
-      bearing: ov.bearing || 72,
+      center: ditchCam.center,
+      zoom: ditchCam.zoom,
+      pitch: ditchCam.pitch,
+      bearing: ditchCam.bearing,
       maxPitch: 80,
       minZoom: 11,
       maxZoom: 17.5,
@@ -1019,7 +1561,6 @@
     });
     map.on("load", function () {
       ready = true;
-      addHwlLayers();
       applyYearImagery();
       addSitePins();
       addPlaneLayer();
@@ -1029,8 +1570,14 @@
         var site = pendingFly;
         pendingFly = null;
         flyToSite(site);
+      } else if (!selectedId) {
+        flyToSite(ditchSite());
       }
       if (opts.onReady) opts.onReady();
+      map.once("idle", function () {
+        if (!visible || pathPlaying) return;
+        if (!selectedId || selectedId === "ditch_plains") flyToSite(ditchSite());
+      });
     });
     map.on("click", function (e) {
       var hit = hitPlanes(e.point);
@@ -1048,8 +1595,18 @@
     });
   }
 
+  function ditchSite() {
+    var pin = (cfg && cfg.pins && cfg.pins.ditch_plains) || {};
+    return sites.find(function (s) { return s.id === "ditch_plains"; }) || {
+      id: "ditch_plains",
+      lat: pin.lat != null ? pin.lat : 41.03948,
+      lng: pin.lng != null ? pin.lng : -71.91701
+    };
+  }
+
   function maybeFlyWalkIn() {
     if (!visible || pathPlaying) return;
+    if (hwlStatus(year)) return;
     if (modeForYear(year) !== "C") return;
     var rec = cards.filter(function (c) { return c.year === year && c.mode === "C" && PIN_SITES.indexOf(c.siteId) >= 0; })[0];
     if (!rec) return;
@@ -1069,6 +1626,7 @@
     }
     cards = collectCards(sites);
     hwlDoc = await tryFetch("data/usgs_hwl_worlds.geojson");
+    coastMeshes = await tryFetch("data/coast_meshes.json");
     bindChrome();
     var fail = $("#coast3d");
     if (typeof maplibregl === "undefined" && fail) {
@@ -1086,6 +1644,7 @@
         try { map.resize(); } catch (e) { /* ignore */ }
       });
     }
+    if (!selectedId && !pendingFly && ready) flyToSite(ditchSite());
     applyYearImagery();
     updateCardStates();
   }
@@ -1216,8 +1775,37 @@
     hwlStatus: hwlStatus,
     hwlAnchors: HWL_ANCHORS,
     hwlDecades: HWL_DECADES,
+    coastSpecForYear: coastSpecForYear,
+    ditchTerraceM: ditchTerraceM,
     nysYears: NYS_YEARS,
-    noModeA: NO_MODE_A
+    noModeA: NO_MODE_A,
+    skipSandMesh: skipSandMesh,
+    lookAtDitchEast: function () {
+      if (!map) return;
+      var east = destPoint(41.03948, -71.91701, 78, 150);
+      map.jumpTo({
+        center: [east.lng, east.lat],
+        zoom: 17.3,
+        pitch: 68,
+        bearing: 258,
+        duration: 0
+      });
+    },
+    siteBeachSpan: siteBeachSpan,
+    debugCoast: function () {
+      var meshes = [];
+      coastGroups.forEach(function (g) {
+        g.traverse(function (obj) {
+          if (!obj.geometry || !obj.geometry.attributes || !obj.geometry.attributes.position) return;
+          meshes.push({
+            water: !!obj.userData.waterPlane,
+            beach: obj.userData.beachSolid || null,
+            verts: obj.geometry.attributes.position.count
+          });
+        });
+      });
+      return { year: year, skipSand: skipSandMesh(), groups: coastGroups.length, meshes: meshes };
+    }
   };
 
   global.MontaukCoast3D = api;
