@@ -318,6 +318,21 @@ def main() -> int:
         errors.append("painted HWL fill/line layers must not be the 3D coast — use carved meshes")
     if "function applyCoastMeshes" not in js or "function buildCoastGroup" not in js:
         errors.append("3D must build a carved coast mesh (water / terrace / till)")
+    apply_m = re.search(r"function applyCoastMeshes\(\) \{([\s\S]*?)\n  function ", js)
+    apply_body = apply_m.group(1) if apply_m else ""
+    if 'modeForYear(year) === "D"' not in apply_body:
+        errors.append("applyCoastMeshes must no-op when modeForYear(year) === D")
+    if "year === 1996" not in apply_body:
+        errors.append("applyCoastMeshes must no-op on 1996 (lighthouse deed)")
+    if "clearCoastMeshes" not in apply_body and "hide" not in apply_body.lower():
+        errors.append("1996 Mode D must hide/clear the coast mesh, not lerp a waterline")
+    spec_m = re.search(r"function coastSpecForYear\(y\) \{([\s\S]*?)\n  function ", js)
+    spec_body = spec_m.group(1) if spec_m else ""
+    if not re.search(r"y === 1996", spec_body) or not re.search(r"return null", spec_body[:280]):
+        errors.append("coastSpecForYear(1996) must return null, not a 1991–2000 lerp")
+    for skip_y in (1883, 1955, 1968):
+        if re.search(rf"\b{skip_y}\b", apply_body) or re.search(rf"\b{skip_y}\b", spec_body[:280]):
+            errors.append(f"do not special-case {skip_y} — silent lerp is watch, not this fix")
     if "tillHeight" not in js:
         errors.append("carved coast must include a till face")
     if "zCut" not in js or "Hide 2014 land" not in js:

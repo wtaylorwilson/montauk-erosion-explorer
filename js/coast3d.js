@@ -723,6 +723,8 @@
 
   function coastSpecForYear(y) {
     y = Number(y);
+    /* 1996 is Mode D (lighthouse deed). Do not lerp 1991→2000. */
+    if (y === 1996) return null;
     if (!coastMeshes || !coastMeshes.years) return null;
     if (y > 2000 && coastMeshes.years["2000"]) {
       var held = coastMeshes.years["2000"];
@@ -1029,9 +1031,30 @@
     planeLayer.scene.add(waterGroup);
   }
 
+  function clearCoastMeshes() {
+    while (coastGroups.length) {
+      var g = coastGroups.pop();
+      if (planeLayer && planeLayer.scene) planeLayer.scene.remove(g);
+      disposeGroup(g);
+    }
+    lastCoastTick = 0;
+  }
+
   function applyCoastMeshes() {
     if (!planeLayer || !planeLayer.scene || !coastMeshes) return;
+    /* Mode D / 1996 deed: no-op — hide/clear the coast mesh. Do not grow a waterline. */
+    if (modeForYear(year) === "D" || year === 1996) {
+      if (year === 1996 || !hwlStatus(year)) {
+        if (lastCoastYear === year && !coastGroups.length) return;
+        clearCoastMeshes();
+        lastCoastYear = year;
+        if (waterGroup) waterGroup.visible = false;
+        if (map) map.triggerRepaint();
+        return;
+      }
+    }
     ensureWaterPlane();
+    if (waterGroup) waterGroup.visible = true;
     if (lastCoastYear === year && coastGroups.length) return;
     lastCoastYear = year;
     var spec = coastSpecForYear(year);
