@@ -12,6 +12,12 @@
   var NO_MODE_A = { 1938: 1, 1976: 1, 1984: 1, 1996: 1, 2012: 1, 2018: 1 };
   var PIN_SITES = ["ditch_plains", "soundview", "harbor_jetties", "ocean_beaches", "lighthouse"];
   var RELIEF_NOTE = "Relief 2014 NGS / Mapterhorn (visual only — not a change surface)";
+  var HWL_ANCHORS = [1830, 1870, 1892, 1933, 1938, 1962, 1979, 1983, 1988, 2000];
+  var HWL_DECADES = [1871, 1881, 1891, 1901, 1911, 1921, 1931, 1941, 1951, 1961, 1971, 1981, 1991, 2001, 2011, 2021];
+  var HWL_NORTH_YEARS = { 1933: 1, 2000: 1 };
+  var HWL_HINT_SURVEY = "Custom coast from USGS high-water line + 2014 elevation. Not a 10-year surveyed model.";
+  var HWL_HINT_MODEL = "Modeled from USGS high-water-line trend. Not a surveyed shoreline.";
+  var HWL_HINT_HELD = "Held at the 2000 USGS high-water line — no later Montauk HWL in OFR 2010-1119. Not a surveyed shoreline.";
 
   var WATER_LOOK = {
     soundview: 0,
@@ -116,7 +122,8 @@
     photoCount: function () { return cards.length; },
     sliderYears: sliderYears,
     yearLabel: yearLabel,
-    modeForYear: modeForYear
+    modeForYear: modeForYear,
+    hwlStatus: hwlStatus
   };
 
   var opts = {};
@@ -136,6 +143,7 @@
   var pendingFly = null;
   var terrainErrors = 0;
   var planeLayer = null;
+  var hwlDoc = null;
 
   function $(sel, root) { return (root || document).querySelector(sel); }
 
@@ -329,6 +337,13 @@
     return "D";
   }
 
+  function hwlStatus(y) {
+    y = Number(y);
+    if (HWL_ANCHORS.indexOf(y) >= 0) return "surveyed";
+    if (HWL_DECADES.indexOf(y) >= 0) return y > 2000 ? "held" : "modeled";
+    return null;
+  }
+
   function sliderYears() {
     var set = {};
     NYS_YEARS.forEach(function (y) { set[y] = 1; });
@@ -337,14 +352,23 @@
       if (y >= 2014 && y <= 2025 && y !== 2018 && !NO_MODE_A[y]) set[y] = 1;
     });
     cards.forEach(function (rec) { if (rec.year != null) set[rec.year] = 1; });
+    HWL_ANCHORS.forEach(function (y) { set[y] = 1; });
+    HWL_DECADES.forEach(function (y) { set[y] = 1; });
     set[1996] = 1;
+    set[2014] = 1;
+    set[2026] = 1;
     return Object.keys(set).map(Number).sort(function (a, b) { return a - b; });
   }
 
   function yearLabel() {
     var spec = imagerySpecForYear(year);
     var mode = modeForYear(year);
+    var hwl = hwlStatus(year);
     if (year === 1996) return "Deed only · relief 2014";
+    if (year === 2014) return "2014 NOAA NGS DEM · not a HWL · " + (spec ? spec.name : "relief 2014");
+    if (hwl === "surveyed") return "USGS surveyed high-water line · relief 2014";
+    if (hwl === "modeled") return "Modeled from USGS HWL trend · not a survey";
+    if (hwl === "held") return "Held at 2000 USGS HWL · not a survey";
     if (spec) return spec.name + " · relief 2014";
     if (mode === "B") return "Local frames only · relief 2014";
     if (mode === "C") return "Walk-into still · relief 2014";
@@ -356,15 +380,35 @@
     return rec.year === year;
   }
 
+  function yearCaption() {
+    if (year >= 1960 && year <= 1979) {
+      return "Soundview: Van Scoyoc recalled 100–200 ft of beach in the 1960s–70s; that sand is gone. Caption only — not a modeled width. No Soundview HWL this year.";
+    }
+    if (year === 2025 || year === 2026) {
+      return "Ditch: 20,000 cy / +16 ft NAVD (Town 2025–26). Caption only — not a modeled volume.";
+    }
+    return "";
+  }
+
   function updateChrome() {
     var shown = cards.filter(cardVisible);
     var mode = modeForYear(year);
     var hint = $("#coast3d-hint");
     var count = $("#coast3d-count");
+    var cap = $("#coast3d-caption");
     var spec = imagerySpecForYear(year);
+    var hwl = hwlStatus(year);
     if (hint) {
       if (year === 1996) {
         hint.textContent = "1996 is the lighthouse deed — tower unmoved. No 1996 ortho. " + RELIEF_NOTE + ".";
+      } else if (hwl === "surveyed") {
+        hint.textContent = HWL_HINT_SURVEY + " " + RELIEF_NOTE + ".";
+      } else if (hwl === "held") {
+        hint.textContent = HWL_HINT_HELD;
+      } else if (hwl === "modeled") {
+        hint.textContent = HWL_HINT_MODEL;
+      } else if (year === 2014) {
+        hint.textContent = "2014 is the measured NOAA NGS DEM year — not a high-water line. " + RELIEF_NOTE + ".";
       } else if (mode === "A") {
         hint.textContent = (spec ? spec.name : year) + " peninsula. " + RELIEF_NOTE + ". Tap a still for credit.";
       } else if (mode === "B") {
@@ -376,21 +420,33 @@
       }
     }
     if (count) {
+      var coastBits = [];
+      if (hwl === "surveyed") coastBits.push("USGS surveyed HWL · south/Point");
+      if (hwl === "modeled") coastBits.push("Modeled south/Point waterline");
+      if (hwl === "held") coastBits.push("Held 2000 HWL · south/Point");
+      if (HWL_NORTH_YEARS[year]) coastBits.push("north HWL only this year");
+      if (year === 1871) coastBits.push("1871 walk-into still");
       if (!shown.length) {
-        count.textContent = mode === "A"
-          ? "Dated ortho only · no still this year"
-          : "No still this year · " + RELIEF_NOTE;
+        coastBits.push(mode === "A" ? "dated ortho" : "no still");
+        count.textContent = coastBits.join(" · ");
       } else if (year === 1962) {
         count.textContent = "1962 patchwork · " + shown.length + " frames at the five sites · not a seamless 1962 peninsula";
       } else {
-        count.textContent = shown.length + " still" + (shown.length === 1 ? "" : "s") + " from " + year + " only";
+        count.textContent = (coastBits.length ? coastBits.join(" · ") + " · " : "") +
+          shown.length + " still" + (shown.length === 1 ? "" : "s") + " from " + year + " only";
       }
+    }
+    if (cap) {
+      var text = yearCaption();
+      cap.hidden = !text;
+      cap.textContent = text;
     }
     var view = $("#coast3d-view");
     if (view) {
       view.classList.toggle("is-walkin", mode === "C");
       view.classList.toggle("is-drape-only", mode === "B" && !spec);
       view.classList.toggle("is-mode-a", !!spec);
+      view.classList.toggle("is-hwl", !!hwl);
     }
   }
 
@@ -548,9 +604,112 @@
       }, map.getLayer("hills") ? "hills" : undefined);
     }
     if (map.getLayer("hills")) {
-      map.setPaintProperty("hills", "hillshade-exaggeration", spec ? 0.3 : 0.58);
-      map.setPaintProperty("hills", "hillshade-highlight-color", spec ? "#f3ead6" : "#7d8d96");
+      var tint = eraTint(spec);
+      map.setPaintProperty("hills", "hillshade-exaggeration", tint.exag);
+      map.setPaintProperty("hills", "hillshade-highlight-color", tint.highlight);
+      map.setPaintProperty("hills", "hillshade-shadow-color", tint.shadow);
     }
+    applyHwlLayers();
+  }
+
+  function eraTint(spec) {
+    if (spec) return { exag: 0.3, highlight: "#f3ead6", shadow: "#101820" };
+    if (year <= 1900) return { exag: 0.62, highlight: "#d4b896", shadow: "#2a1e14" };
+    if (year <= 1945) return { exag: 0.58, highlight: "#b7c2c8", shadow: "#182028" };
+    if (year <= 1975) return { exag: 0.56, highlight: "#c8c4a4", shadow: "#1c2418" };
+    if (year <= 2000) return { exag: 0.54, highlight: "#c0c8b8", shadow: "#182018" };
+    return { exag: 0.58, highlight: "#7d8d96", shadow: "#101820" };
+  }
+
+  function emptyFC() {
+    return { type: "FeatureCollection", features: [] };
+  }
+
+  function hwlFeatures(kind, reach) {
+    if (!hwlDoc || !hwlDoc.features) return [];
+    return hwlDoc.features.filter(function (f) {
+      var p = f.properties || {};
+      if (p.year !== year || p.kind !== kind) return false;
+      if (reach && p.reach !== reach) return false;
+      if (kind === "hwl" && p.reach === "north") return false;
+      return true;
+    });
+  }
+
+  function addHwlLayers() {
+    if (!map || map.getSource("hwl-water")) return;
+    ["hwl-water", "hwl-lost", "hwl-gained", "hwl-line", "hwl-north"].forEach(function (id) {
+      map.addSource(id, { type: "geojson", data: emptyFC() });
+    });
+    map.addLayer({
+      id: "hwl-water",
+      type: "fill",
+      source: "hwl-water",
+      paint: { "fill-color": "#0b3d55", "fill-opacity": 0.46 }
+    });
+    map.addLayer({
+      id: "hwl-lost",
+      type: "fill",
+      source: "hwl-lost",
+      paint: { "fill-color": "#c23b22", "fill-opacity": 0.34 }
+    });
+    map.addLayer({
+      id: "hwl-gained",
+      type: "fill",
+      source: "hwl-gained",
+      paint: { "fill-color": "#3d9a86", "fill-opacity": 0.3 }
+    });
+    map.addLayer({
+      id: "hwl-beach",
+      type: "line",
+      source: "hwl-line",
+      layout: { "line-join": "round", "line-cap": "round" },
+      paint: {
+        "line-color": "#e2c49a",
+        "line-width": 7.5,
+        "line-opacity": 0.55,
+        "line-blur": 0.6
+      }
+    });
+    map.addLayer({
+      id: "hwl-line",
+      type: "line",
+      source: "hwl-line",
+      layout: { "line-join": "round", "line-cap": "round" },
+      paint: {
+        "line-color": "#f6efe2",
+        "line-width": 2.4,
+        "line-opacity": 0.96
+      }
+    });
+    map.addLayer({
+      id: "hwl-north",
+      type: "line",
+      source: "hwl-north",
+      layout: { "line-join": "round", "line-cap": "round" },
+      paint: {
+        "line-color": "#7ec8ff",
+        "line-width": 2.2,
+        "line-dasharray": [1.2, 1.4],
+        "line-opacity": 0.95
+      }
+    });
+  }
+
+  function applyHwlLayers() {
+    if (!map || !ready || !map.getSource("hwl-water")) return;
+    var hwl = hwlStatus(year);
+    var show = !!hwl;
+    var north = show && HWL_NORTH_YEARS[year] ? hwlDoc && hwlDoc.features.filter(function (f) {
+      var p = f.properties || {};
+      return p.year === year && p.kind === "hwl" && p.reach === "north";
+    }) : [];
+    map.getSource("hwl-water").setData({ type: "FeatureCollection", features: show ? hwlFeatures("water") : [] });
+    map.getSource("hwl-lost").setData({ type: "FeatureCollection", features: show ? hwlFeatures("lost") : [] });
+    map.getSource("hwl-gained").setData({ type: "FeatureCollection", features: show ? hwlFeatures("gained") : [] });
+    map.getSource("hwl-line").setData({ type: "FeatureCollection", features: show ? hwlFeatures("hwl") : [] });
+    map.getSource("hwl-north").setData({ type: "FeatureCollection", features: north || [] });
+    if (map) map.triggerRepaint();
   }
 
   function makePinEl(site, i) {
@@ -813,6 +972,9 @@
         }
       });
       map.setTerrain({ source: "terrain", exaggeration: 2.6 });
+      ["hwl-water", "hwl-lost", "hwl-gained", "hwl-beach", "hwl-line", "hwl-north"].forEach(function (id) {
+        if (map.getLayer(id)) map.moveLayer(id);
+      });
     } catch (e) {
       try { map.setTerrain(null); } catch (err) { /* ignore */ }
     }
@@ -857,6 +1019,7 @@
     });
     map.on("load", function () {
       ready = true;
+      addHwlLayers();
       applyYearImagery();
       addSitePins();
       addPlaneLayer();
@@ -905,6 +1068,7 @@
       if (wbDoc) imageryDoc.wayback = wbDoc.releases || wbDoc.wayback || [];
     }
     cards = collectCards(sites);
+    hwlDoc = await tryFetch("data/usgs_hwl_worlds.geojson");
     bindChrome();
     var fail = $("#coast3d");
     if (typeof maplibregl === "undefined" && fail) {
@@ -1049,6 +1213,9 @@
     cardVisible: cardVisible,
     imagerySpecForYear: imagerySpecForYear,
     modeForYear: modeForYear,
+    hwlStatus: hwlStatus,
+    hwlAnchors: HWL_ANCHORS,
+    hwlDecades: HWL_DECADES,
     nysYears: NYS_YEARS,
     noModeA: NO_MODE_A
   };

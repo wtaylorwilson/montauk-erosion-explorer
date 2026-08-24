@@ -272,6 +272,47 @@ def main() -> int:
     if "RELIEF_NOTE" not in js or "Relief 2014" not in js:
         errors.append("UI must say relief is 2014")
 
+    hwl_path = ROOT / "data" / "usgs_hwl_montauk.geojson"
+    worlds_path = ROOT / "data" / "usgs_hwl_worlds.geojson"
+    if not hwl_path.is_file():
+        errors.append("missing data/usgs_hwl_montauk.geojson")
+    if not worlds_path.is_file():
+        errors.append("missing data/usgs_hwl_worlds.geojson")
+    if hwl_path.is_file() and worlds_path.is_file():
+        hwl = json.loads(hwl_path.read_text())
+        worlds_gj = json.loads(worlds_path.read_text())
+        want = [1830, 1870, 1892, 1933, 1938, 1962, 1979, 1983, 1988, 2000]
+        got = sorted({f["properties"]["Year_"] for f in hwl["features"]})
+        if got != want:
+            errors.append(f"Montauk HWL years {got} != {want}")
+        if any(f["properties"]["Year_"] in (1891, 1991) for f in hwl["features"]):
+            errors.append("do not plant Long Island 1891/1991 as Montauk HWL surveys")
+        north_years = sorted({f["properties"]["Year_"] for f in hwl["features"] if f["properties"].get("reach") == "north"})
+        if north_years != [1933, 2000]:
+            errors.append(f"north HWL years {north_years} != [1933, 2000]")
+        modeled_north = [
+            f for f in worlds_gj["features"]
+            if f["properties"].get("reach") == "north" and f["properties"].get("status") != "surveyed"
+        ]
+        if modeled_north:
+            errors.append("do not interpolate a north-shore / Soundview / harbor waterline")
+        if "Himmelstoss" not in json.dumps(hwl.get("properties") or {}):
+            errors.append("usgs_hwl_montauk.geojson must credit Himmelstoss et al. 2010")
+        cfg_hwl = cfg.get("hwl") or {}
+        if cfg_hwl.get("anchors") != want:
+            errors.append("coast3d.json hwl.anchors must match the ten Montauk HWL years")
+        if 2014 in (cfg_hwl.get("anchors") or []):
+            errors.append("2014 is DEM, not a HWL anchor")
+
+    if "Modeled from USGS high-water-line trend" not in js:
+        errors.append("interpolated years must use the modeled-not-surveyed hint")
+    if "USGS surveyed high-water line" not in js:
+        errors.append("anchor years must be labeled as USGS surveyed HWL")
+    if "HWL_DECADES" not in js or "HWL_ANCHORS" not in js:
+        errors.append("3D slider must include sourced HWL anchors and decade worlds")
+    if re.search(r"surveyed shoreline of 1891|USGS shoreline 1891|T-sheet 1891", js):
+        errors.append("do not call 1891 a Montauk survey")
+
     print(f"pins 5 worlds {len(worlds)} locked12 {len(LOCKED12)}")
     if errors:
         print("FAIL")
