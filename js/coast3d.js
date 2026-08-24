@@ -18,9 +18,9 @@
     harbor_jetties: 8,
     ocean_beaches: 180,
     ditch_plains: 168,
-    lighthouse: 125,
-    hither_hills: 180
+    lighthouse: 125
   };
+  var CAPTION_GPS = "commons_ocean_beaches_2026_downtown-aerial.jpg";
 
   /* Original twelve — stills appear only in their own year. */
   var LOCKED_PLANES = [
@@ -46,26 +46,25 @@
     { file: "loc_1919_montauk_point_light.jpg", siteId: "lighthouse", kind: "ground", mode: "C", look: 125, altM: 8, tilt: 0 },
     { file: "nara_lighthouse_1928_18-AA-89-27.jpg", siteId: "lighthouse", kind: "aerial", mode: "C", look: 338, altM: 52, tilt: 42 },
     { file: "nara_lighthouse_1937_18-AA-89-24.jpg", siteId: "lighthouse", kind: "aerial", mode: "C", look: 125, altM: 48, tilt: 36 },
-    { file: "usace_1938_fort_pond.jpg", siteId: "harbor_jetties", kind: "drape", mode: "B", look: 180, altM: 16, tilt: 82, lat: 41.044, lng: -71.954 },
+    { file: "usace_1938_fort_pond.jpg", siteId: "harbor_jetties", kind: "drape", mode: "B", look: 180, altM: 16, tilt: 82 },
     { file: "usace_1938_lake_montauk.jpg", siteId: "harbor_jetties", kind: "drape", mode: "B", look: 8, altM: 16, tilt: 82 },
     { file: "usace_1938_montauk_beach.jpg", siteId: "ocean_beaches", kind: "drape", mode: "B", look: 180, altM: 16, tilt: 82 },
     { file: "usace_1938_montauk_point.jpg", siteId: "lighthouse", kind: "drape", mode: "B", look: 125, altM: 16, tilt: 82 },
     { file: "usace_1941_fort_pond_bay.jpg", siteId: "soundview", kind: "drape", mode: "B", look: 0, altM: 16, tilt: 82 },
     { file: "usace_1941_lake_montauk.jpg", siteId: "harbor_jetties", kind: "drape", mode: "B", look: 8, altM: 16, tilt: 82 },
-    { file: "usace_1941_montauk_park.jpg", siteId: "lighthouse", kind: "drape", mode: "B", look: 125, altM: 16, tilt: 82, lat: 41.0685, lng: -71.868 },
+    { file: "usace_1941_montauk_park.jpg", siteId: "lighthouse", kind: "drape", mode: "B", look: 125, altM: 16, tilt: 82 },
     { file: "usace_1941_montauk_pt.jpg", siteId: "lighthouse", kind: "drape", mode: "B", look: 125, altM: 16, tilt: 82 },
-    { file: "usace_1941_hither_hills_l20_5.jpg", siteId: "hither_hills", kind: "drape", mode: "B", look: 180, altM: 16, tilt: 82, lat: 41.021, lng: -71.992 },
     { file: "loc_ditch_plains_1955_beach-width-bluffs.jpg", siteId: "ditch_plains", kind: "ground", mode: "C", look: 112, altM: 8, tilt: 0 },
-    { file: "usace_1962_camp_hero.jpg", siteId: "lighthouse", kind: "drape", mode: "B", look: 125, altM: 16, tilt: 82, lat: 41.068, lng: -71.871 },
-    { file: "usace_1962_ditch_plains_055.jpg", siteId: "ditch_plains", kind: "drape", mode: "B", look: 168, altM: 16, tilt: 82, lat: 41.0392, lng: -71.9205 },
-    { file: "usace_1962_ditch_plains_057.jpg", siteId: "ditch_plains", kind: "drape", mode: "B", look: 168, altM: 16, tilt: 82, lat: 41.0396, lng: -71.9138 },
-    { file: "usace_1962_fort_pond.jpg", siteId: "harbor_jetties", kind: "drape", mode: "B", look: 180, altM: 16, tilt: 82, lat: 41.044, lng: -71.954 },
+    { file: "usace_1962_camp_hero.jpg", siteId: "lighthouse", kind: "drape", mode: "B", look: 125, altM: 16, tilt: 82 },
+    { file: "usace_1962_ditch_plains_055.jpg", siteId: "ditch_plains", kind: "drape", mode: "B", look: 168, altM: 16, tilt: 82 },
+    { file: "usace_1962_ditch_plains_057.jpg", siteId: "ditch_plains", kind: "drape", mode: "B", look: 168, altM: 16, tilt: 82 },
+    { file: "usace_1962_fort_pond.jpg", siteId: "harbor_jetties", kind: "drape", mode: "B", look: 180, altM: 16, tilt: 82 },
     { file: "usace_1962_lake_montauk.jpg", siteId: "harbor_jetties", kind: "drape", mode: "B", look: 8, altM: 16, tilt: 82 },
     { file: "usace_1962_montauk_beach_051.jpg", siteId: "ocean_beaches", kind: "drape", mode: "B", look: 180, altM: 16, tilt: 82 },
     { file: "usace_1962_montauk_point.jpg", siteId: "lighthouse", kind: "drape", mode: "B", look: 125, altM: 16, tilt: 82 },
     { file: "soundview_suffolk_1962_northshore.jpg", siteId: "soundview", kind: "drape", mode: "B", look: 0, altM: 16, tilt: 82 },
     { file: "dvids_1968_eroded_cliffs.jpg", siteId: "lighthouse", kind: "aerial", mode: "C", look: 125, altM: 56, tilt: 40 },
-    { file: "1976-harbor-wide.jpg", siteId: "soundview", kind: "aerial", mode: "B", look: 0, altM: 48, tilt: 52, lat: 41.0753, lng: -71.942 },
+    { file: "1976-harbor-wide.jpg", siteId: "soundview", kind: "aerial", mode: "B", look: 0, altM: 48, tilt: 52 },
     { file: "1976-harbor-jetties.jpg", siteId: "harbor_jetties", kind: "aerial", mode: "B", look: 8, altM: 48, tilt: 50 },
     { file: "soundview_suffolk_1978_northshore.jpg", siteId: "soundview", kind: "drape", mode: "B", look: 0, altM: 16, tilt: 82 },
     { file: "1984-harbor.jpg", siteId: "harbor_jetties", kind: "aerial", mode: "B", look: 8, altM: 48, tilt: 50 },
@@ -76,7 +75,7 @@
     { file: "usgs_2012_ditch.jpg", siteId: "ditch_plains", kind: "oblique", mode: "B", look: 180, altM: 58, tilt: 38 },
     { file: "usgs_ds858_2012_1105_134804d.jpg", siteId: "ocean_beaches", kind: "oblique", mode: "B", look: 180, altM: 58, tilt: 38 },
     { file: "usgs_2012_point.jpg", siteId: "lighthouse", kind: "oblique", mode: "B", look: 125, altM: 58, tilt: 38 },
-    { file: "usgs_2012_camp_hero.jpg", siteId: "lighthouse", kind: "oblique", mode: "B", look: 180, altM: 58, tilt: 38, lat: 41.0678, lng: -71.8705 },
+    { file: "usgs_2012_camp_hero.jpg", siteId: "lighthouse", kind: "oblique", mode: "B", look: 180, altM: 58, tilt: 38 },
     { file: "usgs_ds958_2014_ditch_plains.jpg", siteId: "ditch_plains", kind: "oblique", mode: "B", look: 180, altM: 56, tilt: 38 },
     { file: "usgs_ds958_2014_ocean_beaches.jpg", siteId: "ocean_beaches", kind: "oblique", mode: "B", look: 180, altM: 56, tilt: 38 },
     { file: "usgs_ds958_2014_lighthouse.jpg", siteId: "lighthouse", kind: "oblique", mode: "B", look: 125, altM: 56, tilt: 38 },
@@ -94,6 +93,7 @@
 
   var BLOCKED_FILES = {
     "usgs_2012_beach.jpg": 1,
+    "usace_1941_hither_hills_l20_5.jpg": 1,
     "loc_ocean_beaches_1919_hither_hills.jpg": 1,
     "dvids_lighthouse_1968_eroded_cliffs.jpg": 1,
     "library_1909_great_pond_moran.jpg": 1,
@@ -231,6 +231,7 @@
       var yearNum = Number(found.photo.year);
       if (!isFinite(yearNum)) return;
       if (spec.siteId && spec.siteId !== locked.siteId) return;
+      if (PIN_SITES.indexOf(locked.siteId) < 0) return;
       var pin = pins[locked.siteId] || {};
       var kind = locked.kind;
       var look = locked.look != null ? locked.look : (WATER_LOOK[locked.siteId] != null ? WATER_LOOK[locked.siteId] : 180);
@@ -250,11 +251,17 @@
       } else if (!(altM >= 40)) {
         altM = 52;
       }
-      var lat = locked.lat != null ? locked.lat : (pin.lat != null ? pin.lat : (found.site && found.site.lat));
-      var lng = locked.lng != null ? locked.lng : (pin.lng != null ? pin.lng : (found.site && found.site.lng));
-      if (spec.lat != null && spec.lng != null) {
-        lat = Number(spec.lat);
-        lng = Number(spec.lng);
+      var captionGps = locked.file === CAPTION_GPS;
+      var lat = pin.lat != null ? pin.lat : (found.site && found.site.lat);
+      var lng = pin.lng != null ? pin.lng : (found.site && found.site.lng);
+      if (captionGps) {
+        if (locked.lat != null && locked.lng != null) {
+          lat = locked.lat;
+          lng = locked.lng;
+        } else if (spec.lat != null && spec.lng != null) {
+          lat = Number(spec.lat);
+          lng = Number(spec.lng);
+        }
       }
       if (lat == null || lng == null || !isFinite(Number(lat)) || !isFinite(Number(lng))) return;
       var host = siteList.find(function (s) { return s.id === locked.siteId; }) || found.site;
@@ -271,7 +278,7 @@
         altM: altM,
         look: look,
         tilt: tilt,
-        gps: locked.lat != null && locked.lng != null
+        gps: captionGps
       });
     });
     return out;
