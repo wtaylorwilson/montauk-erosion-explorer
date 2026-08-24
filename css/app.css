@@ -668,6 +668,164 @@ body {
 .rate-chip:hover { border-color: var(--sand); }
 
 
+/* —— 3D coast (MapLibre, no API key) —— */
+.coast3d-view {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  background:
+    radial-gradient(900px 420px at 50% 0%, rgba(126, 208, 192, 0.08), transparent 55%),
+    #08141f;
+}
+#coast3d { height: 100%; width: 100%; }
+#coast3d .maplibregl-canvas { outline: none; }
+#coast3d .maplibregl-ctrl-attrib {
+  background: rgba(7, 19, 31, 0.8);
+  color: var(--muted);
+  font-size: 10px;
+}
+#coast3d .maplibregl-ctrl-attrib a { color: var(--sand); }
+#coast3d .maplibregl-ctrl-group {
+  background: var(--glass);
+  border: 1px solid var(--line);
+}
+#coast3d .maplibregl-ctrl button { background-color: transparent; }
+
+.coast3d-chrome {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  pointer-events: none;
+}
+.coast3d-chrome > * { pointer-events: auto; }
+.coast3d-paths { display: flex; flex-wrap: wrap; gap: 6px; }
+.coast3d-hint, .coast3d-count {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--sand);
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 9px;
+}
+.coast3d-count { color: var(--seafoam); }
+
+.photo-plane {
+  appearance: none;
+  width: 92px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overflow: hidden;
+  background: rgba(8, 20, 32, 0.9);
+  color: inherit;
+  font-family: var(--sans);
+  text-align: left;
+  cursor: zoom-in;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.48);
+  transform-origin: bottom center;
+}
+.photo-plane img {
+  display: block;
+  width: 92px;
+  height: 64px;
+  object-fit: cover;
+}
+.photo-plane-year {
+  display: block;
+  padding: 3px 6px 0;
+  font-family: var(--display);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--sand);
+}
+.photo-plane-cap {
+  display: block;
+  padding: 1px 6px 5px;
+  font-size: 9px;
+  line-height: 1.25;
+  color: var(--muted);
+  max-height: 2.6em;
+  overflow: hidden;
+}
+.photo-plane.is-now {
+  border-color: var(--sand);
+  box-shadow: 0 0 0 2px rgba(226, 196, 154, 0.4), 0 10px 22px rgba(0, 0, 0, 0.48);
+}
+.photo-plane.is-site { border-color: var(--seafoam); }
+.photo-plane.is-dim { opacity: 0.42; }
+.coast3d-view.is-far .photo-plane {
+  width: auto;
+  min-width: 44px;
+}
+.coast3d-view.is-far .photo-plane img,
+.coast3d-view.is-far .photo-plane-cap { display: none; }
+.coast3d-view.is-far .photo-plane-year { padding: 4px 7px; }
+
+.coast3d-pin {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--sand);
+  font-family: var(--sans);
+}
+.coast3d-pin i {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(180deg, var(--sand), var(--sand-deep));
+  border: 2px solid #1a1208;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.coast3d-pin i span {
+  transform: rotate(45deg);
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a1208;
+  line-height: 1;
+}
+.coast3d-pin em {
+  font-style: normal;
+  margin-top: 4px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sand);
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+.coast3d-pin.north i {
+  background: linear-gradient(180deg, var(--seafoam), var(--seafoam-dim));
+}
+.coast3d-pin.east i {
+  background: linear-gradient(180deg, #f0d0b0, var(--sand-deep));
+}
+.coast3d-pin.is-on i { box-shadow: 0 0 0 4px rgba(226, 196, 154, 0.35); }
+
+#app.is-coast3d .gis-panel,
+#app.is-coast3d .compare-bar,
+#app.is-coast3d .year-banner { display: none !important; }
+#app.is-coast3d .dock-source { visibility: hidden; }
+
 .leaflet-popup-content { font-size: 12px; }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
   background: var(--navy-2);
@@ -863,6 +1021,28 @@ body {
   .studies-inner { padding: 18px 16px 80px; }
   .leaflet-control-attribution { max-width: 70vw; font-size: 9px; }
   .nums { grid-template-columns: 1fr; }
+
+  .tabs { max-width: 100%; }
+  .coast3d-chrome {
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    gap: 6px;
+  }
+  .coast3d-paths { width: 100%; }
+  .coast3d-paths .ghost {
+    padding: 7px 9px;
+    font-size: 10px;
+    min-height: 32px;
+  }
+  .coast3d-hint, .coast3d-count {
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+  .photo-plane { width: 76px; }
+  .photo-plane img { width: 76px; height: 54px; }
+  #coast3d .maplibregl-ctrl-bottom-right { bottom: 4px; }
+  #app.is-coast3d .dock-source { display: none; }
 }
 
 @media (max-width: 900px) and (orientation: landscape), (max-height: 520px) {

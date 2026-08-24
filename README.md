@@ -20,6 +20,19 @@ Deep links:
 - `http://127.0.0.1:8080/#site=lighthouse&year=1996`
 - `http://127.0.0.1:8080/#site=harbor_jetties&aerials=1`
 - `http://127.0.0.1:8080/#site=ditch_plains&year=2013`
+- `http://127.0.0.1:8080/#view=3d`
+- `http://127.0.0.1:8080/#view=3d&site=lighthouse&year=2016`
+
+## 3D coast
+
+The **3D** tab is an added view (the Leaflet 2D map stays). It uses [MapLibre GL JS](https://maplibre.org/) with public terrain and imagery — no Mapbox, Cesium ion, or paid key.
+
+- Terrain: [Mapterhorn](https://mapterhorn.com/) Terrarium tiles (fallback: AWS Terrain / Mapzen). Exaggeration is visual only.
+- Imagery / hillshade: Esri World Imagery and World Hillshade (same family as the 2D basemap).
+- Every gallery still in `data/sites.json` that has a `src` is placed at that site’s lat/lng. One downtown aerial caption includes GPS; that still uses the caption GPS. Other stills are fanned a few tens of meters around the sourced pin so they do not stack — those offsets are display only.
+- Year slider shows photographs dated that year or earlier. Tap a still for the existing lightbox / credit.
+- Camera paths: Atlantic / ESE (Ditch Plains → downtown Kirk Park → lighthouse) and Sound / North (Soundview → harbor jetties). Soundview and the harbor face Block Island Sound. Kirk Park is downtown, not Ditch.
+- Phone: one-finger orbit, pinch/scroll zoom, tap a still. Mobile header/drawers are unchanged.
 
 ## Tiles that work over Montauk
 
@@ -71,3 +84,5 @@ Toggleable on the map (south-shore USGS rates are **not** for Soundview / Block 
 
 - `/workspace/montauk-erosion-explorer/screenshots/overview.png`
 - `/workspace/montauk-erosion-explorer/screenshots/harbor-aerials.png`
+
+The 3D view is the `3D` tab on the live site (`#view=3d`).

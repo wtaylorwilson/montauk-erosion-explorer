@@ -426,9 +426,10 @@
     });
   }
 
-  function selectSite(id, fly) {
+  function selectSite(id, fly, extra) {
     const site = state.sites.find(function (s) { return s.id === id; });
     if (!site) return;
+    extra = extra || {};
     state.selectedId = id;
     state.storyOpen = false;
     $("#panel-list").hidden = true;
@@ -442,10 +443,14 @@
       if (pin) pin.classList.toggle("is-on", k === id);
     });
     if (fly) {
-      map.flyTo([site.lat, site.lng], site.zoom || 16, { duration: 1.05 });
-      if (markers[id]) markers[id].openPopup();
+      if (state.view === "coast3d" && window.MontaukCoast3D) {
+        window.MontaukCoast3D.flyToSite(site);
+      } else if (map) {
+        map.flyTo([site.lat, site.lng], site.zoom || 16, { duration: 1.05 });
+        if (markers[id]) markers[id].openPopup();
+      }
     }
-    if (isPhoneLayout()) openSitesSheet();
+    if (extra.sheet !== false && isPhoneLayout() && state.view !== "coast3d") openSitesSheet();
   }
 
   function showList() {
@@ -486,11 +491,19 @@
     }
   }
 
+  function coast3dYearLabel() {
+    const y = currentYear();
+    const n = window.MontaukCoast3D ? window.MontaukCoast3D.setYear(y) : 0;
+    return "Photographs dated " + y + " or earlier" + (n ? " · " + n + " stills" : "");
+  }
+
   function onYearChange() {
     const y = currentYear();
     $("#year-label").textContent = String(y);
     $("#year-slider").value = String(state.yearIndex);
-    if (state.compare) enableCompare();
+    if (state.view === "coast3d") {
+      $("#year-source").textContent = coast3dYearLabel();
+    } else if (state.compare) enableCompare();
     else setHistLayer();
     highlightEvents();
     if ((y === 1976 || y === 1984) && !state.compare) {
@@ -918,19 +931,49 @@
     });
     window.addEventListener("resize", function () {
       if (!isPhoneLayout()) closeSheets();
+      if (state.view === "coast3d" && window.MontaukCoast3D) window.MontaukCoast3D.resize();
     });
+  }
+
+  function setView(view) {
+    if (!view) return;
+    if (view === "3d") view = "coast3d";
+    state.view = view;
+    document.querySelectorAll(".tab").forEach(function (t) {
+      const on = t.dataset.view === view;
+      t.classList.toggle("is-active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    $("#app").classList.toggle("is-coast3d", view === "coast3d");
+    $("#studies-view").hidden = view !== "studies";
+    if ($("#coast3d-view")) $("#coast3d-view").hidden = view !== "coast3d";
+    if (view === "studies" || view === "coast3d") closeSheets();
+    if (view === "coast3d") {
+      hideAerialCompare();
+      $("#compare-bar").hidden = true;
+      $("#year-banner").hidden = true;
+      if (window.MontaukCoast3D) {
+        window.MontaukCoast3D.show();
+        $("#year-source").textContent = coast3dYearLabel();
+        if (state.selectedId) {
+          const site = state.sites.find(function (s) { return s.id === state.selectedId; });
+          if (site) window.MontaukCoast3D.flyToSite(site);
+        }
+      }
+    } else {
+      if (window.MontaukCoast3D) window.MontaukCoast3D.hide();
+      $("#compare-bar").hidden = !state.compare;
+      if (view === "map") {
+        refreshMapSize();
+        $("#year-source").textContent = sourceLabel(currentYear(), state.layerPref);
+      }
+    }
   }
 
   function initChrome() {
     document.querySelectorAll(".tab").forEach(function (tab) {
       tab.addEventListener("click", function () {
-        document.querySelectorAll(".tab").forEach(function (t) {
-          t.classList.toggle("is-active", t === tab);
-          t.setAttribute("aria-selected", t === tab ? "true" : "false");
-        });
-        state.view = tab.dataset.view;
-        $("#studies-view").hidden = state.view !== "studies";
-        if (state.view === "studies") closeSheets();
+        setView(tab.dataset.view);
       });
     });
     initDrawers();
@@ -958,6 +1001,8 @@
   function applyHash() {
     const hash = (location.hash || "").replace(/^#/, "");
     const params = new URLSearchParams(hash.includes("=") ? hash : "");
+    const viewFromHash = params.get("view");
+    if (viewFromHash === "3d" || viewFromHash === "coast3d") setView("coast3d");
     const siteFromHash = params.get("site") || (hash && FOCUS.indexOf(hash) >= 0 ? hash : "");
     if (siteFromHash) selectSite(siteFromHash, true);
     const y = Number(params.get("year"));
@@ -1018,6 +1063,18 @@
     renderList();
     renderStudies();
     initMap();
+    if (window.MontaukCoast3D) {
+      await window.MontaukCoast3D.init({
+        sites: state.sites,
+        getYear: currentYear,
+        onPhoto: function (photo) {
+          openLightbox(photo.src, (photo.caption || "") + (photo.credit ? " — " + photo.credit : ""));
+        },
+        onSite: function (id, extra) {
+          selectSite(id, extra && extra.fly === true, extra);
+        }
+      });
+    }
     await addGisOverlays();
     initRateStrip();
     initAerialCompare();

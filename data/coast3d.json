@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "note": "Camera paths reference site ids from data/sites.json. Look bearings follow sourced facing (north Sound / south-ESE Atlantic). Inland meters are framing only — not survey coordinates. Terrain is a public no-key tileset; NOAA 2014 Block_140 is not in this repo.",
+  "terrain": {
+    "primary": {
+      "id": "mapterhorn",
+      "tiles": ["https://tiles.mapterhorn.com/{z}/{x}/{y}.webp"],
+      "encoding": "terrarium",
+      "tileSize": 512,
+      "maxzoom": 15,
+      "attribution": "Mapterhorn"
+    },
+    "fallback": {
+      "id": "aws-terrarium",
+      "tiles": ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
+      "encoding": "terrarium",
+      "tileSize": 256,
+      "maxzoom": 15,
+      "attribution": "AWS Terrain Tiles / Mapzen"
+    },
+    "exaggeration": 2.4,
+    "exaggerationNote": "Visual only. Montauk bluffs are tens of meters; exaggeration makes them readable in the browser."
+  },
+  "imagery": {
+    "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+    "attribution": "Esri World Imagery",
+    "maxzoom": 19
+  },
+  "hillshade": {
+    "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"],
+    "attribution": "Esri World Hillshade",
+    "maxzoom": 16
+  },
+  "paths": [
+    {
+      "id": "atlantic",
+      "label": "Atlantic / ESE",
+      "note": "Ditch Plains → downtown Kirk Park → lighthouse. Ocean bluffs face south / ESE. Kirk Park is downtown, not Ditch.",
+      "stops": ["ditch_plains", "ocean_beaches", "lighthouse"]
+    },
+    {
+      "id": "sound",
+      "label": "Sound / North",
+      "note": "Soundview → harbor jetties. Both face Block Island Sound (north).",
+      "stops": ["soundview", "harbor_jetties"]
+    }
+  ],
+  "look": {
+    "ditch_plains": { "bearing": 168, "pitch": 62, "zoom": 15.45, "inlandM": 380 },
+    "ocean_beaches": { "bearing": 180, "pitch": 60, "zoom": 15.35, "inlandM": 400 },
+    "lighthouse": { "bearing": 125, "pitch": 64, "zoom": 15.55, "inlandM": 420 },
+    "soundview": { "bearing": 0, "pitch": 60, "zoom": 15.4, "inlandM": 360 },
+    "harbor_jetties": { "bearing": 8, "pitch": 58, "zoom": 15.5, "inlandM": 360 }
+  },
+  "overview": {
+    "pitch": 52,
+    "bearing": 72,
+    "zoom": 12.35
+  }
+}
