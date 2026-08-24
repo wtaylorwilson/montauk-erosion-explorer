@@ -822,6 +822,16 @@
     pushTri(pos, col, a, c, d, rgb);
   }
 
+  function pushTriFlat(pos, col, a, b, c, rgb) {
+    pos.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
+    col.push(rgb[0], rgb[1], rgb[2], rgb[0], rgb[1], rgb[2], rgb[0], rgb[1], rgb[2]);
+  }
+
+  function pushQuadFlat(pos, col, a, b, c, d, rgb) {
+    pushTriFlat(pos, col, a, b, c, rgb);
+    pushTriFlat(pos, col, a, c, d, rgb);
+  }
+
   function makeColorMesh(pos, col, opacity) {
     if (pos.length < 9) return null;
     var geom = new THREE.BufferGeometry();
@@ -924,18 +934,41 @@
   }
 
   function coverZMeters(spec) {
-    var ditchZ = zCutNear(spec, -71.917, 0.012);
-    /* High enough to cover 2014 DEM lumps seaward of the HWL, below the sand deck. */
-    return Math.max(1.25, Math.min(ditchZ + 0.9, 2.05));
+    var mx = zCutNear(spec, -71.917, 0.04);
+    var i;
+    if (spec && spec.zCut) {
+      for (i = 0; i < spec.zCut.length; i++) {
+        if (spec.zCut[i] > mx) mx = spec.zCut[i];
+      }
+    }
+    /* Constant lid above 2014 DEM seaward of the HWL. Stops at the HWL so it
+       does not flood the sand deck. Not a transect strip. */
+    return Math.max(8.5, mx + 4);
   }
 
   function pushBboxQuad(pos, col, west, south, east, north, z, rgb) {
-    pushQuad(pos, col,
-      mercatorVtx(west, south, z),
-      mercatorVtx(east, south, z),
-      mercatorVtx(east, north, z),
-      mercatorVtx(west, north, z),
-      rgb);
+    var cols = 8;
+    var rows = 6;
+    var c;
+    var r;
+    var x0;
+    var x1;
+    var y0;
+    var y1;
+    for (r = 0; r < rows; r++) {
+      y0 = south + (north - south) * (r / rows);
+      y1 = south + (north - south) * ((r + 1) / rows);
+      for (c = 0; c < cols; c++) {
+        x0 = west + (east - west) * (c / cols);
+        x1 = west + (east - west) * ((c + 1) / cols);
+        pushQuadFlat(pos, col,
+          mercatorVtx(x0, y0, z),
+          mercatorVtx(x1, y0, z),
+          mercatorVtx(x1, y1, z),
+          mercatorVtx(x0, y1, z),
+          rgb);
+      }
+    }
   }
 
   /* Hide 2014 land/hillshade seaward of this year's HWL. Not a historic DEM.
@@ -949,12 +982,17 @@
     var pointNorth = pointLat - 0.00002;
     var pos = [];
     var col = [];
+    var waterRgb = [
+      colors.water[0] * 0.62 + 0.10,
+      colors.water[1] * 0.62 + 0.18,
+      colors.water[2] * 0.62 + 0.24
+    ];
     /* South ocean — full west–east bbox, north edge just seaward of the Ditch HWL. */
-    pushBboxQuad(pos, col, -72.02, 40.978, -71.818, southNorth, z, colors.water);
+    pushBboxQuad(pos, col, -72.02, 40.978, -71.818, southNorth, z, waterRgb);
     /* Point south/east ocean — second solid quad, not a harbor / Soundview loop. */
-    pushBboxQuad(pos, col, -71.878, 40.978, -71.818, pointNorth, z, colors.water);
+    pushBboxQuad(pos, col, -71.878, 40.978, -71.818, pointNorth, z, waterRgb);
     /* North sound — north of the 2014 north shore. Jetties stay 2014 DEM. */
-    pushBboxQuad(pos, col, -72.00, 41.080, -71.845, 41.118, z, colors.water);
+    pushBboxQuad(pos, col, -72.00, 41.080, -71.845, 41.118, z, waterRgb);
     var mesh = makeColorMesh(pos, col, 1);
     if (mesh) {
       mesh.userData.waterPlane = true;
