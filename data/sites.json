@@ -250,6 +250,13 @@
           "sourceUrl": "https://www.easthamptonstar.com/government/2024711/no-coastal-zone-change-soundview"
         },
         {
+          "year": 1957,
+          "title": "HMS Culloden wreckage on the beach",
+          "text": "April 1957 photographs show wooden remains of HMS Culloden on the Fort Pond Bay / Culloden shore, including visitors with Jeannette Edwards Rattray. Star 1998 reprints the 1957 caption. Photos stay link-only (library / news).",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/archive/whats-name-culloden-point"
+        },
+        {
           "year": 1998,
           "title": "February 5 northeaster breaches a Soundview bulkhead",
           "text": "Wind-driven Block Island Sound waves opened a 20-foot-wide hole in a bulkhead shared by seven Soundview Drive houses and put one house in jeopardy. Fill behind the wall \u201ccame tumbling out.\u201d Residents had been asking the town and USACE to dredge the harbor and put sand on beaches east and west of the channel.",
@@ -278,18 +285,25 @@
           "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-shoreline-took-severe-beating"
         },
         {
-          "year": 2021,
-          "title": "Cangemi appeal fails; town not liable for jetty downdrift",
-          "text": "The Second Circuit (13 F.4th 115) affirmed dismissal. Plaintiffs had alleged the jetties caused the western scour. The court held USACE\u2014not the town\u2014controls the federal navigation project, and no trial evidence showed the town knew in 1942 that handing over the jetties would erode the private beaches to the west.",
-          "status": "sourced",
-          "sourceUrl": "https://www.easthamptonstar.com/government/2021916/town-prevails-protracted-montauk-erosion-lawsuit"
-        },
-        {
           "year": 2012,
           "title": "Sandy: rocks on Soundview Drive; house undermined",
           "text": "Block Island Sound threw former shore-protection rocks onto Soundview Drive pavement and undermined at least one house. North shore \u2014 not the Atlantic.",
           "status": "sourced",
           "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-shoreline-took-severe-beating"
+        },
+        {
+          "year": 2012,
+          "title": "USACE/NYSDEC Lake Montauk Harbor feasibility posters",
+          "text": "June 21, 2012 public-meeting posters: dual purpose navigation plus storm damage west of the inlet to Culloden / Soundview Drive. Historic shoreline labels 1892, 1933, 1947, 1957, 1974 topography, 1980. Printed: \u201cPotential loss of Sound View Drive from Northeast storms.\u201d December 2010 storm photos of parking-lot undermining and bulkhead failure west of the inlet.",
+          "status": "sourced",
+          "sourceUrl": "https://www.ehamptonny.gov/DocumentCenter/View/1332/Lake-Montauk-Harbor--Feasibility-Study-PDF"
+        },
+        {
+          "year": 2021,
+          "title": "Cangemi appeal fails; town not liable for jetty downdrift",
+          "text": "The Second Circuit (13 F.4th 115) affirmed dismissal. Plaintiffs had alleged the jetties caused the western scour. The court held USACE\u2014not the town\u2014controls the federal navigation project, and no trial evidence showed the town knew in 1942 that handing over the jetties would erode the private beaches to the west.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/government/2021916/town-prevails-protracted-montauk-erosion-lawsuit"
         },
         {
           "year": 2024,
@@ -315,11 +329,25 @@
           "kind": "usace"
         },
         {
+          "year": 1962,
+          "src": "assets/photos/soundview_suffolk_1962_northshore.jpg",
+          "caption": "Suffolk County 1962 ortho \u2014 north shore west of the Lake Montauk inlet (Soundview / Culloden / Gosman\u2019s). Export has missing tiles at the top.",
+          "credit": "Suffolk County GIS Imagery/1962 ImageServer",
+          "kind": "suffolk"
+        },
+        {
           "year": 1976,
           "src": "assets/aerials/1976-harbor-wide.jpg",
           "caption": "24 MAR 76 \u2014 north shore: Soundview/Culloden at left of the inlet and jetties",
           "credit": "Family collection, BJ Old Montauk aerials (survey stamp 24 MAR 76)",
           "kind": "user-aerial"
+        },
+        {
+          "year": 1978,
+          "src": "assets/photos/soundview_suffolk_1978_northshore.jpg",
+          "caption": "Suffolk County 1978 ortho \u2014 Culloden Point to the west jetty. Wide north-shore beach in front of the Soundview grid.",
+          "credit": "Suffolk County GIS Imagery/1978 ImageServer",
+          "kind": "suffolk"
         },
         {
           "year": 1984,
@@ -329,17 +357,17 @@
           "kind": "user-aerial"
         },
         {
+          "year": 1984,
+          "src": "assets/photos/soundview_suffolk_1984_northshore.jpg",
+          "caption": "Suffolk County 1984 ortho \u2014 same north-shore box. Two-frame join; beach still visible west of the jetties.",
+          "credit": "Suffolk County GIS Imagery/1984 ImageServer",
+          "kind": "suffolk"
+        },
+        {
           "year": 2006,
           "src": "assets/photos/commons_soundview_2006_culloden-point-bluff.jpg",
           "caption": "Culloden Point bluff, Fort Pond Bay (NORTH / Block Island Sound)",
           "credit": "Wikimedia Commons, 2006",
-          "kind": "commons"
-        },
-        {
-          "year": null,
-          "src": "assets/photos/commons_logan_soundview.jpg",
-          "caption": "Soundview / Fort Pond Bay shore (NORTH)",
-          "credit": "Wikimedia Commons (Logan)",
           "kind": "commons"
         },
         {
@@ -354,6 +382,13 @@
           "src": "assets/photos/commons_soundview_2022_soundview-shore.jpg",
           "caption": "Soundview Drive shore (NORTH / Block Island Sound)",
           "credit": "Wikimedia Commons, 2022",
+          "kind": "commons"
+        },
+        {
+          "year": null,
+          "src": "assets/photos/commons_logan_soundview.jpg",
+          "caption": "Soundview / Fort Pond Bay shore (NORTH)",
+          "credit": "Wikimedia Commons (Logan)",
           "kind": "commons"
         },
         {
@@ -399,6 +434,13 @@
           "unit": "ft/yr",
           "status": "sourced",
           "note": "Town CARP 2022. NORTH headland west of Soundview. Do not apply USGS 2010-1119 south-shore LRR here."
+        },
+        {
+          "label": "1960s\u201370s beach",
+          "value": "100\u2013200",
+          "unit": "ft",
+          "status": "sourced",
+          "note": "Supervisor Peter Van Scoyoc, quoted in 27east 2022-04-28: Soundview Drive / Captain Kidd\u2019s Path had 100\u2013200 ft of beach in the 1960s\u201370s; \u201cthat sand is gone.\u201d Recollection, not a surveyed rate. NORTH shore."
         }
       ],
       "related": [
