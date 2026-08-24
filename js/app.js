@@ -835,7 +835,7 @@
     const ticks = $("#year-ticks");
     ticks.innerHTML = "";
     const tickMarks = state.view === "coast3d"
-      ? [years[0], 1883, 1955, 1962, 1996, 2012, 2016, years[years.length - 1]]
+      ? [years[0], 1883, 1955, 1962, 1996, 2012, 2016, 2023, years[years.length - 1]]
       : [years[0], 1976, 1996, 2004, 2012, 2016, 2024, years[years.length - 1]];
     tickMarks
       .filter(function (y, i, a) { return y != null && a.indexOf(y) === i && years.indexOf(y) >= 0; })
