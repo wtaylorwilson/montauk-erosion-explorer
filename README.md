@@ -25,14 +25,15 @@ Deep links:
 
 ## 3D coast
 
-The **3D** tab is an added view (the Leaflet 2D map stays). It uses [MapLibre GL JS](https://maplibre.org/) with public terrain and imagery — no Mapbox, Cesium ion, or paid key.
+The **3D** tab is an added view (the Leaflet 2D map stays). No Mapbox, Cesium ion, or paid key.
 
-- Terrain: [Mapterhorn](https://mapterhorn.com/) Terrarium tiles (fallback: AWS Terrain / Mapzen). Exaggeration is visual only.
-- Imagery / hillshade: Esri World Imagery and World Hillshade (same family as the 2D basemap).
-- Every gallery still in `data/sites.json` that has a `src` is placed at that site’s lat/lng. One downtown aerial caption includes GPS; that still uses the caption GPS. Other stills are fanned a few tens of meters around the sourced pin so they do not stack — those offsets are display only.
-- Year slider shows photographs dated that year or earlier. Tap a still for the existing lightbox / credit.
-- Camera paths: Atlantic / ESE (Ditch Plains → downtown Kirk Park → lighthouse) and Sound / North (Soundview → harbor jetties). Soundview and the harbor face Block Island Sound. Kirk Park is downtown, not Ditch.
-- Phone: one-finger orbit, pinch/scroll zoom, tap a still. Mobile header/drawers are unchanged.
+- **Pins** (only these five, from `data/sites.json`): Soundview 41.0755, −71.948 (NORTH); harbor jetties 41.075, −71.9367 (NORTH / west jetty); downtown Kirk Park 41.0315, −71.946 (SOUTH — not Ditch); Ditch Plains 41.03948, −71.91701 (SOUTH/SSE); lighthouse 41.07099, −71.85709 (SOUTH/ESE Turtle Hill).
+- **First twelve planes** are listed in `data/coast3d.json`. Ground stills are vertical at the pin, normal toward the water. The two USGS 2012 storm obliques are elevated and south-looking (south shore / Point only — none on Soundview). Other vertical aerials and CEHA sheets stay in the lightbox galleries, not as walk-up billboards. The 2026 downtown aerial is the only photo-level GPS (41.035025, −71.9478).
+- **Paths:** Soundview → west jetty, camera looks NORTH. Ditch → downtown Kirk Park → lighthouse, camera looks SOUTH/ESE. Downtown is west of Ditch; that hop is inland, not a continuous beach.
+- **Terrain:** 10 m Terrarium crop of 2014 NOAA NGS Post-Sandy Block_140 (Digital Coast 4967) in `assets/terrain/2014-ngs`. The raw 121 MB GeoTIFF is not in this repo (`scripts/build_montauk_terrain.py` downloads it to `/tmp`). Fallback: Mapterhorn. Single-year surface — not a lidar-change map. 2020/2022 tiles are south-shore slivers and were not used.
+- Year slider shows those twelve planes dated that year or earlier. Tap a plane for the existing lightbox / credit.
+- 1996 at the lighthouse is a deed, not a move. Kirk Park is not snapped to Ditch or Hither Hills.
+- Phone: one-finger orbit, pinch/scroll zoom, tap a plane. Mobile header/drawers are unchanged.
 
 ## Tiles that work over Montauk
 

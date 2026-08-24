@@ -1,9 +1,9 @@
-/* Immersive 3D coast — MapLibre terrain, no API key. Photos stay at sourced coords. */
+/* 3D coast — five locked pins, twelve planes, no extra markers. */
 (function (global) {
   "use strict";
 
-  var FAR_ZOOM = 13.35;
   var PATH_DWELL_MS = 2800;
+  var INLAND_DWELL_MS = 2000;
 
   var api = {
     init: init,
@@ -32,6 +32,7 @@
   var selectedId = null;
   var pendingFly = null;
   var terrainErrors = 0;
+  var planeLayer = null;
 
   function $(sel, root) { return (root || document).querySelector(sel); }
 
@@ -41,6 +42,10 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  function basename(p) {
+    return String(p || "").split("/").pop();
   }
 
   function destPoint(lat, lng, bearingDeg, meters) {
@@ -57,37 +62,6 @@
     return { lat: p2 * 180 / Math.PI, lng: ((l2 * 180 / Math.PI + 540) % 360) - 180 };
   }
 
-  function parseCaptionGps(text) {
-    if (!text) return null;
-    var m = String(text).match(/GPS\s+(-?\d+(?:\.\d+)?)\s*,\s*([−–-])?\s*(-?\d+(?:\.\d+)?)/i);
-    if (!m) return null;
-    var lat = parseFloat(m[1]);
-    var lng = parseFloat(m[3]);
-    if (m[2] && lng > 0) lng = -lng;
-    if (!(lat >= 40.95 && lat <= 41.2 && lng >= -72.15 && lng <= -71.75)) return null;
-    return { lat: lat, lng: lng };
-  }
-
-  function photoLngLat(photo, site) {
-    if (photo && photo.lat != null && (photo.lng != null || photo.lon != null)) {
-      return { lat: Number(photo.lat), lng: Number(photo.lng != null ? photo.lng : photo.lon), sourced: true };
-    }
-    var gps = parseCaptionGps(photo && photo.caption);
-    if (gps) return { lat: gps.lat, lng: gps.lng, sourced: true };
-    return { lat: site.lat, lng: site.lng, sourced: false };
-  }
-
-  function alongBearing(site) {
-    if (site.shore === "north") return 90;
-    if (site.shore === "east") return 10;
-    return 90;
-  }
-
-  function seawardBearing(site) {
-    var look = (cfg && cfg.look && cfg.look[site.id]) || {};
-    return look.bearing != null ? look.bearing : (site.shore === "north" ? 0 : site.shore === "east" ? 125 : 180);
-  }
-
   function wait(ms) {
     return new Promise(function (resolve) { setTimeout(resolve, ms); });
   }
@@ -102,40 +76,46 @@
     }
   }
 
+  function findSitePhoto(siteList, file) {
+    var name = basename(file);
+    var i, j, site, photos;
+    for (i = 0; i < siteList.length; i++) {
+      site = siteList[i];
+      photos = site.photos || [];
+      for (j = 0; j < photos.length; j++) {
+        if (photos[j] && photos[j].src && basename(photos[j].src) === name) {
+          return { site: site, photo: photos[j] };
+        }
+      }
+    }
+    return null;
+  }
+
   function collectCards(siteList) {
+    var planes = (cfg && cfg.planes) || [];
+    var pins = (cfg && cfg.pins) || {};
     var out = [];
-    siteList.forEach(function (site) {
-      var photos = (site.photos || []).filter(function (p) { return p && p.src; });
-      var shared = [];
-      photos.forEach(function (photo, i) {
-        var ll = photoLngLat(photo, site);
-        var rec = {
-          siteId: site.id,
-          site: site,
-          photo: photo,
-          index: i,
-          year: photo.year == null ? null : Number(photo.year),
-          lat: ll.lat,
-          lng: ll.lng,
-          gps: ll.sourced,
-          cap: (photo.year ? photo.year + " · " : "") + (photo.caption || "") + (photo.credit ? " · " + photo.credit : "")
-        };
-        if (ll.sourced) out.push(rec);
-        else shared.push(rec);
-      });
-      var n = shared.length;
-      var mid = (n - 1) / 2;
-      var along = alongBearing(site);
-      var sea = seawardBearing(site);
-      var step = n > 12 ? 15 : 20;
-      shared.forEach(function (rec, i) {
-        var alongM = (i - mid) * step;
-        var seaM = 16 + (i % 2) * 20;
-        var a = destPoint(site.lat, site.lng, along, alongM);
-        var b = destPoint(a.lat, a.lng, sea, seaM);
-        rec.lat = b.lat;
-        rec.lng = b.lng;
-        out.push(rec);
+    planes.forEach(function (spec) {
+      var found = findSitePhoto(siteList, spec.file);
+      if (!found) return;
+      if (spec.siteId && found.site.id !== spec.siteId) return;
+      var pin = pins[spec.siteId] || pins[found.site.id] || {};
+      var lat = spec.lat != null ? Number(spec.lat) : Number(pin.lat != null ? pin.lat : found.site.lat);
+      var lng = spec.lng != null ? Number(spec.lng) : Number(pin.lng != null ? pin.lng : found.site.lng);
+      var look = spec.look != null ? spec.look : (pin.look != null ? pin.look : 180);
+      out.push({
+        spec: spec,
+        siteId: spec.siteId || found.site.id,
+        site: found.site,
+        photo: found.photo,
+        year: found.photo.year == null ? null : Number(found.photo.year),
+        lat: lat,
+        lng: lng,
+        kind: spec.kind || "ground",
+        altM: spec.altM != null ? spec.altM : 10,
+        look: look,
+        tilt: spec.tilt || 0,
+        gps: spec.lat != null && spec.lng != null
       });
     });
     return out;
@@ -146,46 +126,29 @@
     return rec.year <= year;
   }
 
-  function cardNow(rec) {
-    if (rec.year == null) return false;
-    return Math.abs(rec.year - year) <= 4;
-  }
-
   function updateCardStates() {
     var shown = 0;
-    var now = 0;
     cards.forEach(function (rec) {
       var on = cardVisible(rec);
       if (on) shown += 1;
-      if (on && cardNow(rec)) now += 1;
-      if (rec.el) {
-        rec.el.hidden = !on;
-        rec.el.classList.toggle("is-now", on && cardNow(rec));
-        rec.el.classList.toggle("is-dim", on && !cardNow(rec) && rec.siteId !== selectedId);
-        rec.el.classList.toggle("is-site", rec.siteId === selectedId);
-      }
-      if (rec.marker) rec.marker.getElement().style.display = on ? "" : "none";
+      if (rec.mesh) rec.mesh.visible = on;
     });
     var count = $("#coast3d-count");
     if (count) {
-      count.textContent = shown + " stills at or before " + year + (now ? " · " + now + " near this year" : "");
+      count.textContent = shown + " of " + cards.length + " planes at or before " + year;
     }
+    if (map) map.triggerRepaint();
     return shown;
-  }
-
-  function setFarClass(zoom) {
-    var view = $("#coast3d-view");
-    if (!view) return;
-    view.classList.toggle("is-far", zoom < FAR_ZOOM);
   }
 
   function lookFor(site) {
     var look = (cfg && cfg.look && cfg.look[site.id]) || {};
+    var pin = (cfg && cfg.pins && cfg.pins[site.id]) || {};
     return {
-      bearing: look.bearing != null ? look.bearing : seawardBearing(site),
+      bearing: look.bearing != null ? look.bearing : (pin.look != null ? pin.look : 180),
       pitch: look.pitch != null ? look.pitch : 60,
       zoom: look.zoom != null ? look.zoom : 15.4,
-      inlandM: look.inlandM != null ? look.inlandM : 380
+      inlandM: look.inlandM != null ? look.inlandM : 320
     };
   }
 
@@ -203,11 +166,27 @@
     };
   }
 
+  function inlandCamera(fromSite, toSite, northM) {
+    var lat = (fromSite.lat + toSite.lat) / 2;
+    var lng = (fromSite.lng + toSite.lng) / 2;
+    var p = destPoint(lat, lng, 0, northM || 900);
+    return {
+      center: [p.lng, p.lat],
+      zoom: 13.7,
+      pitch: 55,
+      bearing: 180,
+      duration: 2000,
+      essential: true
+    };
+  }
+
   function overviewCenter() {
-    if (!sites.length) return [-71.92, 41.05];
+    var pins = (cfg && cfg.pins) || {};
+    var ids = Object.keys(pins);
+    if (!ids.length) return [-71.92, 41.05];
     var lat = 0, lng = 0;
-    sites.forEach(function (s) { lat += s.lat; lng += s.lng; });
-    return [lng / sites.length, lat / sites.length];
+    ids.forEach(function (id) { lat += pins[id].lat; lng += pins[id].lng; });
+    return [lng / ids.length, lat / ids.length];
   }
 
   function styleSpec(terrainSrc) {
@@ -223,7 +202,6 @@
     };
     return {
       version: 8,
-      glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
       sources: {
         imagery: {
           type: "raster",
@@ -244,6 +222,7 @@
           tiles: terrainSrc.tiles,
           encoding: terrainSrc.encoding || "terrarium",
           tileSize: terrainSrc.tileSize || 256,
+          minzoom: terrainSrc.minzoom || 0,
           maxzoom: terrainSrc.maxzoom || 15,
           attribution: terrainSrc.attribution
         },
@@ -252,6 +231,7 @@
           tiles: terrainSrc.tiles,
           encoding: terrainSrc.encoding || "terrarium",
           tileSize: terrainSrc.tileSize || 256,
+          minzoom: terrainSrc.minzoom || 0,
           maxzoom: terrainSrc.maxzoom || 15
         }
       },
@@ -261,21 +241,21 @@
           id: "hillshade-soft",
           type: "raster",
           source: "hillshadeRaster",
-          paint: { "raster-opacity": 0.32, "raster-contrast": 0.08 }
+          paint: { "raster-opacity": 0.28, "raster-contrast": 0.06 }
         },
         {
           id: "hills",
           type: "hillshade",
           source: "hillshadeDem",
           paint: {
-            "hillshade-exaggeration": 0.42,
+            "hillshade-exaggeration": 0.38,
             "hillshade-shadow-color": "#142018",
             "hillshade-highlight-color": "#f3ead6",
             "hillshade-illumination-direction": 315
           }
         }
       ],
-      terrain: { source: "terrain", exaggeration: (cfg.terrain && cfg.terrain.exaggeration) || 4.2 },
+      terrain: { source: "terrain", exaggeration: (cfg.terrain && cfg.terrain.exaggeration) || 2.6 },
       sky: {
         "sky-color": "#0a1a28",
         "horizon-color": "#8aa7b8",
@@ -286,26 +266,6 @@
         "atmosphere-blend": 0.45
       }
     };
-  }
-
-  function makePhotoEl(rec) {
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "photo-plane";
-    btn.dataset.site = rec.siteId;
-    var yearTxt = rec.year != null ? String(rec.year) : "undated";
-    btn.setAttribute("aria-label", yearTxt + " · " + (rec.photo.caption || rec.site.shortName));
-    btn.innerHTML =
-      '<img alt="" src="' + escapeHtml(rec.photo.src) + '" loading="lazy" />' +
-      '<span class="photo-plane-year">' + escapeHtml(yearTxt) + "</span>" +
-      '<span class="photo-plane-cap">' + escapeHtml(rec.photo.caption || rec.photo.credit || "") + "</span>";
-    btn.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      openCard(rec);
-    });
-    return btn;
   }
 
   function makePinEl(site, i) {
@@ -319,34 +279,158 @@
     wrap.addEventListener("click", function (e) {
       e.stopPropagation();
       selectedId = site.id;
-      updateCardStates();
       flyToSite(site);
       if (opts.onSite) opts.onSite(site.id, { fly: false, sheet: false });
     });
     return wrap;
   }
 
-  function addMarkers() {
-    cards.forEach(function (rec) {
-      rec.el = makePhotoEl(rec);
-      rec.marker = new maplibregl.Marker({
-        element: rec.el,
-        anchor: "bottom",
-        pitchAlignment: "viewport",
-        rotationAlignment: "viewport"
-      }).setLngLat([rec.lng, rec.lat]).addTo(map);
-    });
-    sites.forEach(function (site, i) {
+  function addSitePins() {
+    var order = ["ditch_plains", "soundview", "harbor_jetties", "ocean_beaches", "lighthouse"];
+    var pins = (cfg && cfg.pins) || {};
+    order.forEach(function (id, i) {
+      var site = sites.find(function (s) { return s.id === id; });
+      var pin = pins[id];
+      if (!site || !pin) return;
       var el = makePinEl(site, i);
       var marker = new maplibregl.Marker({
         element: el,
         anchor: "bottom",
         pitchAlignment: "viewport",
         rotationAlignment: "viewport"
-      }).setLngLat([site.lng, site.lat]).addTo(map);
+      }).setLngLat([pin.lng, pin.lat]).addTo(map);
       sitePins.push({ site: site, el: el, marker: marker });
     });
-    updateCardStates();
+  }
+
+  function loadPlaneTexture(rec, done) {
+    var img = new Image();
+    img.onload = function () {
+      var c = document.createElement("canvas");
+      c.width = 1024;
+      c.height = 768;
+      var ctx = c.getContext("2d");
+      ctx.fillStyle = "#0c1d2e";
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, 1024, 640);
+      ctx.fillStyle = "#e2c49a";
+      ctx.font = "600 40px Outfit, sans-serif";
+      ctx.fillText(rec.year != null ? String(rec.year) : "", 28, 698);
+      ctx.fillStyle = "#9aafb8";
+      ctx.font = "28px Outfit, sans-serif";
+      var cap = rec.photo.caption || rec.photo.credit || "";
+      ctx.fillText(cap.length > 64 ? cap.slice(0, 63) + "…" : cap, 28, 740);
+      var tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace || tex.colorSpace;
+      done(tex);
+    };
+    img.onerror = function () { done(null); };
+    img.src = rec.photo.src;
+  }
+
+  function placeGroup(group, rec) {
+    var mc = maplibregl.MercatorCoordinate.fromLngLat([rec.lng, rec.lat], rec.altM);
+    var s = mc.meterInMercatorCoordinateUnits();
+    var T = new THREE.Matrix4().makeTranslation(mc.x, mc.y, mc.z);
+    var S = new THREE.Matrix4().makeScale(s, -s, s);
+    var Rx = new THREE.Matrix4().makeRotationX(Math.PI / 2);
+    var Ry = new THREE.Matrix4().makeRotationY(((rec.look || 0) - 180) * Math.PI / 180);
+    var Rtilt = new THREE.Matrix4().makeRotationX((rec.tilt || 0) * Math.PI / 180);
+    group.matrixAutoUpdate = false;
+    group.matrix.copy(T).multiply(S).multiply(Rx).multiply(Ry).multiply(Rtilt);
+  }
+
+  function planeSize(rec) {
+    if (rec.kind === "usgs-oblique") return { w: 34, h: 24 };
+    if (rec.kind === "aerial") return { w: 30, h: 21 };
+    return { w: 18, h: 13 };
+  }
+
+  function addPlaneMesh(scene, rec) {
+    var size = planeSize(rec);
+    var geom = new THREE.PlaneGeometry(size.w, size.h);
+    var mat = new THREE.MeshBasicMaterial({
+      color: 0x163044,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.98,
+      depthWrite: true
+    });
+    var mesh = new THREE.Mesh(geom, mat);
+    mesh.userData.rec = rec;
+    var group = new THREE.Group();
+    group.add(mesh);
+    placeGroup(group, rec);
+    scene.add(group);
+    rec.mesh = mesh;
+    rec.group = group;
+    loadPlaneTexture(rec, function (tex) {
+      if (!tex) return;
+      mesh.material.map = tex;
+      mesh.material.color.set(0xffffff);
+      mesh.material.needsUpdate = true;
+      if (map) map.triggerRepaint();
+    });
+  }
+
+  function addPlaneLayer() {
+    if (typeof THREE === "undefined" || !map) return;
+    planeLayer = {
+      id: "photo-planes",
+      type: "custom",
+      renderingMode: "3d",
+      onAdd: function (mapInst, gl) {
+        this.map = mapInst;
+        this.camera = new THREE.Camera();
+        this.scene = new THREE.Scene();
+        this.raycaster = new THREE.Raycaster();
+        this.renderer = new THREE.WebGLRenderer({
+          canvas: mapInst.getCanvas(),
+          context: gl,
+          antialias: true
+        });
+        this.renderer.autoClear = false;
+        cards.forEach(function (rec) { addPlaneMesh(this.scene, rec); }, this);
+        updateCardStates();
+      },
+      render: function (gl, args) {
+        var raw = args && args.defaultProjectionData && args.defaultProjectionData.mainMatrix
+          ? args.defaultProjectionData.mainMatrix
+          : args;
+        this.camera.projectionMatrix = new THREE.Matrix4().fromArray(raw);
+        this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();
+        this.camera.matrixWorld.identity();
+        this.camera.matrixWorldInverse.identity();
+        this.renderer.resetState();
+        this.renderer.render(this.scene, this.camera);
+        this.map.triggerRepaint();
+      }
+    };
+    map.addLayer(planeLayer);
+  }
+
+  function hitPlanes(point) {
+    if (!planeLayer || !planeLayer.raycaster || !map) return null;
+    var canvas = map.getCanvas();
+    var ndc = new THREE.Vector2(
+      (point.x / canvas.clientWidth) * 2 - 1,
+      -(point.y / canvas.clientHeight) * 2 + 1
+    );
+    planeLayer.raycaster.setFromCamera(ndc, planeLayer.camera);
+    var hits = planeLayer.raycaster.intersectObjects(planeLayer.scene.children, true);
+    var i, rec;
+    for (i = 0; i < hits.length; i++) {
+      rec = hits[i].object && hits[i].object.userData && hits[i].object.userData.rec;
+      if (rec && cardVisible(rec)) return rec;
+    }
+    return null;
+  }
+
+  function openCard(rec) {
+    if (!rec) return;
+    selectedId = rec.siteId;
+    if (opts.onPhoto) opts.onPhoto(rec.photo, rec.site);
+    if (opts.onSite) opts.onSite(rec.siteId, { fly: false, sheet: false });
   }
 
   function bindOrbit() {
@@ -354,11 +438,9 @@
     canvas.style.touchAction = "none";
     canvas.addEventListener("pointerdown", function (e) {
       if (e.button != null && e.button !== 0) return;
-      if (e.target.closest && e.target.closest(".photo-plane, .coast3d-pin, .coast3d-chrome")) return;
-      try {
-        var rect = canvas.getBoundingClientRect();
-        if (nearestCardAt({ x: e.clientX - rect.left, y: e.clientY - rect.top }, 56)) return;
-      } catch (err) { /* ignore */ }
+      if (e.target.closest && e.target.closest(".coast3d-pin, .coast3d-chrome")) return;
+      var rect = canvas.getBoundingClientRect();
+      if (hitPlanes({ x: e.clientX - rect.left, y: e.clientY - rect.top })) return;
       orbit.on = true;
       orbit.pointerId = e.pointerId;
       orbit.lastX = e.clientX;
@@ -393,43 +475,14 @@
     });
   }
 
-  function nearestCardAt(point, maxDist) {
-    if (!map || !point) return null;
-    var best = null;
-    var bestD = maxDist;
-    cards.forEach(function (rec) {
-      if (!cardVisible(rec)) return;
-      var p = map.project([rec.lng, rec.lat]);
-      var dx = point.x - p.x;
-      var dy = point.y - p.y;
-      var d = Math.sqrt(dx * dx + dy * dy);
-      if (dy < 0 && dy > -100) d = Math.min(d, Math.abs(dx) + Math.abs(dy + 40) * 0.35);
-      if (d < bestD) {
-        bestD = d;
-        best = rec;
-      }
-    });
-    return best;
-  }
-
-  function openCard(rec) {
-    if (!rec) return;
-    selectedId = rec.siteId;
-    updateCardStates();
-    if (opts.onPhoto) opts.onPhoto(rec.photo, rec.site);
-    if (opts.onSite) opts.onSite(rec.siteId, { fly: false, sheet: false });
-  }
-
   function tryFallbackTerrain() {
     var fb = cfg && cfg.terrain && cfg.terrain.fallback;
     if (!map || !fb || !map.getSource("terrain")) return;
     try {
       map.setTerrain(null);
+      if (map.getLayer("hills")) map.removeLayer("hills");
       if (map.getSource("terrain")) map.removeSource("terrain");
-      if (map.getSource("hillshadeDem")) {
-        if (map.getLayer("hills")) map.removeLayer("hills");
-        map.removeSource("hillshadeDem");
-      }
+      if (map.getSource("hillshadeDem")) map.removeSource("hillshadeDem");
       map.addSource("terrain", {
         type: "raster-dem",
         tiles: fb.tiles,
@@ -445,31 +498,19 @@
         tileSize: fb.tileSize || 256,
         maxzoom: fb.maxzoom || 15
       });
-      if (!map.getLayer("hills")) {
-        map.addLayer({
-          id: "hills",
-          type: "hillshade",
-          source: "hillshadeDem",
-          paint: {
-            "hillshade-exaggeration": 0.5,
-            "hillshade-shadow-color": "#142018",
-            "hillshade-highlight-color": "#f3ead6"
-          }
-        });
-      }
-      map.setTerrain({ source: "terrain", exaggeration: 4.2 });
+      map.addLayer({
+        id: "hills",
+        type: "hillshade",
+        source: "hillshadeDem",
+        paint: {
+          "hillshade-exaggeration": 0.4,
+          "hillshade-shadow-color": "#142018",
+          "hillshade-highlight-color": "#f3ead6"
+        }
+      });
+      map.setTerrain({ source: "terrain", exaggeration: 2.6 });
     } catch (e) {
-      dropTerrain();
-    }
-  }
-
-  function dropTerrain() {
-    if (!map) return;
-    try { map.setTerrain(null); } catch (e) { /* ignore */ }
-    var note = $("#coast3d-hint");
-    if (note && !note.dataset.terrainFail) {
-      note.dataset.terrainFail = "1";
-      note.textContent = "Terrain tiles unavailable — pitched coast with hillshade. Drag to orbit · tap a still.";
+      try { map.setTerrain(null); } catch (err) { /* ignore */ }
     }
   }
 
@@ -482,20 +523,20 @@
       tileSize: 512
     };
     var ov = cfg.overview || {};
-    var center = overviewCenter();
     map = new maplibregl.Map({
       container: el,
       style: styleSpec(terrain),
-      center: center,
+      center: overviewCenter(),
       zoom: ov.zoom || 12.35,
       pitch: ov.pitch || 52,
       bearing: ov.bearing || 72,
       maxPitch: 80,
       minZoom: 11,
       maxZoom: 17.5,
-      maxBounds: [[-72.14, 40.96], [-71.76, 41.16]],
+      maxBounds: [[-72.00, 41.015], [-71.82, 41.10]],
       attributionControl: true,
-      hash: false
+      hash: false,
+      canvasContextAttributes: { antialias: true }
     });
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "bottom-right");
     map.dragPan.disable();
@@ -508,13 +549,13 @@
       var id = e && e.sourceId;
       if (id !== "terrain" && id !== "hillshadeDem") return;
       terrainErrors += 1;
-      if (terrainErrors === 8) tryFallbackTerrain();
+      if (terrainErrors === 12) tryFallbackTerrain();
     });
     map.on("load", function () {
       ready = true;
-      addMarkers();
+      addSitePins();
+      addPlaneLayer();
       bindOrbit();
-      setFarClass(map.getZoom());
       try { map.resize(); } catch (e) { /* ignore */ }
       if (pendingFly) {
         var site = pendingFly;
@@ -523,11 +564,9 @@
       }
       if (opts.onReady) opts.onReady();
     });
-    map.on("zoom", function () { setFarClass(map.getZoom()); });
     map.on("click", function (e) {
-      var hit = nearestCardAt(e.point, 72);
-      if (!hit) return;
-      openCard(hit);
+      var hit = hitPlanes(e.point);
+      if (hit) openCard(hit);
     });
     map.on("move", function () {
       if (!visible) return;
@@ -583,7 +622,6 @@
   function flyToSite(site) {
     if (!site) return;
     selectedId = site.id;
-    updateCardStates();
     sitePins.forEach(function (p) {
       p.el.classList.toggle("is-on", p.site.id === site.id);
     });
@@ -602,7 +640,6 @@
   function overview() {
     pathToken += 1;
     selectedId = null;
-    updateCardStates();
     sitePins.forEach(function (p) { p.el.classList.remove("is-on"); });
     if (!map) return;
     var ov = cfg.overview || {};
@@ -621,9 +658,19 @@
     var path = paths.find(function (p) { return p.id === id; });
     if (!path) return;
     var token = ++pathToken;
-    for (var i = 0; i < path.stops.length; i++) {
+    var i, stop, site, fromSite, toSite;
+    for (i = 0; i < path.stops.length; i++) {
       if (token !== pathToken) return;
-      var site = sites.find(function (s) { return s.id === path.stops[i]; });
+      stop = path.stops[i];
+      if (typeof stop === "string") stop = { siteId: stop };
+      if (stop.via === "inland") {
+        fromSite = sites.find(function (s) { return s.id === stop.from; });
+        toSite = sites.find(function (s) { return s.id === stop.to; });
+        if (map && fromSite && toSite) map.easeTo(inlandCamera(fromSite, toSite, stop.northM));
+        await wait(INLAND_DWELL_MS);
+        continue;
+      }
+      site = sites.find(function (s) { return s.id === stop.siteId; });
       if (!site) continue;
       flyToSite(site);
       if (opts.onSite) opts.onSite(site.id, { fly: false, sheet: false });
@@ -633,9 +680,8 @@
 
   api._helpers = {
     destPoint: destPoint,
-    parseCaptionGps: parseCaptionGps,
-    photoLngLat: photoLngLat,
-    collectCards: collectCards
+    collectCards: collectCards,
+    basename: basename
   };
 
   global.MontaukCoast3D = api;

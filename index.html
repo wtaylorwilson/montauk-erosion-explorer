@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" />
-  <link rel="stylesheet" href="css/app.css?v=20260824b" />
+  <link rel="stylesheet" href="css/app.css?v=20260824c" />
 </head>
 <body>
   <div id="app">
@@ -71,11 +71,11 @@
           <div id="coast3d" role="application" aria-label="Montauk 3D coast"></div>
           <div class="coast3d-chrome">
             <div class="coast3d-paths" role="group" aria-label="Camera paths">
-              <button type="button" class="ghost" data-coast3d-path="atlantic">Atlantic path</button>
-              <button type="button" class="ghost" data-coast3d-path="sound">Sound path</button>
+              <button type="button" class="ghost" data-coast3d-path="atlantic">Ditch → Kirk Park → lighthouse</button>
+              <button type="button" class="ghost" data-coast3d-path="sound">Soundview → west jetty</button>
               <button type="button" class="ghost" data-coast3d-path="overview">Overview</button>
             </div>
-            <p class="coast3d-hint" id="coast3d-hint">Drag to orbit · scroll to zoom · tap a still</p>
+            <p class="coast3d-hint" id="coast3d-hint">Twelve stills at the five pins. Ground planes face the water. Drag to orbit · tap a plane</p>
             <p class="coast3d-count" id="coast3d-count"></p>
           </div>
         </div>
@@ -194,7 +194,8 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-  <script src="js/coast3d.js?v=20260824b"></script>
-  <script src="js/app.js?v=20260824b"></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="js/coast3d.js?v=20260824c"></script>
+  <script src="js/app.js?v=20260824c"></script>
 </body>
 </html>

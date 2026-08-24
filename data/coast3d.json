@@ -1,8 +1,111 @@
 {
-  "version": 1,
-  "note": "Camera paths reference site ids from data/sites.json. Look bearings follow sourced facing (north Sound / south-ESE Atlantic). Inland meters are framing only — not survey coordinates. Terrain is a public no-key tileset; NOAA 2014 Block_140 is not in this repo.",
+  "version": 2,
+  "note": "Placement is locked to the five sites.json pins. The first pass is twelve planes already in assets/photos. No extra pins. Downtown (Kirk Park) is west of Ditch — that hop is inland, not a continuous beach. 1996 is a deed, not a lighthouse move. Terrain is a 10 m Terrarium crop of 2014 NGS Post-Sandy Block_140 (Digital Coast 4967), not a lidar-change surface and not the raw 121 MB GeoTIFF.",
+  "pins": {
+    "soundview": { "lat": 41.0755, "lng": -71.948, "look": 0, "water": "NORTH / Block Island Sound" },
+    "harbor_jetties": { "lat": 41.075, "lng": -71.9367, "look": 0, "water": "NORTH / inlet (west jetty)" },
+    "ocean_beaches": { "lat": 41.0315, "lng": -71.946, "look": 180, "water": "SOUTH / Kirk Park downtown Atlantic (NOT Ditch)" },
+    "ditch_plains": { "lat": 41.03948, "lng": -71.91701, "look": 168, "water": "SOUTH/SSE" },
+    "lighthouse": { "lat": 41.07099, "lng": -71.85709, "look": 125, "water": "SOUTH/ESE Turtle Hill" }
+  },
+  "planes": [
+    {
+      "file": "assets/photos/nara_lighthouse_1928_18-AA-89-27.jpg",
+      "siteId": "lighthouse",
+      "kind": "ground",
+      "altM": 9
+    },
+    {
+      "file": "assets/photos/dvids_1968_eroded_cliffs.jpg",
+      "siteId": "lighthouse",
+      "kind": "ground",
+      "altM": 26,
+      "skip": "dvids_lighthouse_1968_eroded_cliffs.jpg"
+    },
+    {
+      "file": "assets/photos/dvids_2023_aerial_revetment.jpg",
+      "siteId": "lighthouse",
+      "kind": "aerial",
+      "altM": 52,
+      "tilt": 58
+    },
+    {
+      "file": "assets/photos/commons_ditch_plains_1883_association-cobble-bluff.jpg",
+      "siteId": "ditch_plains",
+      "kind": "ground",
+      "altM": 9
+    },
+    {
+      "file": "assets/photos/loc_ditch_plains_1955_beach-width-bluffs.jpg",
+      "siteId": "ditch_plains",
+      "kind": "ground",
+      "altM": 24
+    },
+    {
+      "file": "assets/photos/usgs_2012_ditch.jpg",
+      "siteId": "ditch_plains",
+      "kind": "usgs-oblique",
+      "altM": 58,
+      "look": 180,
+      "tilt": 38,
+      "note": "Elevated south-looking storm oblique. South shore only."
+    },
+    {
+      "file": "assets/photos/usgs_2012_beach.jpg",
+      "siteId": "ocean_beaches",
+      "kind": "usgs-oblique",
+      "altM": 58,
+      "look": 180,
+      "tilt": 38,
+      "note": "Elevated south-looking storm oblique. Downtown / Kirk Park — not Ditch, not Soundview."
+    },
+    {
+      "file": "assets/photos/commons_ocean_beaches_2026_downtown-aerial.jpg",
+      "siteId": "ocean_beaches",
+      "kind": "aerial",
+      "lat": 41.035025,
+      "lng": -71.9478,
+      "altM": 46,
+      "tilt": 58,
+      "note": "Only photo-level GPS. Caption GPS — not a new pin."
+    },
+    {
+      "file": "assets/photos/commons_soundview_2006_culloden-point-bluff.jpg",
+      "siteId": "soundview",
+      "kind": "ground",
+      "altM": 9
+    },
+    {
+      "file": "assets/photos/commons_soundview_2022_soundview-shore.jpg",
+      "siteId": "soundview",
+      "kind": "ground",
+      "altM": 24
+    },
+    {
+      "file": "assets/photos/commons_harbor_jetties_2017_south-jetty.jpg",
+      "siteId": "harbor_jetties",
+      "kind": "ground",
+      "altM": 9,
+      "note": "Harbor inlet. Normal toward Block Island Sound (north), not south."
+    },
+    {
+      "file": "assets/photos/commons_harbor_jetties_2021_lake-montauk-inlet.jpg",
+      "siteId": "harbor_jetties",
+      "kind": "ground",
+      "altM": 24
+    }
+  ],
   "terrain": {
     "primary": {
+      "id": "ngs-2014-block140-crop",
+      "tiles": ["assets/terrain/2014-ngs/{z}/{x}/{y}.png"],
+      "encoding": "terrarium",
+      "tileSize": 256,
+      "minzoom": 11,
+      "maxzoom": 14,
+      "attribution": "2014 NOAA NGS Post-Sandy DEM Block_140 crop (Digital Coast 4967) · 10 m Terrarium"
+    },
+    "fallback": {
       "id": "mapterhorn",
       "tiles": ["https://tiles.mapterhorn.com/{z}/{x}/{y}.webp"],
       "encoding": "terrarium",
@@ -10,16 +113,8 @@
       "maxzoom": 15,
       "attribution": "Mapterhorn"
     },
-    "fallback": {
-      "id": "aws-terrarium",
-      "tiles": ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
-      "encoding": "terrarium",
-      "tileSize": 256,
-      "maxzoom": 15,
-      "attribution": "AWS Terrain Tiles / Mapzen"
-    },
-    "exaggeration": 4.2,
-    "exaggerationNote": "Visual only. Montauk bluffs are tens of meters; exaggeration makes them readable in the browser."
+    "exaggeration": 2.6,
+    "exaggerationNote": "Visual only. Single 2014 surface — not a change map. 2020/2022 tiles are south-shore slivers and were not used."
   },
   "imagery": {
     "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
@@ -34,23 +129,31 @@
   "paths": [
     {
       "id": "atlantic",
-      "label": "Atlantic / ESE",
-      "note": "Ditch Plains → downtown Kirk Park → lighthouse. Ocean bluffs face south / ESE. Kirk Park is downtown, not Ditch.",
-      "stops": ["ditch_plains", "ocean_beaches", "lighthouse"]
+      "label": "Ditch → Kirk Park → lighthouse",
+      "note": "Camera looks SOUTH/ESE. Downtown / Kirk Park is west of Ditch; that hop is inland, not a continuous beach. Kirk Park is not Ditch.",
+      "stops": [
+        { "siteId": "ditch_plains" },
+        { "via": "inland", "from": "ditch_plains", "to": "ocean_beaches", "northM": 900 },
+        { "siteId": "ocean_beaches" },
+        { "siteId": "lighthouse" }
+      ]
     },
     {
       "id": "sound",
-      "label": "Sound / North",
-      "note": "Soundview → harbor jetties. Both face Block Island Sound (north).",
-      "stops": ["soundview", "harbor_jetties"]
+      "label": "Soundview → west jetty",
+      "note": "Camera looks NORTH over Block Island Sound. harbor_jetties is the inlet / west jetty pin.",
+      "stops": [
+        { "siteId": "soundview" },
+        { "siteId": "harbor_jetties" }
+      ]
     }
   ],
   "look": {
-    "ditch_plains": { "bearing": 168, "pitch": 62, "zoom": 15.45, "inlandM": 380 },
-    "ocean_beaches": { "bearing": 180, "pitch": 60, "zoom": 15.35, "inlandM": 400 },
-    "lighthouse": { "bearing": 125, "pitch": 64, "zoom": 15.55, "inlandM": 420 },
-    "soundview": { "bearing": 0, "pitch": 60, "zoom": 15.4, "inlandM": 360 },
-    "harbor_jetties": { "bearing": 8, "pitch": 58, "zoom": 15.5, "inlandM": 360 }
+    "ditch_plains": { "bearing": 168, "pitch": 62, "zoom": 15.55, "inlandM": 320 },
+    "ocean_beaches": { "bearing": 180, "pitch": 60, "zoom": 15.45, "inlandM": 340 },
+    "lighthouse": { "bearing": 125, "pitch": 64, "zoom": 15.6, "inlandM": 380 },
+    "soundview": { "bearing": 0, "pitch": 60, "zoom": 15.45, "inlandM": 300 },
+    "harbor_jetties": { "bearing": 0, "pitch": 58, "zoom": 15.5, "inlandM": 300 }
   },
   "overview": {
     "pitch": 52,
