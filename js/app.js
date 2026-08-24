@@ -445,6 +445,7 @@
       map.flyTo([site.lat, site.lng], site.zoom || 16, { duration: 1.05 });
       if (markers[id]) markers[id].openPopup();
     }
+    if (isPhoneLayout()) openSitesSheet();
   }
 
   function showList() {
@@ -839,6 +840,87 @@
     $("#ceha-close").addEventListener("click", hide);
   }
 
+
+  function isPhoneLayout() {
+    return window.matchMedia("(max-width: 900px), (max-height: 520px)").matches;
+  }
+
+  function refreshMapSize() {
+    if (map) setTimeout(function () { map.invalidateSize(); }, 240);
+  }
+
+  function closeSheets() {
+    var panel = $("#panel");
+    var gis = $("#gis-panel");
+    var scrim = $("#sheet-scrim");
+    var sitesBtn = $("#btn-sites");
+    var overlaysBtn = $("#btn-overlays");
+    if (panel) panel.classList.remove("is-open");
+    if (gis) gis.classList.remove("is-open");
+    if (sitesBtn) sitesBtn.setAttribute("aria-expanded", "false");
+    if (overlaysBtn) overlaysBtn.setAttribute("aria-expanded", "false");
+    if (scrim) {
+      scrim.hidden = true;
+      scrim.classList.remove("is-on");
+    }
+    refreshMapSize();
+  }
+
+  function openSitesSheet() {
+    if (!isPhoneLayout()) return;
+    var gis = $("#gis-panel");
+    var overlaysBtn = $("#btn-overlays");
+    if (gis) gis.classList.remove("is-open");
+    if (overlaysBtn) overlaysBtn.setAttribute("aria-expanded", "false");
+    $("#panel").classList.add("is-open");
+    $("#btn-sites").setAttribute("aria-expanded", "true");
+    var scrim = $("#sheet-scrim");
+    scrim.hidden = false;
+    scrim.classList.add("is-on");
+    refreshMapSize();
+  }
+
+  function openOverlaysSheet() {
+    if (!isPhoneLayout()) return;
+    $("#panel").classList.remove("is-open");
+    $("#btn-sites").setAttribute("aria-expanded", "false");
+    $("#gis-panel").classList.add("is-open");
+    $("#btn-overlays").setAttribute("aria-expanded", "true");
+    var scrim = $("#sheet-scrim");
+    scrim.hidden = false;
+    scrim.classList.add("is-on");
+    refreshMapSize();
+  }
+
+  function initDrawers() {
+    var sitesBtn = $("#btn-sites");
+    var overlaysBtn = $("#btn-overlays");
+    var scrim = $("#sheet-scrim");
+    var sheetClose = $("#btn-sheet-close");
+    var gisClose = $("#btn-gis-close");
+    if (sitesBtn) {
+      sitesBtn.addEventListener("click", function () {
+        if ($("#panel").classList.contains("is-open")) closeSheets();
+        else openSitesSheet();
+      });
+    }
+    if (overlaysBtn) {
+      overlaysBtn.addEventListener("click", function () {
+        if ($("#gis-panel").classList.contains("is-open")) closeSheets();
+        else openOverlaysSheet();
+      });
+    }
+    if (scrim) scrim.addEventListener("click", closeSheets);
+    if (sheetClose) sheetClose.addEventListener("click", closeSheets);
+    if (gisClose) gisClose.addEventListener("click", closeSheets);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeSheets();
+    });
+    window.addEventListener("resize", function () {
+      if (!isPhoneLayout()) closeSheets();
+    });
+  }
+
   function initChrome() {
     document.querySelectorAll(".tab").forEach(function (tab) {
       tab.addEventListener("click", function () {
@@ -848,8 +930,10 @@
         });
         state.view = tab.dataset.view;
         $("#studies-view").hidden = state.view !== "studies";
+        if (state.view === "studies") closeSheets();
       });
     });
+    initDrawers();
     $("#btn-back").addEventListener("click", showList);
     $("#btn-compare").addEventListener("click", function () {
       state.compare = !state.compare;
