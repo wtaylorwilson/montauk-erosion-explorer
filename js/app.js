@@ -580,6 +580,7 @@
     const shore = await tryFetch("data/eh_shoreline.geojson");
     const cusp = await tryFetch("data/cusp_montauk.geojson");
     const west = await tryFetch("data/usace_nsmf_lake_montauk_western_beach.geojson");
+    const ny1934 = await tryFetch("data/ny1934c.geojson");
 
     if (ceha && ceha.features && ceha.features.length) {
       overlayLayers.ceha = L.geoJSON(ceha, {
@@ -655,19 +656,34 @@
       });
     }
 
+    if (ny1934 && ny1934.features && ny1934.features.length) {
+      overlayLayers.ny1934 = L.geoJSON(ny1934, {
+        style: { color: "#f4b183", weight: 2.4, opacity: 0.92 },
+        onEachFeature: function (feat, layer) {
+          const p = feat.properties || {};
+          layer.bindPopup(
+            "<strong>NOAA NY1934C shoreline</strong> (1 Jun 1934)<br>" +
+            escapeHtml(p.ATTRIBUTE || "Mean High Water") +
+            "<br>Covers Soundview / harbor. Official east bound is west of Ditch and the Point."
+          );
+        },
+      });
+    }
+
     const overlays = {};
     if (overlayLayers.ceha) overlays["E. Hampton CEHA zones"] = overlayLayers.ceha;
     if (overlayLayers.usgs) overlays["USGS LT rates (south shore)"] = overlayLayers.usgs;
     if (overlayLayers.shore) overlays["Town shoreline"] = overlayLayers.shore;
     if (overlayLayers.cusp) overlays["NOAA CUSP 2014"] = overlayLayers.cusp;
     if (overlayLayers.west) overlays["USACE western beach placement"] = overlayLayers.west;
+    if (overlayLayers.ny1934) overlays["NOAA 1934 shoreline"] = overlayLayers.ny1934;
     L.control.layers(baseLayers, overlays, { position: "topright", collapsed: true }).addTo(map);
 
     if (overlayLayers.ceha && $("#tog-ceha").checked) overlayLayers.ceha.addTo(map);
     if (overlayLayers.usgs && $("#tog-usgs").checked) overlayLayers.usgs.addTo(map);
     if (overlayLayers.shore && $("#tog-shore").checked) overlayLayers.shore.addTo(map);
 
-    ["ceha", "usgs", "shore", "cusp", "west"].forEach(function (id) {
+    ["ceha", "usgs", "shore", "cusp", "west", "ny1934"].forEach(function (id) {
       const el = $("#tog-" + id);
       if (!el) return;
       if (!overlayLayers[id]) {
@@ -684,10 +700,10 @@
       if (el) el.checked = on;
     }
     map.on("overlayadd", function (e) {
-      ["ceha", "usgs", "shore", "cusp", "west"].forEach(function (id) { syncToggle(e.layer, id, true); });
+      ["ceha", "usgs", "shore", "cusp", "west", "ny1934"].forEach(function (id) { syncToggle(e.layer, id, true); });
     });
     map.on("overlayremove", function (e) {
-      ["ceha", "usgs", "shore", "cusp", "west"].forEach(function (id) { syncToggle(e.layer, id, false); });
+      ["ceha", "usgs", "shore", "cusp", "west", "ny1934"].forEach(function (id) { syncToggle(e.layer, id, false); });
     });
 
     const loaded = [];
@@ -696,6 +712,7 @@
     if (overlayLayers.shore) loaded.push("shoreline");
     if (overlayLayers.cusp) loaded.push("CUSP " + cusp.features.length);
     if (overlayLayers.west) loaded.push("western beach");
+    if (overlayLayers.ny1934) loaded.push("NY1934C");
     state.dataOrigin.overlays = loaded.join(", ") || "none";
   }
 
