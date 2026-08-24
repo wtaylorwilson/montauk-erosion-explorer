@@ -874,14 +874,18 @@ body {
   .rates-strip::after { content: ""; flex: 0 0 12px; }
 
   .dock {
-    grid-template-columns: minmax(0, 96px) minmax(0, 1fr);
-    gap: 6px 10px;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    grid-template-areas:
+      "year source"
+      "slider slider";
+    gap: 4px 10px;
     padding: 6px 10px calc(8px + env(safe-area-inset-bottom));
     min-width: 0;
     max-width: 100%;
   }
-  .dock-year { min-width: 0; }
-  .dock-source { grid-column: 2; justify-self: end; min-width: 0; }
+  .dock-year { grid-area: year; min-width: 0; }
+  .dock-source { grid-area: source; justify-self: end; align-self: center; min-width: 0; }
+  .slider-wrap { grid-area: slider; }
   .dock-source select { max-width: 42vw; font-size: 12px; }
   #year-label { font-size: 22px; }
   .year-source {
@@ -894,7 +898,6 @@ body {
   #year-slider { height: 28px; }
   .slider-wrap {
     padding-bottom: 2px;
-    grid-column: 1 / -1;
     min-width: 0;
     max-width: 100%;
   }
