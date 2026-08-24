@@ -332,6 +332,10 @@ def main() -> int:
         errors.append("2000 / held years must skip all sand; segments under ~4 m must not draw tan")
     if "function sandRunsForSpec" not in js or "end - start + 1 < 2" not in js:
         errors.append("sand must be drawn only on contiguous runs of at least 2 segments")
+    if "runAlongM" not in js or ">= 40" not in js:
+        errors.append("drop sand runs shorter than 40 m — leftover verts become floating blobs")
+    if "function pushSandBox" not in js or "function thickCrossAt" not in js:
+        errors.append("1871 east end must be a synthesized rectangular cap, not a converging HWL/ref wedge")
     if "w0 > 5 || w1 > 5" in js:
         errors.append("do not OR-gate terrace width — that tapers the east end into slivers")
     if re.search(r"toward\(h0,\s*s0,\s*920\)", js):
