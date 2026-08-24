@@ -75,7 +75,7 @@
         {
           "year": 2025,
           "title": "Hurricane Erin: Highway sand at the Ditch lots; rack line to the dune toe",
-          "text": "On 21 August 2025 the East Hampton Star reported a Highway payloader placing and shaping sand at two Ditch Plains parking lots as Hurricane Erin passed offshore. Councilman David Lys said the rack line reached the toe of the dunes. Forecast waves of 15–20 ft were a prep-meeting figure, not a surveyed shoreline change. Star news photos (Durell Godfrey) stay link-only.",
+          "text": "On 21 August 2025 the East Hampton Star reported a Highway payloader placing and shaping sand at two Ditch Plains parking lots as Hurricane Erin passed offshore. Councilman David Lys said the rack line reached the toe of the dunes. Forecast waves of 15\u201320 ft were a prep-meeting figure, not a surveyed shoreline change. Star news photos (Durell Godfrey) stay link-only.",
           "status": "sourced",
           "sourceUrl": "https://www.easthamptonstar.com/government/2025821/hurricane-erin-offshore-still-packing-punch"
         },
@@ -136,6 +136,20 @@
           "caption": "Toni Frissell \u2014 Ditch Plains beach",
           "credit": "Library of Congress, Toni Frissell, 1955",
           "kind": "loc"
+        },
+        {
+          "year": 1962,
+          "src": "assets/photos/usace_1962_ditch_plains_055.jpg",
+          "caption": "USACE 1962 vertical of Ditch Plains (frame 657-55), 8 Mar 1962",
+          "credit": "U.S. Army Corps of Engineers, 1962-03-08",
+          "kind": "usace"
+        },
+        {
+          "year": 1962,
+          "src": "assets/photos/usace_1962_ditch_plains_057.jpg",
+          "caption": "USACE 1962 vertical of Ditch Plains (frame 657-57), 8 Mar 1962",
+          "credit": "U.S. Army Corps of Engineers, 1962-03-08",
+          "kind": "usace"
         },
         {
           "year": 2007,
@@ -668,6 +682,20 @@
           "kind": "usace"
         },
         {
+          "year": 1962,
+          "src": "assets/photos/usace_1962_fort_pond.jpg",
+          "caption": "USACE 1962 Fort Pond \u2014 village isthmus between the ocean and the pond",
+          "credit": "U.S. Army Corps of Engineers, 1962-03-08",
+          "kind": "usace"
+        },
+        {
+          "year": 1962,
+          "src": "assets/photos/usace_1962_lake_montauk.jpg",
+          "caption": "USACE 1962 vertical of Lake Montauk / inlet",
+          "credit": "U.S. Army Corps of Engineers, 1962-03-08",
+          "kind": "usace"
+        },
+        {
           "year": 1976,
           "src": "assets/aerials/1976-harbor-jetties.jpg",
           "caption": "24 MAR 76 \u2014 closer crop of jetties and Star Island",
@@ -714,6 +742,13 @@
           "src": "assets/photos/commons_harbor_jetties_2022_montauk-inlet.jpg",
           "caption": "Montauk Harbor inlet (NORTH)",
           "credit": "Wikimedia Commons, 2022",
+          "kind": "commons"
+        },
+        {
+          "year": null,
+          "src": "assets/photos/commons_logan_inlet.jpg",
+          "caption": "Lake Montauk inlet / working waterfront (NORTH)",
+          "credit": "Wikimedia Commons (Logan)",
           "kind": "commons"
         }
       ],
@@ -859,6 +894,20 @@
           "kind": "usace"
         },
         {
+          "year": 1962,
+          "src": "assets/photos/usace_1962_montauk_beach.jpg",
+          "caption": "USACE 1962 vertical of Montauk Beach (south shore), 8 Mar 1962",
+          "credit": "U.S. Army Corps of Engineers, 1962-03-08",
+          "kind": "usace"
+        },
+        {
+          "year": 1962,
+          "src": "assets/photos/usace_1962_montauk_beach_051.jpg",
+          "caption": "USACE 1962 vertical of Montauk Beach, adjacent frame 657-51",
+          "credit": "U.S. Army Corps of Engineers, 1962-03-08",
+          "kind": "usace"
+        },
+        {
           "year": 2012,
           "src": "assets/photos/usgs_2012_beach.jpg",
           "caption": "USGS DS 858 oblique, 5 Nov 2012 \u2014 Montauk Beach / downtown ocean",
@@ -880,6 +929,13 @@
           "kind": "usgs"
         },
         {
+          "year": 2014,
+          "src": "assets/photos/usgs_ds958_2014_1006_182715d.jpg",
+          "caption": "USGS DS 958 baseline oblique, 6 Oct 2014 \u2014 downtown ocean (adjacent frame)",
+          "credit": "U.S. Geological Survey, DS 958, 2014-10-06",
+          "kind": "usgs"
+        },
+        {
           "year": 2015,
           "src": "assets/photos/usgs_ds995_2015_1008_170945d.jpg",
           "caption": "USGS DS 995 post-Joaquin oblique, 8 Oct 2015 \u2014 downtown ocean",
@@ -890,6 +946,13 @@
           "year": 2016,
           "src": "assets/photos/usgs_ds1030_2016_ocean_beaches.jpg",
           "caption": "USGS DS 1030 winter oblique, 9 Mar 2016 \u2014 downtown ocean",
+          "credit": "U.S. Geological Survey, DS 1030, 2016-03-09",
+          "kind": "usgs"
+        },
+        {
+          "year": 2016,
+          "src": "assets/photos/usgs_ds1030_2016_0309_185337d.jpg",
+          "caption": "USGS DS 1030 winter oblique, 9 Mar 2016 \u2014 downtown ocean (adjacent frame)",
           "credit": "U.S. Geological Survey, DS 1030, 2016-03-09",
           "kind": "usgs"
         },
@@ -1015,10 +1078,24 @@
       ],
       "photos": [
         {
+          "year": 1796,
+          "src": "assets/photos/nara_lighthouse_1796_86453834.jpg",
+          "caption": "A View of the Light House on Montauk Point, 1796 (Isaac McComb)",
+          "credit": "U.S. National Archives",
+          "kind": "nara"
+        },
+        {
           "year": 1871,
           "src": "assets/photos/loc_1871_montauk_light.jpg",
           "caption": "Montauk Point Light, 1871",
           "credit": "Library of Congress, 1871",
+          "kind": "loc"
+        },
+        {
+          "year": 1884,
+          "src": "assets/photos/loc_1884_lighthouse_trawler.jpg",
+          "caption": "Fishing trawler off Montauk Point Light, 1884",
+          "credit": "Library of Congress, 1884",
           "kind": "loc"
         },
         {
@@ -1036,9 +1113,30 @@
           "kind": "loc"
         },
         {
+          "year": 1919,
+          "src": "assets/photos/loc_1919_lighthouse_montauk_point.jpg",
+          "caption": "Lighthouse \u2014 Montauk Point, Long Island (postcard)",
+          "credit": "Library of Congress, 1919",
+          "kind": "loc"
+        },
+        {
           "year": 1928,
           "src": "assets/photos/nara_lighthouse_1928_18-AA-89-27.jpg",
           "caption": "NARA Airscapes, 10 Aug 1928 \u2014 pre-armor bluff and wooden landings",
+          "credit": "U.S. National Archives",
+          "kind": "nara"
+        },
+        {
+          "year": 1930,
+          "src": "assets/photos/nara_lighthouse_1930_18-AA-89-25.jpg",
+          "caption": "NARA Airscapes, 1930 \u2014 Montauk Point Light from the air",
+          "credit": "U.S. National Archives",
+          "kind": "nara"
+        },
+        {
+          "year": 1930,
+          "src": "assets/photos/nara_lighthouse_1930_18-AA-89-26.jpg",
+          "caption": "NARA Airscapes, 1930 \u2014 lighthouse bluff and approach roads",
           "credit": "U.S. National Archives",
           "kind": "nara"
         },
@@ -1071,6 +1169,34 @@
           "kind": "usace"
         },
         {
+          "year": 1945,
+          "src": "assets/photos/loc_1945_residence_lighthouse.jpg",
+          "caption": "Keeper's residence at Montauk Point Light, 1945",
+          "credit": "Library of Congress, 1945",
+          "kind": "loc"
+        },
+        {
+          "year": 1956,
+          "src": "assets/photos/loc_1956_keeper_schumacher.jpg",
+          "caption": "Keeper Schumacher and family at Montauk Point Light, 1956",
+          "credit": "Library of Congress, 1956",
+          "kind": "loc"
+        },
+        {
+          "year": 1962,
+          "src": "assets/photos/usace_1962_camp_hero.jpg",
+          "caption": "USACE 1962 vertical of Camp Hero / Turtle Cove bluffs",
+          "credit": "U.S. Army Corps of Engineers, 1962-03-08",
+          "kind": "usace"
+        },
+        {
+          "year": 1962,
+          "src": "assets/photos/usace_1962_montauk_point.jpg",
+          "caption": "USACE 1962 vertical of Montauk Point",
+          "credit": "U.S. Army Corps of Engineers, 1962-03-08",
+          "kind": "usace"
+        },
+        {
           "year": 1968,
           "src": "assets/photos/dvids_1968_eroded_cliffs.jpg",
           "caption": "Eroded Turtle Hill cliffs, 1968",
@@ -1085,10 +1211,31 @@
           "kind": "dvids"
         },
         {
+          "year": 1970,
+          "src": "assets/photos/loc_lighthouse_1970_gotfryd_07310.jpg",
+          "caption": "Bernard Gotfryd, 1970 \u2014 Montauk Point Light from the hill",
+          "credit": "Library of Congress, Bernard Gotfryd, 1970",
+          "kind": "loc"
+        },
+        {
+          "year": 1970,
+          "src": "assets/photos/loc_lighthouse_1970_gotfryd_07311.jpg",
+          "caption": "Bernard Gotfryd, 1970 \u2014 Montauk Point Light through the scrub",
+          "credit": "Library of Congress, Bernard Gotfryd, 1970",
+          "kind": "loc"
+        },
+        {
           "year": 1997,
           "src": "assets/photos/commons_uscg_1997_montauk_light.jpg",
           "caption": "USCG Montauk Point Light, 1997",
           "credit": "U.S. Coast Guard / Wikimedia Commons, 1997",
+          "kind": "commons"
+        },
+        {
+          "year": 1999,
+          "src": "assets/photos/commons_lighthouse_1999_point-storm-usace.jpg",
+          "caption": "USACE storm surf at Montauk Point, 1999",
+          "credit": "U.S. Army Corps of Engineers / Wikimedia Commons, 1999",
           "kind": "commons"
         },
         {
@@ -1097,6 +1244,20 @@
           "caption": "Montauk Point Light, 2006",
           "credit": "Wikimedia Commons, 2006",
           "kind": "commons"
+        },
+        {
+          "year": 2007,
+          "src": "assets/photos/commons_2007_montauk_point_light.jpg",
+          "caption": "Montauk Point Light, 2007",
+          "credit": "Wikimedia Commons, 2007",
+          "kind": "commons"
+        },
+        {
+          "year": 2008,
+          "src": "assets/photos/dvids_lighthouse_2008_helo_overflight.jpg",
+          "caption": "USCG / DVIDS helicopter overflight of Montauk Point Light, 2008",
+          "credit": "DVIDS / U.S. Coast Guard, 2008",
+          "kind": "dvids"
         },
         {
           "year": 2012,
@@ -1110,6 +1271,13 @@
           "src": "assets/photos/usgs_2012_point.jpg",
           "caption": "USGS DS 858 oblique, 5 Nov 2012 \u2014 Montauk Point",
           "credit": "U.S. Geological Survey, DS 858, 2012-11-05 (134520d)",
+          "kind": "usgs"
+        },
+        {
+          "year": 2012,
+          "src": "assets/photos/usgs_ds858_2012_1105_134518d.jpg",
+          "caption": "USGS DS 858 oblique, 5 Nov 2012 \u2014 Montauk Point (adjacent frame)",
+          "credit": "U.S. Geological Survey, DS 858, 2012-11-05",
           "kind": "usgs"
         },
         {
@@ -1127,6 +1295,13 @@
           "kind": "usgs"
         },
         {
+          "year": 2015,
+          "src": "assets/photos/usgs_ds995_2015_1008_171456d.jpg",
+          "caption": "USGS DS 995 post-Joaquin oblique, 8 Oct 2015 \u2014 Montauk Point",
+          "credit": "U.S. Geological Survey, DS 995, 2015-10-08",
+          "kind": "usgs"
+        },
+        {
           "year": 2016,
           "src": "assets/photos/usgs_ds1030_2016_lighthouse.jpg",
           "caption": "USGS DS 1030 winter oblique, 9 Mar 2016 \u2014 Montauk Point",
@@ -1134,9 +1309,44 @@
           "kind": "usgs"
         },
         {
+          "year": 2019,
+          "src": "assets/photos/commons_lighthouse_2019_camp-hero-from-tower.jpg",
+          "caption": "Camp Hero radar tower from the lighthouse gallery, 2019",
+          "credit": "Wikimedia Commons, 2019",
+          "kind": "commons"
+        },
+        {
           "year": 2023,
           "src": "assets/photos/dvids_2023_aerial_revetment.jpg",
           "caption": "USACE / DVIDS aerial of the completed lighthouse revetment, 2023",
+          "credit": "DVIDS / U.S. Army Corps of Engineers, 2023",
+          "kind": "dvids"
+        },
+        {
+          "year": 2023,
+          "src": "assets/photos/dvids_lighthouse_2023_seawall_turtle_hill.jpg",
+          "caption": "USACE / DVIDS \u2014 Turtle Hill seawall construction, 2023",
+          "credit": "DVIDS / U.S. Army Corps of Engineers, 2023",
+          "kind": "dvids"
+        },
+        {
+          "year": 2023,
+          "src": "assets/photos/dvids_lighthouse_2023_stabilized_cliffs.jpg",
+          "caption": "USACE / DVIDS \u2014 stabilized Turtle Hill cliffs after the revetment, 2023",
+          "credit": "DVIDS / U.S. Army Corps of Engineers, 2023",
+          "kind": "dvids"
+        },
+        {
+          "year": 2023,
+          "src": "assets/photos/dvids_lighthouse_2023_construction_visit.jpg",
+          "caption": "USACE / DVIDS construction visit at the lighthouse revetment, 2023",
+          "credit": "DVIDS / U.S. Army Corps of Engineers, 2023",
+          "kind": "dvids"
+        },
+        {
+          "year": 2023,
+          "src": "assets/photos/dvids_lighthouse_2023_usace_bian.jpg",
+          "caption": "USACE / DVIDS \u2014 Corps official at the lighthouse revetment, 2023",
           "credit": "DVIDS / U.S. Army Corps of Engineers, 2023",
           "kind": "dvids"
         },
