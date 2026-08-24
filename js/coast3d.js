@@ -1,9 +1,43 @@
-/* 3D coast — five locked pins, twelve planes, no extra markers. */
+/* 3D coast — five locked pins, ONLY these twelve planes. Never hang gallery/CEHA. */
 (function (global) {
   "use strict";
 
   var PATH_DWELL_MS = 2800;
   var INLAND_DWELL_MS = 2000;
+
+  /* Camera / water normals: Ditch 168, downtown 180, lighthouse 125, Soundview 0, harbor 8. */
+  var WATER_LOOK = {
+    soundview: 0,
+    harbor_jetties: 8,
+    ocean_beaches: 180,
+    ditch_plains: 168,
+    lighthouse: 125
+  };
+
+  /* Hard allowlist. JSON may tune hang numbers; it cannot add extras. */
+  var LOCKED_PLANES = [
+    { file: "nara_lighthouse_1928_18-AA-89-27.jpg", siteId: "lighthouse", kind: "aerial", look: 338, altM: 52, tilt: 42 },
+    { file: "dvids_1968_eroded_cliffs.jpg", siteId: "lighthouse", kind: "aerial", look: 125, altM: 56, tilt: 40 },
+    { file: "dvids_2023_aerial_revetment.jpg", siteId: "lighthouse", kind: "aerial", look: 125, altM: 64, tilt: 58 },
+    { file: "commons_ditch_plains_1883_association-cobble-bluff.jpg", siteId: "ditch_plains", kind: "ground", look: 168, altM: 8, tilt: 0 },
+    { file: "loc_ditch_plains_1955_beach-width-bluffs.jpg", siteId: "ditch_plains", kind: "ground", look: 112, altM: 8, tilt: 0 },
+    { file: "usgs_2012_ditch.jpg", siteId: "ditch_plains", kind: "aerial", look: 180, altM: 58, tilt: 38 },
+    { file: "usgs_ds858_2012_1105_134804d.jpg", siteId: "ocean_beaches", kind: "aerial", look: 180, altM: 58, tilt: 38 },
+    { file: "commons_ocean_beaches_2026_downtown-aerial.jpg", siteId: "ocean_beaches", kind: "aerial", look: 180, altM: 52, tilt: 58, lat: 41.035025, lng: -71.9478 },
+    { file: "commons_soundview_2006_culloden-point-bluff.jpg", siteId: "soundview", kind: "ground", look: 270, altM: 8, tilt: 0 },
+    { file: "commons_soundview_2022_soundview-shore.jpg", siteId: "soundview", kind: "ground", look: 0, altM: 8, tilt: 0 },
+    { file: "commons_harbor_jetties_2017_south-jetty.jpg", siteId: "harbor_jetties", kind: "ground", look: 8, altM: 8, tilt: 0 },
+    { file: "commons_harbor_jetties_2021_lake-montauk-inlet.jpg", siteId: "harbor_jetties", kind: "aerial", look: 180, altM: 52, tilt: 48 }
+  ];
+
+  var BLOCKED_FILES = {
+    "usgs_2012_beach.jpg": 1,
+    "loc_ocean_beaches_1919_hither_hills.jpg": 1,
+    "dvids_lighthouse_1968_eroded_cliffs.jpg": 1,
+    "library_1909_great_pond_moran.jpg": 1,
+    "commons_1909_great_pond.jpg": 1,
+    "commons_logan_soundview.jpg": 1
+  };
 
   var api = {
     init: init,
@@ -91,38 +125,83 @@
     return null;
   }
 
-  function collectCards(siteList) {
+  function isBlockedSrc(src) {
+    var name = basename(src);
+    if (!name) return true;
+    if (BLOCKED_FILES[name]) return true;
+    if (/ceha/i.test(src) || /ceha/i.test(name)) return true;
+    if (/moran/i.test(name)) return true;
+    if (/dvids_lighthouse_1968/.test(name)) return true;
+    return false;
+  }
+
+  function jsonPlaneByFile() {
+    var map = {};
     var planes = (cfg && cfg.planes) || [];
-    var pins = (cfg && cfg.pins) || {};
-    var out = [];
     planes.forEach(function (spec) {
-      var found = findSitePhoto(siteList, spec.file);
-      if (!found) return;
-      if (spec.siteId && found.site.id !== spec.siteId) return;
-      var pin = pins[spec.siteId] || pins[found.site.id] || {};
-      var lat = spec.lat != null ? Number(spec.lat) : Number(pin.lat != null ? pin.lat : found.site.lat);
-      var lng = spec.lng != null ? Number(spec.lng) : Number(pin.lng != null ? pin.lng : found.site.lng);
-      var look = spec.look != null ? spec.look : (pin.look != null ? pin.look : 180);
+      var name = basename(spec && spec.file);
+      if (!name || isBlockedSrc(spec.file)) return;
+      map[name] = spec;
+    });
+    return map;
+  }
+
+  function collectCards(siteList) {
+    var pins = (cfg && cfg.pins) || {};
+    var extras = jsonPlaneByFile();
+    var out = [];
+    LOCKED_PLANES.forEach(function (locked) {
+      if (isBlockedSrc(locked.file)) return;
+      var spec = extras[locked.file] || {};
+      var found = findSitePhoto(siteList, locked.file);
+      if (!found || !found.photo) return;
+      if (isBlockedSrc(found.photo.src)) return;
+      if (found.photo.kind === "ceha") return;
+      if (found.photo.year == null || found.photo.year === "") return;
+      var yearNum = Number(found.photo.year);
+      if (!isFinite(yearNum)) return;
+      if (found.site.id !== locked.siteId) return;
+      if (spec.siteId && spec.siteId !== locked.siteId) return;
+      var pin = pins[locked.siteId] || {};
+      var kind = locked.kind;
+      var look = locked.look != null ? locked.look : (WATER_LOOK[locked.siteId] != null ? WATER_LOOK[locked.siteId] : 180);
+      if (spec.look != null && isFinite(Number(spec.look))) look = Number(spec.look);
+      var altM = locked.altM;
+      if (spec.altM != null && isFinite(Number(spec.altM))) altM = Number(spec.altM);
+      var tilt = locked.tilt;
+      if (spec.tilt != null && isFinite(Number(spec.tilt))) tilt = Number(spec.tilt);
+      if (kind === "ground") {
+        tilt = 0;
+        if (!(altM > 0) || altM > 14) altM = 8;
+      } else {
+        if (!(altM >= 40)) altM = 52;
+      }
+      var lat = locked.lat != null ? locked.lat : (pin.lat != null ? pin.lat : found.site.lat);
+      var lng = locked.lng != null ? locked.lng : (pin.lng != null ? pin.lng : found.site.lng);
+      if (spec.lat != null && spec.lng != null) {
+        lat = Number(spec.lat);
+        lng = Number(spec.lng);
+      }
       out.push({
         spec: spec,
-        siteId: spec.siteId || found.site.id,
+        siteId: locked.siteId,
         site: found.site,
         photo: found.photo,
-        year: found.photo.year == null ? null : Number(found.photo.year),
-        lat: lat,
-        lng: lng,
-        kind: spec.kind || "ground",
-        altM: spec.altM != null ? spec.altM : (spec.kind === "aerial" ? 52 : 8),
+        year: yearNum,
+        lat: Number(lat),
+        lng: Number(lng),
+        kind: kind,
+        altM: altM,
         look: look,
-        tilt: spec.tilt != null ? spec.tilt : (spec.kind === "aerial" ? 42 : 0),
-        gps: spec.lat != null && spec.lng != null
+        tilt: tilt,
+        gps: locked.lat != null && locked.lng != null
       });
     });
     return out;
   }
 
   function cardVisible(rec) {
-    if (rec.year == null) return true;
+    if (!rec || rec.year == null || !isFinite(rec.year)) return false;
     return rec.year <= year;
   }
 
@@ -145,7 +224,7 @@
     var look = (cfg && cfg.look && cfg.look[site.id]) || {};
     var pin = (cfg && cfg.pins && cfg.pins[site.id]) || {};
     return {
-      bearing: look.bearing != null ? look.bearing : (pin.look != null ? pin.look : 180),
+      bearing: look.bearing != null ? look.bearing : (pin.look != null ? pin.look : (WATER_LOOK[site.id] != null ? WATER_LOOK[site.id] : 180)),
       pitch: look.pitch != null ? look.pitch : 60,
       zoom: look.zoom != null ? look.zoom : 15.4,
       inlandM: look.inlandM != null ? look.inlandM : 320
@@ -189,6 +268,20 @@
     return [lng / ids.length, lat / ids.length];
   }
 
+  function demSource(id, terrainSrc, withAttr) {
+    var src = {
+      type: "raster-dem",
+      tiles: terrainSrc.tiles,
+      encoding: terrainSrc.encoding || "terrarium",
+      tileSize: terrainSrc.tileSize || 256,
+      minzoom: terrainSrc.minzoom || 0,
+      maxzoom: terrainSrc.maxzoom || 15
+    };
+    if (withAttr && terrainSrc.attribution) src.attribution = terrainSrc.attribution;
+    if (terrainSrc.bounds) src.bounds = terrainSrc.bounds;
+    return src;
+  }
+
   function styleSpec(terrainSrc) {
     var img = (cfg && cfg.imagery) || {
       tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
@@ -217,25 +310,8 @@
           attribution: hill.attribution,
           maxzoom: hill.maxzoom || 16
         },
-        terrain: {
-          type: "raster-dem",
-          tiles: terrainSrc.tiles,
-          encoding: terrainSrc.encoding || "terrarium",
-          tileSize: terrainSrc.tileSize || 256,
-          minzoom: terrainSrc.minzoom || 0,
-          maxzoom: terrainSrc.maxzoom || 15,
-          attribution: terrainSrc.attribution,
-          bounds: terrainSrc.bounds || [-71.965, 41.022, -71.845, 41.088]
-        },
-        hillshadeDem: {
-          type: "raster-dem",
-          tiles: terrainSrc.tiles,
-          encoding: terrainSrc.encoding || "terrarium",
-          tileSize: terrainSrc.tileSize || 256,
-          minzoom: terrainSrc.minzoom || 0,
-          maxzoom: terrainSrc.maxzoom || 15,
-          bounds: terrainSrc.bounds || [-71.965, 41.022, -71.845, 41.088]
-        }
+        terrain: demSource("terrain", terrainSrc, true),
+        hillshadeDem: demSource("hillshadeDem", terrainSrc, false)
       },
       layers: [
         { id: "imagery", type: "raster", source: "imagery" },
@@ -686,7 +762,10 @@
   api._helpers = {
     destPoint: destPoint,
     collectCards: collectCards,
-    basename: basename
+    basename: basename,
+    lockedPlanes: LOCKED_PLANES,
+    isBlockedSrc: isBlockedSrc,
+    cardVisible: cardVisible
   };
 
   global.MontaukCoast3D = api;

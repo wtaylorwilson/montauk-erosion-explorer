@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "note": "Placement is locked to the five sites.json pins. The first pass is twelve planes already in assets/photos. No extra pins. Downtown (Kirk Park) is west of Ditch — that hop is inland, not a continuous beach. 1996 is a deed, not a lighthouse move. Terrain is a 10 m Terrarium crop of 2014 NGS Post-Sandy Block_140 (Digital Coast 4967), not a lidar-change surface and not the raw 121 MB GeoTIFF.",
+  "note": "ONLY these twelve planes. Do not hang CEHA, 1909 Moran, year-null cards, usgs_2012_beach, 1919 Hither Hills, or the rest of the gallery. Five sites.json pins only. Downtown (Kirk Park) is west of Ditch — that hop is inland. 1996 is a deed. Mapterhorn Terrarium is the key-free interim terrain.",
   "pins": {
     "soundview": { "lat": 41.0755, "lng": -71.948, "look": 0, "water": "NORTH / Block Island Sound" },
-    "harbor_jetties": { "lat": 41.075, "lng": -71.9367, "look": 0, "water": "NORTH / inlet (west jetty)" },
+    "harbor_jetties": { "lat": 41.075, "lng": -71.9367, "look": 8, "water": "NORTH / inlet (west jetty)" },
     "ocean_beaches": { "lat": 41.0315, "lng": -71.946, "look": 180, "water": "SOUTH / Kirk Park downtown Atlantic (NOT Ditch)" },
     "ditch_plains": { "lat": 41.03948, "lng": -71.91701, "look": 168, "water": "SOUTH/SSE" },
     "lighthouse": { "lat": 41.07099, "lng": -71.85709, "look": 125, "water": "SOUTH/ESE Turtle Hill" }
@@ -14,7 +14,7 @@
       "siteId": "lighthouse",
       "kind": "aerial",
       "look": 338,
-      "altM": 48,
+      "altM": 52,
       "tilt": 42,
       "note": "Print 8-10-28. From the ocean looking NNW. Elevated card, not a beach billboard."
     },
@@ -41,19 +41,19 @@
       "file": "assets/photos/commons_ditch_plains_1883_association-cobble-bluff.jpg",
       "siteId": "ditch_plains",
       "kind": "ground",
-      "look": 0,
+      "look": 168,
       "altM": 8,
       "tilt": 0,
-      "note": "Ground plane. Looks at the till face, inland (north) — not a seaward billboard."
+      "note": "Vertical ground plane. Normal toward the water (168). Viewer looks inland at the till face."
     },
     {
       "file": "assets/photos/loc_ditch_plains_1955_beach-width-bluffs.jpg",
       "siteId": "ditch_plains",
       "kind": "ground",
-      "look": 125,
+      "look": 112,
       "altM": 8,
       "tilt": 0,
-      "note": "Frissell. Ground plane along-shore ESE."
+      "note": "Frissell. Vertical ground plane along-shore ESE."
     },
     {
       "file": "assets/photos/usgs_2012_ditch.jpg",
@@ -80,7 +80,7 @@
       "lat": 41.035025,
       "lng": -71.9478,
       "look": 180,
-      "altM": 46,
+      "altM": 52,
       "tilt": 58,
       "note": "Only photo-level GPS. Caption GPS — not a new pin. Downtown / Kirk Park, not Ditch."
     },
@@ -106,10 +106,10 @@
       "file": "assets/photos/commons_harbor_jetties_2017_south-jetty.jpg",
       "siteId": "harbor_jetties",
       "kind": "ground",
-      "look": 0,
+      "look": 8,
       "altM": 8,
       "tilt": 0,
-      "note": "Name is the structure. Looks NORTH at the inlet — not south."
+      "note": "Name is the structure. Vertical ground plane, normal toward the water (look 8 / NORTH) at the inlet."
     },
     {
       "file": "assets/photos/commons_harbor_jetties_2021_lake-montauk-inlet.jpg",
@@ -123,6 +123,14 @@
   ],
   "terrain": {
     "primary": {
+      "id": "mapterhorn",
+      "tiles": ["https://tiles.mapterhorn.com/{z}/{x}/{y}.webp"],
+      "encoding": "terrarium",
+      "tileSize": 512,
+      "maxzoom": 15,
+      "attribution": "Mapterhorn Terrarium (key-free interim)"
+    },
+    "fallback": {
       "id": "ngs-2014-block140-crop",
       "tiles": ["assets/terrain/2014-ngs/{z}/{x}/{y}.png"],
       "encoding": "terrarium",
@@ -131,14 +139,6 @@
       "maxzoom": 14,
       "bounds": [-71.965, 41.022, -71.845, 41.088],
       "attribution": "2014 NOAA NGS Post-Sandy DEM Block_140 crop (Digital Coast 4967) · 10 m Terrarium"
-    },
-    "fallback": {
-      "id": "mapterhorn",
-      "tiles": ["https://tiles.mapterhorn.com/{z}/{x}/{y}.webp"],
-      "encoding": "terrarium",
-      "tileSize": 512,
-      "maxzoom": 15,
-      "attribution": "Mapterhorn"
     },
     "exaggeration": 2.6,
     "exaggerationNote": "Visual only. Single 2014 surface — not a change map. 2020/2022 tiles are south-shore slivers and were not used."
@@ -180,7 +180,7 @@
     "ocean_beaches": { "bearing": 180, "pitch": 60, "zoom": 15.45, "inlandM": 340 },
     "lighthouse": { "bearing": 125, "pitch": 64, "zoom": 15.6, "inlandM": 380 },
     "soundview": { "bearing": 0, "pitch": 60, "zoom": 15.45, "inlandM": 300 },
-    "harbor_jetties": { "bearing": 0, "pitch": 58, "zoom": 15.5, "inlandM": 300 }
+    "harbor_jetties": { "bearing": 8, "pitch": 58, "zoom": 15.5, "inlandM": 300 }
   },
   "overview": {
     "pitch": 52,
