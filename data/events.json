@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "events": [
+    {
+      "year": 1796,
+      "title": "Light completed on Turtle Hill",
+      "status": "sourced",
+      "siteId": "lighthouse"
+    },
+    {
+      "year": 1926,
+      "title": "Private harbor jetties",
+      "status": "sourced",
+      "siteId": "harbor_jetties"
+    },
+    {
+      "year": 1927,
+      "title": "Lake Montauk inlet opened",
+      "status": "sourced",
+      "siteId": "harbor_jetties"
+    },
+    {
+      "year": 1938,
+      "title": "Hurricane of 1938 / USACE aerials",
+      "status": "sourced",
+      "siteId": "ocean_beaches"
+    },
+    {
+      "year": 1976,
+      "title": "BJ Old Montauk aerials (24 MAR 76)",
+      "status": "sourced",
+      "siteId": "harbor_jetties"
+    },
+    {
+      "year": 1984,
+      "title": "BJ Old Montauk aerials (Apr 1984)",
+      "status": "sourced",
+      "siteId": "harbor_jetties"
+    },
+    {
+      "year": 1996,
+      "title": "Lighthouse deeded \u2014 tower unmoved",
+      "status": "sourced",
+      "siteId": "lighthouse"
+    },
+    {
+      "year": 2012,
+      "title": "Hurricane Sandy",
+      "status": "sourced",
+      "siteId": "ocean_beaches"
+    },
+    {
+      "year": 2024,
+      "title": "FIMP downtown ~500,000 cy",
+      "status": "sourced",
+      "siteId": "ocean_beaches"
+    },
+    {
+      "year": 2025,
+      "title": "Harbor deepening; ~110k cy west",
+      "status": "sourced",
+      "siteId": "harbor_jetties"
+    }
+  ]
+}

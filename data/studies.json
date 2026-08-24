@@ -1,0 +1,325 @@
+{
+  "version": 2,
+  "status": "loaded-from-research-when-served",
+  "caveats": [
+    "The Montauk Point Lighthouse was NOT physically relocated in 1996. That year the Montauk Historical Society took ownership. Relocation was studied by USACE and rejected in favor of a stone revetment.",
+    "USGS Hapke 2010/2011 Long Island regional net rates are dominated by nourished/engineered western barrier beaches; they are not Montauk-specific. Use the OFR 2010-1119 transect shapefiles for Montauk.",
+    "Hapke text (p. 43) writes long-term Long Island net as '\u22120.08 m/yr' but Table 9a lists +0.08 \u00b1 0.2 m/yr and calls the net accretional. Table 9a is used here.",
+    "CARP 0.5\u20132.5 ft/yr (Downtown Montauk and Ditch Plains) is from GZA 2020 workshop slides citing 1983\u20132016 shoreline-change trends. USGS long-term (1800s\u20132007) means at those sites are smaller. Different methods and periods.",
+    "News volumes (e.g. 500,000 cy placed in 2024) can differ from FIMP design volumes (450,000 cy). Both are recorded with their sources.",
+    "Lake Montauk / Soundview is a north-shore (Block Island Sound) problem driven by jetties interrupting east-to-west littoral drift. USGS OFR 2010-1118/1119 covers the open-ocean south shore only."
+  ],
+  "studies": [
+    {
+      "id": "hapke-2010-ofr-1118",
+      "title": "National Assessment of Shoreline Change: Historical Shoreline Change along the New England and Mid-Atlantic Coasts",
+      "authors": "Cheryl J. Hapke, Emily A. Himmelstoss, Meredith G. Kratzmann, Jeffrey H. List, E. Robert Thieler / U.S. Geological Survey",
+      "year": 2011,
+      "url": "https://pubs.usgs.gov/of/2010/1118/",
+      "note": "The standard USGS national shoreline-change assessment. Long Island as a whole looks nearly stable or slightly accretional because western nourished barriers pull the average; Montauk itself is a bluffed erosional headland and must be read from the transect GIS, not the regional mean.",
+      "publisher": "",
+      "siteIds": [
+        "south_shore_ocean_beaches_downtown_montauk",
+        "montauk_point_lighthouse_bluffs_turtle_cove"
+      ]
+    },
+    {
+      "id": "himmelstoss-2010-ofr-1119",
+      "title": "National Assessment of Shoreline Change: A GIS Compilation of Vector Shorelines and Associated Shoreline Change Data for the New England and Mid-Atlantic Coasts",
+      "authors": "Emily A. Himmelstoss, Meredith G. Kratzmann, Cheryl Hapke, E. Robert Thieler, Jeffrey List / USGS",
+      "year": 2010,
+      "url": "https://pubs.usgs.gov/of/2010/1119/",
+      "note": "The plottable GIS. Use LongIsland_LT.shp LRR (m/yr, negative = erosion) and LongIsland_shorelines.shp dates 1830\u20132007 to overlay Montauk.",
+      "publisher": "",
+      "siteIds": [
+        "ditch_plains",
+        "south_shore_ocean_beaches_downtown_montauk",
+        "montauk_point_lighthouse_bluffs_turtle_cove"
+      ]
+    },
+    {
+      "id": "gza-carp-2020",
+      "title": "Coastal Assessment and Resiliency Plan (CARP) \u2014 Second Public Meeting / Town of East Hampton",
+      "authors": "GZA GeoEnvironmental of New York, with Dodson & Flinker and Coastal Ocean Analytics, for Town of East Hampton",
+      "year": 2020,
+      "url": "https://www.preservemontauk.org/wp-content/uploads/2020/07/East-Hampton-CARP-Worshop-2-_compiled_as-presented_2020_0622.pdf",
+      "note": "The town's adopted (2022) coastal plan. It treats Downtown Montauk and Ditch Plains as the two ocean-shore erosional focus areas at 0.5\u20132.5 ft/yr and flags Soundview/Culloden as a separate north-shore problem.",
+      "publisher": "",
+      "siteIds": [
+        "ditch_plains",
+        "south_shore_ocean_beaches_downtown_montauk",
+        "soundview_drive_north_shore",
+        "montauk_harbor_jetties_lake_montauk_inlet"
+      ]
+    },
+    {
+      "id": "usace-fimp-2020",
+      "title": "Fire Island Inlet to Montauk Point Reformulation Study / General Reevaluation Report and Final EIS (Recommended Plan: Montauk feeder beach)",
+      "authors": "U.S. Army Corps of Engineers, New York District",
+      "year": 2020,
+      "url": "https://www.nan.usace.army.mil/Missions/Civil-Works/Projects-in-New-York/Fire-Island-to-Montauk-Point/FIMP-Reports/",
+      "note": "FIMP's Montauk feature is a repeating feeder beach, not a seawall: ~450,000 cy every four years for 30 years, intended to feed the westward longshore system and bury the 2016 geobags.",
+      "publisher": "",
+      "siteIds": [
+        "south_shore_ocean_beaches_downtown_montauk"
+      ]
+    },
+    {
+      "id": "ehampton-downtown-faq-2015",
+      "title": "The Downtown Montauk Stabilization Project Frequently Asked Questions (as of November 18, 2015)",
+      "authors": "Town of East Hampton",
+      "year": 2015,
+      "url": "http://www.ehamptonny.gov/DocumentCenter/Home/View/1671",
+      "note": "Post-Sandy Downtown Montauk was so stripped that USACE built a 3,100-ft buried geotextile-bag dune (2015\u201316) as a one-time stabilizer until the FIMP feeder beach could be built.",
+      "publisher": "",
+      "siteIds": [
+        "south_shore_ocean_beaches_downtown_montauk"
+      ]
+    },
+    {
+      "id": "usace-montauk-point-lighthouse",
+      "title": "Montauk Point, NY, Hurricane and Storm Damage Reduction / Lighthouse Revetment Project (2005 Feasibility Report & EIS; 2017 Hurricane Sandy Limited Re-evaluation Report; 2021\u20132023 construction)",
+      "authors": "U.S. Army Corps of Engineers, New York District, with NYS, Montauk Historical Society, NYS Parks, Town of East Hampton",
+      "year": 2005,
+      "url": "https://www.nan.usace.army.mil/Missions/Civil-Works/Projects-in-New-York/Montauk-Point/",
+      "note": "The lighthouse was never moved. USACE repeatedly chose armor-stone revetment over relocation. Distance-to-bluff shrank from ~300 ft (1796) to ~75 ft (1990s\u20132006) and is cited as <50\u2013100 ft in later Corps fact sheets \u2014 then the 2021\u201323 revetment rebuilt the toe, including Turtle Cove.",
+      "publisher": "",
+      "siteIds": [
+        "montauk_point_lighthouse_bluffs_turtle_cove"
+      ]
+    },
+    {
+      "id": "bokuniewicz-huang-2016",
+      "title": "Inventory of Sand Borrow Sites along New York's Ocean Shoreline & their sustainable management",
+      "authors": "Henry Bokuniewicz and Haibo Huang / Stony Brook University for BOEM (M14AC00001)",
+      "year": 2016,
+      "url": "https://www.boem.gov/sites/default/files/mm-research/2021-05/BokuniewiczAndHuang2016_M14AC00001NYSandBorrowSiteInventory.pdf",
+      "note": "The best single synthesis of why Montauk bluffs matter: they start the south-shore sand conveyor, but every published budget finds they supply far less sand than is moving past Fire Island. Net transport is westward.",
+      "publisher": "",
+      "siteIds": [
+        "montauk_point_lighthouse_bluffs_turtle_cove",
+        "south_shore_ocean_beaches_downtown_montauk",
+        "ditch_plains"
+      ]
+    },
+    {
+      "id": "buonaiuto-bokuniewicz-2005",
+      "title": "Coastal Bluff Recession and Impacts on Littoral Transport: Special Reference to Montauk, NY",
+      "authors": "Frank S. Buonaiuto Jr. and Henry Bokuniewicz / Shore & Beach (ASBPA)",
+      "year": 2005,
+      "url": "http://www.geo.hunter.cuny.edu/~fbuon/PGEOG_334/Literature_pdfs/ShoreBeach_MB.pdf",
+      "note": "The only peer-reviewed Montauk-specific bluff-volume paper. Recession is highly variable cove-to-headland; armoring the bluffs would cut the already-small sand feed to beaches down-drift.",
+      "publisher": "",
+      "siteIds": [
+        "ditch_plains",
+        "montauk_point_lighthouse_bluffs_turtle_cove",
+        "south_shore_ocean_beaches_downtown_montauk"
+      ]
+    },
+    {
+      "id": "applied-coastal-lake-montauk",
+      "title": "Impact of Navigation and Shore Protection Structures on Coastal Erosion and Storm Damage Reduction: Lake Montauk Harbor, Asharoken, and Goldsmith Inlet, New York",
+      "authors": "Applied Coastal Research and Engineering (for a DHS / coastal-structures assessment)",
+      "year": null,
+      "url": "https://appliedcoastal.com/shoreline-and-wetland-change-assessment/longisland-dhsmm",
+      "note": "The quantitative north-shore sediment budget: the 1926 jetties trap sand on the east side and starve Soundview / Culloden to the west. Applied Coastal's bypass prescription is ~6,700 cy/yr plus a ~480,000 cy restoration fill.",
+      "publisher": "",
+      "siteIds": [
+        "montauk_harbor_jetties_lake_montauk_inlet",
+        "soundview_drive_north_shore"
+      ]
+    },
+    {
+      "id": "usace-lake-montauk-harbor",
+      "title": "Lake Montauk Harbor Navigation Improvement Project, NY",
+      "authors": "U.S. Army Corps of Engineers, New York District, with Town of East Hampton",
+      "year": 2025,
+      "url": "https://www.nan.usace.army.mil/Missions/Civil-Works/Projects-in-New-York/Lake-Montauk-Harbor/",
+      "note": "Federal practice now explicitly places inlet-dredged sand on the eroded west (Soundview-side) beach \u2014 the bypass the jetties have needed since 1926. Volume of this deepening (110,000 cy) is a one-time construction fill, not the 6,700 cy/yr maintenance figure.",
+      "publisher": "",
+      "siteIds": [
+        "montauk_harbor_jetties_lake_montauk_inlet",
+        "soundview_drive_north_shore"
+      ]
+    },
+    {
+      "id": "cse-ditch-plains-2024",
+      "title": "Coastal Dune Restoration \u2013 Ditch Plains Beach (Town Board work session, 15 October 2024)",
+      "authors": "Coastal Science & Engineering (CSE) for Town of East Hampton",
+      "year": 2024,
+      "url": "https://www.preservemontauk.org/wp-content/uploads/2024/10/Ditch-Dune-Town-Board-work-session-2024.10.15.pdf",
+      "note": "The winter 2023\u201324 storms cut the Ditch Plains dune from ~1,925 cy to ~544 cy above MSL. The town's FEMA-oriented rebuild is on the order of 50,000\u201354,000 cy over ~2,700 ft \u2014 Ditch Plains is not in the FIMP feeder-beach template.",
+      "publisher": "",
+      "siteIds": [
+        "ditch_plains"
+      ]
+    },
+    {
+      "id": "ehampton-star-2023-shadmoor",
+      "title": "Erosion Threatens Blufftop Trails in Montauk",
+      "authors": "Christopher Walsh quoting East Hampton Town Land Management (Hugh Gaites) / The East Hampton Star",
+      "year": 2023,
+      "url": "https://www.easthamptonstar.com/government/2023316/erosion-threatens-blufftop-trails-montauk",
+      "note": "A rare local, documented bluff-top measurement next to Ditch Plains: about 0.9 ft/yr over 60 years, matching a one-year stake average of 0.88 ft/yr. Secondary news, but the numbers are attributed to town staff using dated air photos and bunkers.",
+      "publisher": "",
+      "siteIds": [
+        "ditch_plains"
+      ]
+    },
+    {
+      "id": "nysdec-ceha",
+      "title": "Coastal Erosion Hazard Areas (Article 34 ECL; 6 NYCRR Part 505) \u2014 maps and GIS for Long Island / East Hampton",
+      "authors": "New York State Department of Environmental Conservation",
+      "year": null,
+      "url": "https://dec.ny.gov/regulatory/permits-licenses/waterways-coastlines-wetlands/coastal-erosion-management-permit-program",
+      "note": "Any Montauk reach mapped as a Structural Hazard Area is, by legal definition, receding \u22651 ft/yr long-term. Overlay the REST services on a map; confirm against the official paper/PDF CEHA sheets.",
+      "publisher": "",
+      "siteIds": [
+        "ditch_plains",
+        "soundview_drive_north_shore",
+        "south_shore_ocean_beaches_downtown_montauk",
+        "montauk_point_lighthouse_bluffs_turtle_cove"
+      ]
+    },
+    {
+      "id": "usgs-lis-2025",
+      "title": "National Shoreline Change \u2014 GIS compilation of vector shorelines and shoreline-change data from the 1800s to the 2010s for the coast of Long Island Sound, New York and Connecticut",
+      "authors": "Rachel E. Henderson, Meredith Kratzmann, Amy Farris, Erika Lentz, Emily Himmelstoss / USGS Woods Hole",
+      "year": 2025,
+      "url": "https://www.usgs.gov/data/national-shoreline-change-a-gis-compilation-vector-shorelines-and-associated-shoreline-0",
+      "note": "Use this 2025 Sound-shore data release \u2014 not the 2010 ocean-shore product \u2014 to map Soundview Drive, Culloden, and Lake Montauk Harbor.",
+      "publisher": "",
+      "siteIds": [
+        "soundview_drive_north_shore",
+        "montauk_harbor_jetties_lake_montauk_inlet"
+      ]
+    },
+    {
+      "id": "jetty-history-1926",
+      "title": "Lake Montauk / Montauk Harbor jetties \u2014 construction history and downdrift effects (assembled from USACE CHL structure history, Cangemi v. United States, Town of East Hampton, Montauk Library)",
+      "authors": "Multiple: USACE (structure history table); E.D.N.Y. Cangemi litigation; Town of East Hampton; Montauk Library archives",
+      "year": 1926,
+      "url": "https://coastalhydraulicslaboratoryfact.tpub.com/TechReport5/TechReport50034.htm",
+      "note": "The inlet is artificial (1926). Jetties have trapped sand on the east and starved the west for a century. That is the Soundview Drive problem. The 2025\u201326 deepening finally places ~110,000 cy on that west beach.",
+      "publisher": "",
+      "siteIds": [
+        "montauk_harbor_jetties_lake_montauk_inlet",
+        "soundview_drive_north_shore"
+      ]
+    }
+  ],
+  "usgs_site_box_rates": {
+    "note": "Computed 2026-08-23 from USGS OFR 2010-1119 LongIsland_LT.shp (LRR, m/yr) and LongIsland_ST.shp (EPR, m/yr). Negative = landward/erosion. Site boxes are approximate WGS84 rectangles chosen for this compilation; they are NOT official USGS analysis units. 1 m = 3.28084 ft.",
+    "source_shapefiles": {
+      "lt": "https://pubs.usgs.gov/of/2010/1119/data/LongIsland_LT.zip",
+      "st": "https://pubs.usgs.gov/of/2010/1119/data/LongIsland_ST.zip",
+      "local": "/workspace/montauk-erosion/studies/usgs-gis/"
+    },
+    "sites": {
+      "montauk_point_turtle_cove": {
+        "box_wgs84": {
+          "lon": [
+            -71.875,
+            -71.85
+          ],
+          "lat": [
+            41.06,
+            41.08
+          ]
+        },
+        "n_transects": 30,
+        "long_term_lrr": {
+          "mean_m_yr": -0.204,
+          "median_m_yr": -0.19,
+          "min_m_yr": -0.53,
+          "max_m_yr": 0.05,
+          "pct_eroding": 86.7,
+          "mean_ft_yr": -0.67
+        },
+        "short_term_epr": {
+          "mean_m_yr": 0.028,
+          "median_m_yr": -0.01,
+          "pct_eroding": 50.0
+        }
+      },
+      "ditch_plains": {
+        "box_wgs84": {
+          "lon": [
+            -71.955,
+            -71.92
+          ],
+          "lat": [
+            41.028,
+            41.045
+          ]
+        },
+        "n_transects": 61,
+        "long_term_lrr": {
+          "mean_m_yr": -0.075,
+          "median_m_yr": -0.08,
+          "min_m_yr": -0.26,
+          "max_m_yr": 0.12,
+          "pct_eroding": 75.4,
+          "mean_ft_yr": -0.25
+        },
+        "short_term_epr": {
+          "mean_m_yr": 0.029,
+          "median_m_yr": -0.03,
+          "pct_eroding": 54.1
+        }
+      },
+      "downtown_montauk_south_beach": {
+        "box_wgs84": {
+          "lon": [
+            -71.965,
+            -71.93
+          ],
+          "lat": [
+            41.025,
+            41.04
+          ]
+        },
+        "n_transects": 59,
+        "long_term_lrr": {
+          "mean_m_yr": -0.042,
+          "median_m_yr": -0.03,
+          "min_m_yr": -0.22,
+          "max_m_yr": 0.12,
+          "pct_eroding": 62.7,
+          "mean_ft_yr": -0.14
+        },
+        "short_term_epr": {
+          "mean_m_yr": 0.236,
+          "median_m_yr": 0.24,
+          "pct_eroding": 32.2
+        }
+      },
+      "montauk_south_shore_all": {
+        "box_wgs84": {
+          "lon": [
+            -72.02,
+            -71.85
+          ],
+          "lat": [
+            40.99,
+            41.08
+          ]
+        },
+        "n_transects": 318,
+        "long_term_lrr": {
+          "mean_m_yr": -0.105,
+          "median_m_yr": -0.11,
+          "min_m_yr": -0.61,
+          "max_m_yr": 0.25,
+          "pct_eroding": 69.2,
+          "mean_ft_yr": -0.35
+        },
+        "short_term_epr": {
+          "mean_m_yr": 0.405,
+          "median_m_yr": 0.23,
+          "pct_eroding": 33.6
+        }
+      }
+    }
+  }
+}

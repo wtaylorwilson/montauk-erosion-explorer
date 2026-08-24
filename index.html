@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Montauk Erosion Explorer</title>
+  <meta name="description" content="Montauk, NY beach and cliff erosion explorer — sourced site histories, family aerials, Esri Wayback and NYSDOP tiles." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="compass" aria-hidden="true">
+          <svg viewBox="0 0 48 48" width="36" height="36">
+            <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="1.2" />
+            <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.5" />
+            <path d="M24 6 L27.2 24 L24 21.2 L20.8 24 Z" fill="var(--sand)" />
+            <path d="M24 42 L20.8 24 L24 26.8 L27.2 24 Z" fill="var(--seafoam-dim)" />
+            <text x="24" y="11" text-anchor="middle" font-size="5.5" fill="var(--sand)" font-family="Cinzel, serif">N</text>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <p class="eyebrow">South Fork · Atlantic &amp; Sound</p>
+          <h1>Montauk Erosion Explorer</h1>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="Primary">
+        <button class="tab is-active" data-view="map" role="tab" aria-selected="true">Map</button>
+        <button class="tab" data-view="studies" role="tab" aria-selected="false">Studies / Sources</button>
+      </nav>
+      <div class="top-meta">
+        <span id="cursor-ll" class="ll-readout">41.0400°N  71.9400°W</span>
+        <button id="btn-photo-compare" class="ghost" type="button">1976 vs 1984</button>
+        <button id="btn-compare" class="ghost" type="button" aria-pressed="false">Compare tiles</button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="panel" id="panel">
+        <div id="panel-list" class="panel-pane">
+          <p class="panel-kicker">Five sites</p>
+          <h2 class="panel-title">Where the land meets water</h2>
+          <p class="lede">North shore: Soundview and the Lake Montauk jetties (Block Island Sound). South / ESE: Ditch Plains, downtown ocean at Kirk Park, and the lighthouse bluffs. Kirk Park is the village ocean beach — not Ditch. The 1996 lighthouse event is a <em>deed</em>, not a move.</p>
+          <ol id="site-list" class="site-list"></ol>
+        </div>
+
+        <div id="panel-detail" class="panel-pane" hidden>
+          <button id="btn-back" class="text-btn" type="button">← All sites</button>
+          <div id="site-detail"></div>
+        </div>
+
+        <footer class="panel-credits">
+          <p>Tiles: Esri World Imagery Wayback · NYS ITS Geospatial Services (NYSDOP). Photos: family collection, BJ Old Montauk aerials (24 MAR 76 / Apr 1984) · USACE 1938 · USGS DS 858 (5 Nov 2012) · Library of Congress (Highsmith). Rates labeled by agency and period — no invented numbers.</p>
+        </footer>
+      </aside>
+
+      <main class="stage">
+        <div id="map" role="application" aria-label="Montauk map"></div>
+        <div id="studies-view" class="studies" hidden>
+          <div class="studies-inner">
+            <p class="panel-kicker">Bibliography</p>
+            <h2>Studies / Sources</h2>
+            <p class="lede" id="studies-intro">Loaded from research/studies.json when served via <code>serve.py</code>.</p>
+            <div id="studies-caveats"></div>
+            <div id="studies-list"></div>
+          </div>
+        </div>
+
+        <div id="compare-bar" class="compare-bar" hidden>
+          <label>Left <select id="compare-left"></select></label>
+          <label>Right <select id="compare-right"></select></label>
+          <p class="compare-hint">Drag the gold divider. Same extent, two tile years.</p>
+        </div>
+
+        <div id="aerial-compare" class="aerial-compare" hidden>
+          <div class="ac-chrome">
+            <p><strong>Harbor / Soundview</strong> · 24 MAR 76 vs Apr 1984</p>
+            <button id="ac-close" class="ghost" type="button">Close</button>
+          </div>
+          <div class="ac-frame" id="ac-frame">
+            <img id="ac-left" alt="24 MAR 76 Montauk Harbor aerial" />
+            <div id="ac-right-clip"><img id="ac-right" alt="April 1984 Montauk Harbor aerial" /></div>
+            <div id="ac-divider" class="compare-divider"></div>
+          </div>
+          <p class="ac-credit">Family collection, BJ Old Montauk aerials (survey stamps 24 MAR 76 / Apr 1984). Not a georeferenced overlay — same flight line, two years.</p>
+        </div>
+
+        <div id="year-banner" class="year-banner" hidden></div>
+      </main>
+    </div>
+
+    <footer class="dock">
+      <div class="dock-year">
+        <span class="dock-kicker">Year</span>
+        <strong id="year-label">2016</strong>
+        <span id="year-source" class="year-source">NYSDOP ortho</span>
+      </div>
+      <div class="slider-wrap">
+        <input id="year-slider" type="range" min="0" max="1" step="1" />
+        <div id="year-ticks" class="ticks"></div>
+        <div id="event-pills" class="event-pills"></div>
+      </div>
+      <div class="dock-source">
+        <label class="src-label">Layer
+          <select id="layer-source">
+            <option value="auto">Auto (NYS then Wayback)</option>
+            <option value="wayback">Esri Wayback</option>
+            <option value="nys">NYS ortho</option>
+            <option value="current">Current Esri imagery</option>
+            <option value="osm">OpenStreetMap</option>
+          </select>
+        </label>
+      </div>
+    </footer>
+  </div>
+
+  <div id="lightbox" class="lightbox" hidden>
+    <button type="button" id="lb-close" class="ghost">Close</button>
+    <img id="lb-img" alt="" />
+    <p id="lb-cap"></p>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

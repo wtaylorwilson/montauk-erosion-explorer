@@ -1,0 +1,77 @@
+{
+  "count": 12,
+  "releases": [
+    {
+      "year": 2014,
+      "date": "2014-12-30",
+      "releaseNum": 5844,
+      "verified": true
+    },
+    {
+      "year": 2015,
+      "date": "2015-12-16",
+      "releaseNum": 28163,
+      "verified": true
+    },
+    {
+      "year": 2016,
+      "date": "2016-12-20",
+      "releaseNum": 18966,
+      "verified": true
+    },
+    {
+      "year": 2017,
+      "date": "2017-11-16",
+      "releaseNum": 25521,
+      "verified": true
+    },
+    {
+      "year": 2018,
+      "date": "2018-11-07",
+      "releaseNum": null,
+      "verified": true
+    },
+    {
+      "year": 2019,
+      "date": "2019-12-12",
+      "releaseNum": 4756,
+      "verified": true
+    },
+    {
+      "year": 2020,
+      "date": "2020-12-16",
+      "releaseNum": 29260,
+      "verified": true
+    },
+    {
+      "year": 2021,
+      "date": "2021-12-21",
+      "releaseNum": 26120,
+      "verified": true
+    },
+    {
+      "year": 2022,
+      "date": "2022-11-02",
+      "releaseNum": 7110,
+      "verified": true
+    },
+    {
+      "year": 2023,
+      "date": "2023-12-07",
+      "releaseNum": 56102,
+      "verified": true
+    },
+    {
+      "year": 2024,
+      "date": "2024-12-12",
+      "releaseNum": 16453,
+      "verified": true
+    },
+    {
+      "year": 2025,
+      "date": "2025-12-18",
+      "releaseNum": 13192,
+      "verified": true
+    }
+  ]
+}

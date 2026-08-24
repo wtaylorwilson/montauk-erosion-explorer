@@ -1,0 +1,178 @@
+{
+  "version": 2,
+  "basemaps": [
+    {
+      "id": "esri-world-imagery",
+      "name": "Esri World Imagery (current)",
+      "type": "xyz",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      "attribution": "Esri, Vantor, Earthstar Geographics, and the GIS User Community",
+      "maxZoom": 19
+    },
+    {
+      "id": "osm",
+      "name": "OpenStreetMap",
+      "type": "xyz",
+      "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      "attribution": "\u00a9 OpenStreetMap contributors",
+      "maxZoom": 19
+    }
+  ],
+  "wayback": [
+    {
+      "year": 2014,
+      "date": "2014-12-30",
+      "releaseNum": 5844,
+      "verified": true
+    },
+    {
+      "year": 2015,
+      "date": "2015-12-16",
+      "releaseNum": 28163,
+      "verified": true
+    },
+    {
+      "year": 2016,
+      "date": "2016-12-20",
+      "releaseNum": 18966,
+      "verified": true
+    },
+    {
+      "year": 2017,
+      "date": "2017-11-16",
+      "releaseNum": 25521,
+      "verified": true
+    },
+    {
+      "year": 2018,
+      "date": "2018-11-07",
+      "releaseNum": null,
+      "verified": true
+    },
+    {
+      "year": 2019,
+      "date": "2019-12-12",
+      "releaseNum": 4756,
+      "verified": true
+    },
+    {
+      "year": 2020,
+      "date": "2020-12-16",
+      "releaseNum": 29260,
+      "verified": true
+    },
+    {
+      "year": 2021,
+      "date": "2021-12-21",
+      "releaseNum": 26120,
+      "verified": true
+    },
+    {
+      "year": 2022,
+      "date": "2022-11-02",
+      "releaseNum": 7110,
+      "verified": true
+    },
+    {
+      "year": 2023,
+      "date": "2023-12-07",
+      "releaseNum": 56102,
+      "verified": true
+    },
+    {
+      "year": 2024,
+      "date": "2024-12-12",
+      "releaseNum": 16453,
+      "verified": true
+    },
+    {
+      "year": 2025,
+      "date": "2025-12-18",
+      "releaseNum": 13192,
+      "verified": true
+    }
+  ],
+  "nys": [
+    {
+      "year": 2001,
+      "name": "NYSDOP 2001",
+      "url": "https://orthos.its.ny.gov/arcgis/rest/services/wms/2001/MapServer/tile/{z}/{y}/{x}",
+      "httpFallback": "http://orthos.its.ny.gov/arcgis/rest/services/wms/2001/MapServer/tile/{z}/{y}/{x}",
+      "verified": true
+    },
+    {
+      "year": 2004,
+      "name": "NYSDOP 2004",
+      "url": "https://orthos.its.ny.gov/arcgis/rest/services/wms/2004/MapServer/tile/{z}/{y}/{x}",
+      "httpFallback": "http://orthos.its.ny.gov/arcgis/rest/services/wms/2004/MapServer/tile/{z}/{y}/{x}",
+      "verified": true
+    },
+    {
+      "year": 2007,
+      "name": "NYSDOP 2007",
+      "url": "https://orthos.its.ny.gov/arcgis/rest/services/wms/2007/MapServer/tile/{z}/{y}/{x}",
+      "httpFallback": "http://orthos.its.ny.gov/arcgis/rest/services/wms/2007/MapServer/tile/{z}/{y}/{x}",
+      "verified": true
+    },
+    {
+      "year": 2013,
+      "name": "NYSDOP 2013",
+      "url": "https://orthos.its.ny.gov/arcgis/rest/services/wms/2013/MapServer/tile/{z}/{y}/{x}",
+      "httpFallback": "http://orthos.its.ny.gov/arcgis/rest/services/wms/2013/MapServer/tile/{z}/{y}/{x}",
+      "verified": true
+    },
+    {
+      "year": 2016,
+      "name": "NYSDOP 2016",
+      "url": "https://orthos.its.ny.gov/arcgis/rest/services/wms/2016/MapServer/tile/{z}/{y}/{x}",
+      "httpFallback": "http://orthos.its.ny.gov/arcgis/rest/services/wms/2016/MapServer/tile/{z}/{y}/{x}",
+      "verified": true
+    },
+    {
+      "year": 2020,
+      "name": "NYSDOP 2020",
+      "url": "https://orthos.its.ny.gov/arcgis/rest/services/wms/2020/MapServer/tile/{z}/{y}/{x}",
+      "httpFallback": "http://orthos.its.ny.gov/arcgis/rest/services/wms/2020/MapServer/tile/{z}/{y}/{x}",
+      "verified": true
+    },
+    {
+      "year": 2023,
+      "name": "NYSDOP 2023",
+      "url": "https://orthos.its.ny.gov/arcgis/rest/services/wms/2023/MapServer/tile/{z}/{y}/{x}",
+      "httpFallback": "http://orthos.its.ny.gov/arcgis/rest/services/wms/2023/MapServer/tile/{z}/{y}/{x}",
+      "verified": true
+    }
+  ],
+  "sliderYears": [
+    1938,
+    1976,
+    1984,
+    1996,
+    2001,
+    2004,
+    2007,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "photoCompare": {
+    "harbor_jetties": {
+      "left": "assets/aerials/1976-harbor-wide.jpg",
+      "right": "assets/aerials/1984-harbor.jpg",
+      "leftLabel": "24 MAR 76",
+      "rightLabel": "Apr 1984",
+      "credit": "Family collection, BJ Old Montauk aerials"
+    }
+  }
+}
