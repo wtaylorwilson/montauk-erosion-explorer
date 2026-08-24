@@ -579,6 +579,7 @@
     const usgs = await tryFetch("data/usgs_lt_montauk.geojson");
     const shore = await tryFetch("data/eh_shoreline.geojson");
     const cusp = await tryFetch("data/cusp_montauk.geojson");
+    const west = await tryFetch("data/usace_nsmf_lake_montauk_western_beach.geojson");
 
     if (ceha && ceha.features && ceha.features.length) {
       overlayLayers.ceha = L.geoJSON(ceha, {
@@ -645,18 +646,28 @@
       });
     }
 
+    if (west && west.features && west.features.length) {
+      overlayLayers.west = L.geoJSON(west, {
+        style: { color: "#c9a227", weight: 2, opacity: 0.95, fillColor: "#e6c35c", fillOpacity: 0.28 },
+        onEachFeature: function (feat, layer) {
+          layer.bindPopup("<strong>USACE Lake Montauk Western Beach</strong><br>NSMF placement polygon — west of the inlet (Soundview side).");
+        },
+      });
+    }
+
     const overlays = {};
     if (overlayLayers.ceha) overlays["E. Hampton CEHA zones"] = overlayLayers.ceha;
     if (overlayLayers.usgs) overlays["USGS LT rates (south shore)"] = overlayLayers.usgs;
     if (overlayLayers.shore) overlays["Town shoreline"] = overlayLayers.shore;
     if (overlayLayers.cusp) overlays["NOAA CUSP 2014"] = overlayLayers.cusp;
+    if (overlayLayers.west) overlays["USACE western beach placement"] = overlayLayers.west;
     L.control.layers(baseLayers, overlays, { position: "topright", collapsed: true }).addTo(map);
 
     if (overlayLayers.ceha && $("#tog-ceha").checked) overlayLayers.ceha.addTo(map);
     if (overlayLayers.usgs && $("#tog-usgs").checked) overlayLayers.usgs.addTo(map);
     if (overlayLayers.shore && $("#tog-shore").checked) overlayLayers.shore.addTo(map);
 
-    ["ceha", "usgs", "shore", "cusp"].forEach(function (id) {
+    ["ceha", "usgs", "shore", "cusp", "west"].forEach(function (id) {
       const el = $("#tog-" + id);
       if (!el) return;
       if (!overlayLayers[id]) {
@@ -673,10 +684,10 @@
       if (el) el.checked = on;
     }
     map.on("overlayadd", function (e) {
-      ["ceha", "usgs", "shore", "cusp"].forEach(function (id) { syncToggle(e.layer, id, true); });
+      ["ceha", "usgs", "shore", "cusp", "west"].forEach(function (id) { syncToggle(e.layer, id, true); });
     });
     map.on("overlayremove", function (e) {
-      ["ceha", "usgs", "shore", "cusp"].forEach(function (id) { syncToggle(e.layer, id, false); });
+      ["ceha", "usgs", "shore", "cusp", "west"].forEach(function (id) { syncToggle(e.layer, id, false); });
     });
 
     const loaded = [];
@@ -684,6 +695,7 @@
     if (overlayLayers.usgs) loaded.push("USGS LT " + usgs.features.length);
     if (overlayLayers.shore) loaded.push("shoreline");
     if (overlayLayers.cusp) loaded.push("CUSP " + cusp.features.length);
+    if (overlayLayers.west) loaded.push("western beach");
     state.dataOrigin.overlays = loaded.join(", ") || "none";
   }
 
