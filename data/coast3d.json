@@ -12,52 +12,66 @@
     {
       "file": "assets/photos/nara_lighthouse_1928_18-AA-89-27.jpg",
       "siteId": "lighthouse",
-      "kind": "ground",
-      "altM": 9
+      "kind": "aerial",
+      "look": 338,
+      "altM": 48,
+      "tilt": 42,
+      "note": "Print 8-10-28. From the ocean looking NNW. Elevated card, not a beach billboard."
     },
     {
       "file": "assets/photos/dvids_1968_eroded_cliffs.jpg",
       "siteId": "lighthouse",
-      "kind": "ground",
-      "altM": 26,
-      "skip": "dvids_lighthouse_1968_eroded_cliffs.jpg"
+      "kind": "aerial",
+      "look": 125,
+      "altM": 56,
+      "tilt": 40,
+      "skip": "dvids_lighthouse_1968_eroded_cliffs.jpg",
+      "note": "Only this 1968 file. Elevated cliff card. SOUTH/ESE Turtle Hill."
     },
     {
       "file": "assets/photos/dvids_2023_aerial_revetment.jpg",
       "siteId": "lighthouse",
       "kind": "aerial",
-      "altM": 52,
-      "tilt": 58
+      "look": 125,
+      "altM": 64,
+      "tilt": 58,
+      "note": "Elevated revetment card. SOUTH/ESE."
     },
     {
       "file": "assets/photos/commons_ditch_plains_1883_association-cobble-bluff.jpg",
       "siteId": "ditch_plains",
       "kind": "ground",
-      "altM": 9
+      "look": 0,
+      "altM": 8,
+      "tilt": 0,
+      "note": "Ground plane. Looks at the till face, inland (north) — not a seaward billboard."
     },
     {
       "file": "assets/photos/loc_ditch_plains_1955_beach-width-bluffs.jpg",
       "siteId": "ditch_plains",
       "kind": "ground",
-      "altM": 24
+      "look": 125,
+      "altM": 8,
+      "tilt": 0,
+      "note": "Frissell. Ground plane along-shore ESE."
     },
     {
       "file": "assets/photos/usgs_2012_ditch.jpg",
       "siteId": "ditch_plains",
-      "kind": "usgs-oblique",
-      "altM": 58,
+      "kind": "aerial",
       "look": 180,
+      "altM": 58,
       "tilt": 38,
-      "note": "Elevated south-looking storm oblique. South shore only."
+      "note": "Elevated south-looking storm oblique. Ditch / south shore only."
     },
     {
-      "file": "assets/photos/usgs_2012_beach.jpg",
+      "file": "assets/photos/usgs_ds858_2012_1105_134804d.jpg",
       "siteId": "ocean_beaches",
-      "kind": "usgs-oblique",
-      "altM": 58,
+      "kind": "aerial",
       "look": 180,
+      "altM": 58,
       "tilt": 38,
-      "note": "Elevated south-looking storm oblique. Downtown / Kirk Park — not Ditch, not Soundview."
+      "note": "Downtown / Kirk Park (motels, tennis courts, Fort Pond behind, Atlantic at the bottom). Not usgs_2012_beach.jpg (till-bluff house reach)."
     },
     {
       "file": "assets/photos/commons_ocean_beaches_2026_downtown-aerial.jpg",
@@ -65,34 +79,46 @@
       "kind": "aerial",
       "lat": 41.035025,
       "lng": -71.9478,
+      "look": 180,
       "altM": 46,
       "tilt": 58,
-      "note": "Only photo-level GPS. Caption GPS — not a new pin."
+      "note": "Only photo-level GPS. Caption GPS — not a new pin. Downtown / Kirk Park, not Ditch."
     },
     {
       "file": "assets/photos/commons_soundview_2006_culloden-point-bluff.jpg",
       "siteId": "soundview",
       "kind": "ground",
-      "altM": 9
+      "look": 270,
+      "altM": 8,
+      "tilt": 0,
+      "note": "Ground plane along-shore at Culloden. Site faces NORTH; this still looks along the Sound shore."
     },
     {
       "file": "assets/photos/commons_soundview_2022_soundview-shore.jpg",
       "siteId": "soundview",
       "kind": "ground",
-      "altM": 24
+      "look": 0,
+      "altM": 8,
+      "tilt": 0,
+      "note": "Blue-roof house + riprap. Ground plane looking NORTH."
     },
     {
       "file": "assets/photos/commons_harbor_jetties_2017_south-jetty.jpg",
       "siteId": "harbor_jetties",
       "kind": "ground",
-      "altM": 9,
-      "note": "Harbor inlet. Normal toward Block Island Sound (north), not south."
+      "look": 0,
+      "altM": 8,
+      "tilt": 0,
+      "note": "Name is the structure. Looks NORTH at the inlet — not south."
     },
     {
       "file": "assets/photos/commons_harbor_jetties_2021_lake-montauk-inlet.jpg",
       "siteId": "harbor_jetties",
-      "kind": "ground",
-      "altM": 24
+      "kind": "aerial",
+      "look": 180,
+      "altM": 52,
+      "tilt": 48,
+      "note": "From over the Sound looking south. North is open water / jetty tips. Elevated card."
     }
   ],
   "terrain": {

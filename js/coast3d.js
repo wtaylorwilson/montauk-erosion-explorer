@@ -112,9 +112,9 @@
         lat: lat,
         lng: lng,
         kind: spec.kind || "ground",
-        altM: spec.altM != null ? spec.altM : 10,
+        altM: spec.altM != null ? spec.altM : (spec.kind === "aerial" ? 52 : 8),
         look: look,
-        tilt: spec.tilt || 0,
+        tilt: spec.tilt != null ? spec.tilt : (spec.kind === "aerial" ? 42 : 0),
         gps: spec.lat != null && spec.lng != null
       });
     });
@@ -347,9 +347,8 @@
   }
 
   function planeSize(rec) {
-    if (rec.kind === "usgs-oblique") return { w: 34, h: 24 };
-    if (rec.kind === "aerial") return { w: 30, h: 21 };
-    return { w: 18, h: 13 };
+    if (rec.kind === "aerial" || rec.kind === "usgs-oblique") return { w: 36, h: 24 };
+    return { w: 16, h: 12 };
   }
 
   function addPlaneMesh(scene, rec) {
