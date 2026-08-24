@@ -82,6 +82,13 @@
           "kind": "loc"
         },
         {
+          "year": 1920,
+          "src": "assets/photos/library_c1920_mccaffray_house_construction.jpg",
+          "caption": "McCaffray / Rheinstein windmill house under construction. CatalogIt ARC.0052 dates this c.1920; town/library histories say the house was built in 1928. Do not treat 1920 as the build year.",
+          "credit": "Montauk Library Archives (Public domain)",
+          "kind": "library"
+        },
+        {
           "year": 1955,
           "src": "assets/photos/loc_1955_frissell_ditch_plains.jpg",
           "caption": "Toni Frissell — Ditch Plains beach",
@@ -457,17 +464,24 @@
           "kind": "commons"
         },
         {
-          "year": 1938,
-          "src": "assets/photos/usace_1938_lake_montauk.jpg",
-          "caption": "USACE 1938 vertical of Lake Montauk / inlet",
-          "credit": "U.S. Army Corps of Engineers, 1938",
-          "kind": "usace"
+          "year": 1909,
+          "src": "assets/photos/library_1909_great_pond_moran.jpg",
+          "caption": "Thomas Moran, A Glimpse of Great Pond, Montauk, 1909 — before the inlet cut",
+          "credit": "Wikimedia Commons / public domain",
+          "kind": "commons"
         },
         {
           "year": 1938,
           "src": "assets/photos/usace_1938_fort_pond.jpg",
           "caption": "USACE 1938 Fort Pond mosaic — village isthmus between the ocean and Fort Pond Bay",
           "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1938-07-06",
+          "kind": "usace"
+        },
+        {
+          "year": 1938,
+          "src": "assets/photos/usace_1938_lake_montauk.jpg",
+          "caption": "USACE 1938 vertical of Lake Montauk / inlet",
+          "credit": "U.S. Army Corps of Engineers, 1938",
           "kind": "usace"
         },
         {
@@ -479,15 +493,15 @@
         },
         {
           "year": 1976,
-          "src": "assets/aerials/1976-harbor-wide.jpg",
-          "caption": "24 MAR 76 — Montauk Harbor inlet, jetties, Star Island, Soundview/Culloden shore",
+          "src": "assets/aerials/1976-harbor-jetties.jpg",
+          "caption": "24 MAR 76 — closer crop of jetties and Star Island",
           "credit": "Family collection, BJ Old Montauk aerials (survey stamp 24 MAR 76)",
           "kind": "user-aerial"
         },
         {
           "year": 1976,
-          "src": "assets/aerials/1976-harbor-jetties.jpg",
-          "caption": "24 MAR 76 — closer crop of jetties and Star Island",
+          "src": "assets/aerials/1976-harbor-wide.jpg",
+          "caption": "24 MAR 76 — Montauk Harbor inlet, jetties, Star Island, Soundview/Culloden shore",
           "credit": "Family collection, BJ Old Montauk aerials (survey stamp 24 MAR 76)",
           "kind": "user-aerial"
         },
