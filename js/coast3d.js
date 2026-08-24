@@ -224,7 +224,8 @@
           tileSize: terrainSrc.tileSize || 256,
           minzoom: terrainSrc.minzoom || 0,
           maxzoom: terrainSrc.maxzoom || 15,
-          attribution: terrainSrc.attribution
+          attribution: terrainSrc.attribution,
+          bounds: terrainSrc.bounds || [-71.965, 41.022, -71.845, 41.088]
         },
         hillshadeDem: {
           type: "raster-dem",
@@ -232,7 +233,8 @@
           encoding: terrainSrc.encoding || "terrarium",
           tileSize: terrainSrc.tileSize || 256,
           minzoom: terrainSrc.minzoom || 0,
-          maxzoom: terrainSrc.maxzoom || 15
+          maxzoom: terrainSrc.maxzoom || 15,
+          bounds: terrainSrc.bounds || [-71.965, 41.022, -71.845, 41.088]
         }
       },
       layers: [
@@ -281,6 +283,10 @@
       selectedId = site.id;
       flyToSite(site);
       if (opts.onSite) opts.onSite(site.id, { fly: false, sheet: false });
+      var latest = cards
+        .filter(function (rec) { return rec.siteId === site.id && cardVisible(rec); })
+        .sort(function (a, b) { return (b.year || 0) - (a.year || 0); })[0];
+      if (latest) openCard(latest);
     });
     return wrap;
   }

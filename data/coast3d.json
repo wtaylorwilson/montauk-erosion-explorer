@@ -103,6 +103,7 @@
       "tileSize": 256,
       "minzoom": 11,
       "maxzoom": 14,
+      "bounds": [-71.965, 41.022, -71.845, 41.088],
       "attribution": "2014 NOAA NGS Post-Sandy DEM Block_140 crop (Digital Coast 4967) · 10 m Terrarium"
     },
     "fallback": {
