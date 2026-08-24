@@ -470,7 +470,8 @@
         if (markers[id]) markers[id].openPopup();
       }
     }
-    if (openSheet && isPhoneLayout() && state.view !== "coast3d") openSitesSheet();
+    if (openSheet && isPhoneLayout() && state.view !== "coast3d" && state.view !== "change") openSitesSheet();
+    if (window.MontaukChange) window.MontaukChange.selectSite(id);
     highlightEvents();
   }
 
@@ -541,6 +542,11 @@
     $("#year-slider").value = String(state.yearIndex);
     if (state.view === "coast3d") {
       $("#year-source").textContent = coast3dYearLabel();
+    } else if (state.view === "change") {
+      if (window.MontaukChange) {
+        window.MontaukChange.setYear(y);
+        $("#year-source").textContent = window.MontaukChange.yearLabel();
+      }
     } else if (state.compare) enableCompare();
     else setHistLayer();
     highlightEvents();
@@ -806,6 +812,9 @@
     if (state.view === "coast3d" && window.MontaukCoast3D && window.MontaukCoast3D.sliderYears) {
       return window.MontaukCoast3D.sliderYears();
     }
+    if (state.view === "change" && window.MontaukChange && window.MontaukChange.sliderYears) {
+      return window.MontaukChange.sliderYears();
+    }
     const all = (state.imagery && state.imagery.sliderYears) || [];
     if (!isPhoneLayout()) return all.slice();
     return all.filter(function (y) { return !!layerForYear(y, "auto"); });
@@ -836,7 +845,9 @@
     ticks.innerHTML = "";
     const tickMarks = state.view === "coast3d"
       ? [1871, 1892, 1938, 1962, 1996, 2000, 2014, 2023, years[years.length - 1]]
-      : [years[0], 1976, 1996, 2004, 2012, 2016, 2024, years[years.length - 1]];
+      : state.view === "change"
+        ? [1870, 1871, 1938, 1962, 2000, 2021]
+        : [years[0], 1976, 1996, 2004, 2012, 2016, 2024, years[years.length - 1]];
     tickMarks
       .filter(function (y, i, a) { return y != null && a.indexOf(y) === i && years.indexOf(y) >= 0; })
       .forEach(function (y) {
@@ -1056,13 +1067,27 @@
       t.setAttribute("aria-selected", on ? "true" : "false");
     });
     $("#app").classList.toggle("is-coast3d", view === "coast3d");
+    $("#app").classList.toggle("is-change", view === "change");
     $("#studies-view").hidden = view !== "studies";
     if ($("#coast3d-view")) $("#coast3d-view").hidden = view !== "coast3d";
-    if (view === "studies" || view === "coast3d") closeSheets();
-    if (view === "coast3d") {
+    if ($("#change-view")) $("#change-view").hidden = view !== "change";
+    if (view === "studies" || view === "coast3d" || view === "change") closeSheets();
+    if (view === "change") {
       hideAerialCompare();
       $("#compare-bar").hidden = true;
       $("#year-banner").hidden = true;
+      if (window.MontaukCoast3D) window.MontaukCoast3D.hide();
+      rebuildYearsForView();
+      if (window.MontaukChange) {
+        window.MontaukChange.selectSite(state.selectedId || "ditch_plains");
+        window.MontaukChange.show();
+        $("#year-source").textContent = window.MontaukChange.yearLabel();
+      }
+    } else if (view === "coast3d") {
+      hideAerialCompare();
+      $("#compare-bar").hidden = true;
+      $("#year-banner").hidden = true;
+      if (window.MontaukChange) window.MontaukChange.hide();
       rebuildYearsForView();
       if (window.MontaukCoast3D) {
         window.MontaukCoast3D.show();
@@ -1074,6 +1099,7 @@
       }
     } else {
       if (window.MontaukCoast3D) window.MontaukCoast3D.hide();
+      if (window.MontaukChange) window.MontaukChange.hide();
       rebuildYearsForView();
       $("#compare-bar").hidden = !state.compare;
       if (view === "map") {
@@ -1117,6 +1143,7 @@
     const params = new URLSearchParams(hash.includes("=") ? hash : "");
     const viewFromHash = params.get("view");
     if (viewFromHash === "3d" || viewFromHash === "coast3d") setView("coast3d");
+    if (viewFromHash === "change") setView("change");
     const y = Number(params.get("year"));
     if (y) {
       let idx = state.years.indexOf(y);
@@ -1184,6 +1211,15 @@
     renderList();
     renderStudies();
     initMap();
+    if (window.MontaukChange) {
+      await window.MontaukChange.init({
+        getYear: currentYear,
+        selectedId: state.selectedId || "ditch_plains",
+        onSite: function (id) {
+          selectSite(id, false, { sheet: false });
+        }
+      });
+    }
     if (window.MontaukCoast3D) {
       await window.MontaukCoast3D.init({
         sites: state.sites,
