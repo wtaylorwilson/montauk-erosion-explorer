@@ -16,7 +16,7 @@
       "skipWaybackNullRelease": [2018],
       "noModeA": [1938, 1976, 1984, 1996, 2012]
     },
-    "B": "Local drapes only: 1938/1941/1962 USACE, 1976/1984 family, 1978/1962/1984 Suffolk northshore, 2012–2016 USGS south/Point. 1962 is a five-site patchwork, not a seamless peninsula. USGS are obliques. 1941 Hither Hills L20-5 is not Kirk Park. usgs_ds958_2014_camp_hero.jpg is not Turtle Cove south.",
+    "B": "Local drapes only at the five sites.json pins. 1938/1941/1962 USACE, 1976/1984 family, 1978/1962/1984 Suffolk northshore, 2012–2016 USGS south/Point. 1962 is a five-site patchwork, not a seamless peninsula. USGS are obliques. 1941 Hither Hills L20-5 is not Kirk Park and is not a 3D drape (2D gallery only). No invented lat/lng. usgs_ds958_2014_camp_hero.jpg is not Turtle Cove south.",
     "C": "Walk-into stills at the pin: 1871, 1883 Ditch, 1900 LSS, 1919 lighthouse, 1928 NARA, 1937, 1955 Frissell, 1968 cliffs, 1997, 2006 ground stills, 2026 downtown aerial. 1909 Moran/Great Pond stays out.",
     "D": "1996 deed. CEHA, Moran, 1919 Hither Hills, usgs_2012_beach.jpg, extra 459 frames."
   },
@@ -66,17 +66,6 @@
       "altM": 58,
       "tilt": 38,
       "note": "Mode B. Downtown / Kirk Park. Not usgs_2012_beach.jpg."
-    },
-    {
-      "file": "assets/photos/usace_1941_hither_hills_l20_5.jpg",
-      "siteId": "hither_hills",
-      "kind": "drape",
-      "look": 180,
-      "altM": 16,
-      "tilt": 82,
-      "lat": 41.021,
-      "lng": -71.992,
-      "note": "Mode B. Hither Hills is NOT Kirk Park. West of downtown on the south shore."
     },
     {
       "file": "assets/photos/commons_ocean_beaches_2026_downtown-aerial.jpg",

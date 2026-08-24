@@ -33,7 +33,6 @@ MUST_WORLDS = [
     "usace_1941_lake_montauk.jpg",
     "usace_1941_montauk_park.jpg",
     "usace_1941_montauk_pt.jpg",
-    "usace_1941_hither_hills_l20_5.jpg",
     "usace_1962_camp_hero.jpg",
     "usace_1962_ditch_plains_055.jpg",
     "usace_1962_ditch_plains_057.jpg",
@@ -68,6 +67,7 @@ DUMP = {
     "library_1909_great_pond_moran.jpg",
     "commons_1909_great_pond.jpg",
     "loc_ocean_beaches_1919_hither_hills.jpg",
+    "usace_1941_hither_hills_l20_5.jpg",
     "usace_2024_03_08_downtown_240308-D-A1420-001.jpg",
     "usace_2024_03_08_downtown_240308-D-A1420-002.jpg",
     "ditch_plains_2024_drone_project_area_oct7.jpg",
@@ -199,14 +199,23 @@ def main() -> int:
     if ditch1938:
         errors.append("no 1938 Ditch frame")
 
-    hither = next((w for w in worlds if w["file"] == "usace_1941_hither_hills_l20_5.jpg"), None)
-    if not hither:
-        errors.append("1941 Hither Hills L20-5 must be hung")
-    else:
-        if hither.get("siteId") == "ocean_beaches":
-            errors.append("Hither Hills L20-5 is NOT Kirk Park")
-        if hither.get("lng") is not None and hither["lng"] > -71.97:
-            errors.append("Hither Hills drape is too far east (would read as Kirk Park)")
+    if any(w.get("siteId") == "hither_hills" for w in worlds):
+        errors.append("hither_hills is not a sixth explorer pin")
+    if re.search(r"hither_hills:\s*180", js):
+        errors.append("js/coast3d.js must not have a hither_hills look entry")
+    if "41.021" in js or "-71.992" in js:
+        errors.append("do not invent Hither Hills coords 41.021, -71.992")
+    mode_b_gps = [w for w in worlds if w.get("mode") == "B" and ("lat" in w or "lng" in w)]
+    if mode_b_gps:
+        errors.append("Mode B frames must not carry guessed lat/lng: " + ", ".join(w["file"] for w in mode_b_gps))
+    gps_any = [w for w in worlds if "lat" in w or "lng" in w]
+    if any(w["file"] != "commons_ocean_beaches_2026_downtown-aerial.jpg" for w in gps_any):
+        errors.append("only the 2026 downtown caption GPS may appear on a year-world")
+    ditch1962 = [w for w in worlds if w["file"] in ("usace_1962_ditch_plains_055.jpg", "usace_1962_ditch_plains_057.jpg")]
+    if len(ditch1962) != 2:
+        errors.append("1962 Ditch 055 and 057 must both drape at the Ditch pin")
+    elif any(w.get("lat") is not None or w.get("lng") is not None for w in ditch1962):
+        errors.append("1962 Ditch 055/057 must share the sites.json Ditch pin — do not split them")
 
     camp2014 = next((w for w in worlds if w["file"] == "usgs_ds958_2014_camp_hero.jpg"), None)
     if camp2014:
