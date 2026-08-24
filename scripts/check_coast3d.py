@@ -328,6 +328,10 @@ def main() -> int:
         errors.append("1996 Mode D must hide/clear every coast mesh, not lerp a waterline")
     if "addSolidWaterPlanes" not in js or "pushBboxQuad" not in js or "pushQuadFlat" not in js:
         errors.append("water must be solid flat-shaded bbox planes, not a transect triangle strip")
+    if "function skipSandMesh" not in js or "function sandWidthOk" not in js:
+        errors.append("2000 / held years must skip all sand; segments under ~4 m must not draw tan")
+    if "w0 > 5 || w1 > 5" in js:
+        errors.append("do not OR-gate terrace width — that tapers the east end into slivers")
     if re.search(r"toward\(h0,\s*s0,\s*920\)", js):
         errors.append("do not build hide/water as transect fans — those become shards")
     ditch_look = (cfg.get("look") or {}).get("ditch_plains") or {}

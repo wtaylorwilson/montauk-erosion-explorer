@@ -861,11 +861,19 @@
     });
   }
 
+  /* 2000 is the 2014 waterline proxy. Held years share that line. No tan. */
+  function skipSandMesh() {
+    return year === 2000 || year > 2000;
+  }
+
+  function sandWidthOk(w0, w1) {
+    return w0 >= 4 && w1 >= 4;
+  }
+
   function northRibbonMeshes(colors) {
+    if (skipSandMesh()) return [];
     if (!HWL_NORTH_YEARS[year] || !coastMeshes || !coastMeshes.north) return [];
     var lines = coastMeshes.north[String(year)] || [];
-    var sandPos = [];
-    var sandCol = [];
     var tillPos = [];
     var tillCol = [];
     var li;
@@ -889,18 +897,10 @@
         var e = mercatorVtx(inn[i][0], inn[i][1], altZ(7.2));
         var f = mercatorVtx(inn[i + 1][0], inn[i + 1][1], altZ(7.2));
         pushQuad(tillPos, tillCol, a, b, f, e, colors.till);
-        pushQuad(sandPos, sandCol, a, b,
-          mercatorVtx(mid[i + 1][0], mid[i + 1][1], altZ(1.15)),
-          mercatorVtx(mid[i][0], mid[i][1], altZ(1.15)),
-          colors.sand);
       }
     }
-    var out = [];
-    var sand = makeColorMesh(sandPos, sandCol, 1);
     var till = makeColorMesh(tillPos, tillCol, 1);
-    if (sand) out.push(sand);
-    if (till) out.push(till);
-    return out;
+    return till ? [till] : [];
   }
 
   function hwlLatNear(spec, lng, windowDeg) {
@@ -1009,6 +1009,7 @@
     if (!spec || !map) return group;
     var colors = eraCoastColors();
     var waterZ = addSolidWaterPlanes(group, spec, colors);
+    if (skipSandMesh()) return group;
     var n = spec.w.length;
     var land = coastMeshes.land;
     var sandPos = [];
@@ -1031,10 +1032,12 @@
       var l1 = xyAt(land, i + 1);
       var w0 = spec.w[i];
       var w1 = spec.w[i + 1];
-      var terrace = w0 > 5 || w1 > 5;
-      var cut = w0 < -5 || w1 < -5;
-      if (terrace) {
-        /* Thick extruded sand BODY: top deck, seaward face to the water, inland join. */
+      /* Both ends must be a real seaward beach. OR-gating drew taper slivers. */
+      if (sandWidthOk(w0, w1)) {
+        var span0 = metersBetween(r0[1], r0[0], h0[1], h0[0]);
+        var span1 = metersBetween(r1[1], r1[0], h1[1], h1[0]);
+        if (span0 < 4 || span1 < 4) continue;
+        /* Thick extruded sand BODY — seaward of the 2014/2000 HWL only. */
         var a = mercatorVtx(r0[0], r0[1], topIn);
         var b = mercatorVtx(r1[0], r1[1], topIn);
         var c = mercatorVtx(h1[0], h1[1], topOut);
@@ -1047,10 +1050,13 @@
         var h = mercatorVtx(r1[0], r1[1], toeZ);
         pushQuad(sandPos, sandCol, a, d, e, g, colors.sand);
         pushQuad(sandPos, sandCol, b, h, f, c, colors.sand);
+        var nextOk = i + 2 < n && sandWidthOk(w1, spec.w[i + 2]);
+        if (!nextOk) {
+          /* Close the east end as a block — do not leave an open taper. */
+          pushQuad(sandPos, sandCol, b, c, f, h, colors.sand);
+        }
         var ib0 = toward(r0, l0, 4);
         var ib1 = toward(r1, l1, 4);
-        var it0 = toward(r0, l0, 12);
-        var it1 = toward(r1, l1, 12);
         var th0 = tillHeight(r0[0]);
         var th1 = tillHeight(r1[0]);
         pushQuad(tillPos, tillCol,
@@ -1058,13 +1064,7 @@
           mercatorVtx(ib1[0], ib1[1], altZ(th1)),
           mercatorVtx(ib0[0], ib0[1], altZ(th0)),
           colors.till);
-        pushQuad(tillPos, tillCol,
-          mercatorVtx(ib0[0], ib0[1], altZ(th0)),
-          mercatorVtx(ib1[0], ib1[1], altZ(th1)),
-          mercatorVtx(it1[0], it1[1], altZ(th1 * 0.88)),
-          mercatorVtx(it0[0], it0[1], altZ(th0 * 0.88)),
-          colors.cobble);
-      } else if (cut) {
+      } else if (w0 < -5 && w1 < -5) {
         var ct0 = toward(h0, l0, 4);
         var ct1 = toward(h1, l1, 4);
         var ch0 = tillHeight(h0[0]);
@@ -1075,25 +1075,6 @@
           mercatorVtx(ct1[0], ct1[1], altZ(ch1)),
           mercatorVtx(ct0[0], ct0[1], altZ(ch0)),
           colors.till);
-      } else {
-        var tb0 = toward(h0, l0, 4);
-        var tb1 = toward(h1, l1, 4);
-        var tt0 = toward(h0, l0, 12);
-        var tt1 = toward(h1, l1, 12);
-        var zh0 = tillHeight(h0[0]);
-        var zh1 = tillHeight(h1[0]);
-        pushQuad(tillPos, tillCol,
-          mercatorVtx(h0[0], h0[1], deckZ),
-          mercatorVtx(h1[0], h1[1], deckZ),
-          mercatorVtx(tb1[0], tb1[1], altZ(zh1)),
-          mercatorVtx(tb0[0], tb0[1], altZ(zh0)),
-          colors.till);
-        pushQuad(tillPos, tillCol,
-          mercatorVtx(tb0[0], tb0[1], altZ(zh0)),
-          mercatorVtx(tb1[0], tb1[1], altZ(zh1)),
-          mercatorVtx(tt1[0], tt1[1], altZ(zh1 * 0.88)),
-          mercatorVtx(tt0[0], tt0[1], altZ(zh0 * 0.88)),
-          colors.cobble);
       }
     }
     var sand = makeColorMesh(sandPos, sandCol, 1);
