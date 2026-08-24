@@ -866,143 +866,79 @@
     return year === 2000 || year > 2000;
   }
 
-  function sandWidthOk(w0, w1) {
-    return w0 >= 4 && w1 >= 4;
-  }
+  /* Three south-shore site boxes only. Not a peninsula-long transect strip. */
+  var SAND_BOX_SITES = [
+    { id: "ditch_plains", lat: 41.03948, lng: -71.91701, look: 168, alongM: 110 },
+    { id: "ocean_beaches", lat: 41.0315, lng: -71.946, look: 180, alongM: 90 },
+    { id: "lighthouse", lat: 41.07099, lng: -71.85709, look: 125, alongM: 90 }
+  ];
 
-  function bearingDeg(lat1, lng1, lat2, lng2) {
-    var p1 = lat1 * Math.PI / 180;
-    var p2 = lat2 * Math.PI / 180;
-    var dL = (lng2 - lng1) * Math.PI / 180;
-    var y = Math.sin(dL) * Math.cos(p2);
-    var x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dL);
-    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
-  }
-
-  function runAlongM(spec, start, end) {
-    var m = 0;
+  function meanWidthNear(spec, lng, windowDeg) {
+    if (!spec || !spec.w || !spec.ref) return 0;
+    var sum = 0;
+    var n = 0;
     var i;
-    for (i = start; i <= end; i++) {
-      var a = xyAt(spec.ref, i);
-      var b = xyAt(spec.ref, i + 1);
-      m += metersBetween(a[1], a[0], b[1], b[0]);
-    }
-    return m;
-  }
-
-  function sandRunsForSpec(spec) {
-    var n = spec.w.length;
-    var ok = [];
-    var i;
-    for (i = 0; i < n - 1; i++) {
-      var h0 = xyAt(spec.hwl, i);
-      var h1 = xyAt(spec.hwl, i + 1);
-      var r0 = xyAt(spec.ref, i);
-      var r1 = xyAt(spec.ref, i + 1);
-      var far = metersBetween(h0[1], h0[0], h1[1], h1[0]) > 140 &&
-        metersBetween(r0[1], r0[0], r1[1], r1[0]) > 140;
-      var span0 = metersBetween(r0[1], r0[0], h0[1], h0[0]);
-      var span1 = metersBetween(r1[1], r1[0], h1[1], h1[0]);
-      ok[i] = !far && sandWidthOk(spec.w[i], spec.w[i + 1]) && span0 >= 4 && span1 >= 4;
-    }
-    var runs = [];
-    i = 0;
-    while (i < ok.length) {
-      if (!ok[i]) {
-        i += 1;
-        continue;
-      }
-      var start = i;
-      while (i < ok.length && ok[i]) i += 1;
-      var end = i - 1;
-      if (end - start + 1 < 2) continue;
-      while (end - start + 1 >= 2 && spec.w[start] < 16) start += 1;
-      while (end - start + 1 >= 2 && spec.w[end + 1] < 16) end -= 1;
-      /* Isolated leftover runs become floating blobs — need ≥ 40 m of beach. */
-      if (end - start + 1 >= 2 && runAlongM(spec, start, end) >= 40) {
-        runs.push({ start: start, end: end });
+    for (i = 0; i < spec.w.length; i++) {
+      if (Math.abs(spec.ref[i * 2] - lng) <= windowDeg) {
+        sum += spec.w[i];
+        n += 1;
       }
     }
-    return runs;
+    return n ? sum / n : 0;
   }
 
-  function thickestVert(spec, a, b) {
-    var best = a;
-    var bw = spec.w[a];
-    var i;
-    for (i = a; i <= b; i++) {
-      if (spec.w[i] > bw) {
-        bw = spec.w[i];
-        best = i;
-      }
+  function siteBoxWidthM(spec, site) {
+    if (site.id === "ditch_plains" && coastMeshes && coastMeshes.properties &&
+        coastMeshes.properties.ditchWidthM) {
+      var dw = coastMeshes.properties.ditchWidthM[String(year)];
+      if (dw != null && isFinite(Number(dw))) return Number(dw);
     }
-    return best;
+    return meanWidthNear(spec, site.lng, 0.012);
   }
 
-  /* Inland at ref, seaward = max(w, 20 m) along the transect. Never use the
-     converging HWL vertex — that pair collapses into a knife-edge. */
-  function thickCrossAt(spec, i) {
-    var r = xyAt(spec.ref, i);
-    var h = xyAt(spec.hwl, i);
-    var br = bearingDeg(r[1], r[0], h[1], h[0]);
-    if (!isFinite(br)) br = 168;
-    var width = Math.max(Math.abs(spec.w[i]), 20);
-    var sea = destPoint(r[1], r[0], br, width);
-    return { inland: [r[0], r[1]], seaward: [sea.lng, sea.lat], br: br, width: width };
+  /* Closed rectangular prism. East/west faces are vertical rectangles of the
+     same seaward width as the middle. No taper, no leftover verts. */
+  function pushRectPrism(pos, col, rgb, corners, zTop, zBot) {
+    var iw = mercatorVtx(corners[0][0], corners[0][1], zTop);
+    var ie = mercatorVtx(corners[1][0], corners[1][1], zTop);
+    var se = mercatorVtx(corners[2][0], corners[2][1], zTop);
+    var sw = mercatorVtx(corners[3][0], corners[3][1], zTop);
+    var iwB = mercatorVtx(corners[0][0], corners[0][1], zBot);
+    var ieB = mercatorVtx(corners[1][0], corners[1][1], zBot);
+    var seB = mercatorVtx(corners[2][0], corners[2][1], zBot);
+    var swB = mercatorVtx(corners[3][0], corners[3][1], zBot);
+    pushQuad(pos, col, iw, ie, se, sw, rgb);
+    pushQuad(pos, col, iwB, swB, seB, ieB, rgb);
+    pushQuad(pos, col, sw, se, seB, swB, rgb);
+    pushQuad(pos, col, iw, iwB, ieB, ie, rgb);
+    pushQuad(pos, col, ie, se, seB, ieB, rgb);
+    pushQuad(pos, col, iw, sw, swB, iwB, rgb);
   }
 
-  function shiftCross(cs, alongBr, meters) {
-    var inn = destPoint(cs.inland[1], cs.inland[0], alongBr, meters);
-    var sea = destPoint(inn.lat, inn.lng, cs.br, cs.width);
-    return { inland: [inn.lng, inn.lat], seaward: [sea.lng, sea.lat], br: cs.br, width: cs.width };
-  }
-
-  function pushSandBox(pos, col, rgb, aIn, aSea, bIn, bSea, topIn, topOut, toeZ) {
-    var a = mercatorVtx(aIn[0], aIn[1], topIn);
-    var b = mercatorVtx(bIn[0], bIn[1], topIn);
-    var c = mercatorVtx(bSea[0], bSea[1], topOut);
-    var d = mercatorVtx(aSea[0], aSea[1], topOut);
-    var e = mercatorVtx(aSea[0], aSea[1], toeZ);
-    var f = mercatorVtx(bSea[0], bSea[1], toeZ);
-    var g = mercatorVtx(aIn[0], aIn[1], toeZ);
-    var h = mercatorVtx(bIn[0], bIn[1], toeZ);
-    pushQuad(pos, col, a, b, c, d, rgb);
-    pushQuad(pos, col, d, c, f, e, rgb);
-    pushQuad(pos, col, a, d, e, g, rgb);
-    pushQuad(pos, col, b, c, f, h, rgb);
-  }
-
-  function northRibbonMeshes(colors) {
-    if (skipSandMesh()) return [];
-    if (!HWL_NORTH_YEARS[year] || !coastMeshes || !coastMeshes.north) return [];
-    var lines = coastMeshes.north[String(year)] || [];
-    var tillPos = [];
-    var tillCol = [];
-    var li;
-    for (li = 0; li < lines.length; li++) {
-      var packed = lines[li];
-      var n = packed.length / 2;
-      if (n < 2) continue;
-      var i;
-      var mid = [];
-      var inn = [];
-      for (i = 0; i < n; i++) {
-        var p = xyAt(packed, i);
-        mid.push(p);
-        var inland = destPoint(p[1], p[0], 180, 10);
-        inn.push([inland.lng, inland.lat]);
-      }
-      for (i = 0; i < n - 1; i++) {
-        if (metersBetween(mid[i][1], mid[i][0], mid[i + 1][1], mid[i + 1][0]) > 140) continue;
-        var a = mercatorVtx(mid[i][0], mid[i][1], altZ(1.8));
-        var b = mercatorVtx(mid[i + 1][0], mid[i + 1][1], altZ(1.8));
-        var e = mercatorVtx(inn[i][0], inn[i][1], altZ(7.2));
-        var f = mercatorVtx(inn[i + 1][0], inn[i + 1][1], altZ(7.2));
-        pushQuad(tillPos, tillCol, a, b, f, e, colors.till);
-      }
-    }
-    var till = makeColorMesh(tillPos, tillCol, 1);
-    return till ? [till] : [];
+  function addSiteSandBoxes(group, spec, colors) {
+    /* Closed prisms only. Height ~2.7 m. East/west faces copy the mid width. */
+    var zTop = altZ(3.2);
+    var zBot = altZ(0.5);
+    var pos = [];
+    var col = [];
+    SAND_BOX_SITES.forEach(function (site) {
+      var width = siteBoxWidthM(spec, site);
+      if (!(width >= 8)) return;
+      var alongE = (site.look + 90) % 360;
+      var alongW = (site.look + 270) % 360;
+      var inlandW = destPoint(site.lat, site.lng, alongW, site.alongM);
+      var inlandE = destPoint(site.lat, site.lng, alongE, site.alongM);
+      var seaW = destPoint(inlandW.lat, inlandW.lng, site.look, width);
+      var seaE = destPoint(inlandE.lat, inlandE.lng, site.look, width);
+      pushRectPrism(pos, col, colors.sand, [
+        [inlandW.lng, inlandW.lat],
+        [inlandE.lng, inlandE.lat],
+        [seaE.lng, seaE.lat],
+        [seaW.lng, seaW.lat]
+      ], zTop, zBot);
+    });
+    var mesh = makeColorMesh(pos, col, 1);
+    if (mesh) group.add(mesh);
   }
 
   function hwlLatNear(spec, lng, windowDeg) {
@@ -1110,74 +1046,9 @@
     group.userData.fade = 0;
     if (!spec || !map) return group;
     var colors = eraCoastColors();
-    var waterZ = addSolidWaterPlanes(group, spec, colors);
+    addSolidWaterPlanes(group, spec, colors);
     if (skipSandMesh()) return group;
-    var land = coastMeshes.land;
-    var sandPos = [];
-    var sandCol = [];
-    var tillPos = [];
-    var tillCol = [];
-    var topIn = altZ(3.15);
-    var topOut = altZ(2.55);
-    var toeZ = altZ(waterZ);
-    var runs = sandRunsForSpec(spec);
-    var ri;
-    for (ri = 0; ri < runs.length; ri++) {
-      var run = runs[ri];
-      var startVert = thickestVert(spec, run.start, Math.min(run.start + 1, run.end + 1));
-      var endVert = thickestVert(spec, Math.max(run.end, run.start), run.end + 1);
-      var csS = thickCrossAt(spec, startVert);
-      var csE = thickCrossAt(spec, endVert);
-      var westBr = startVert + 1 < spec.w.length
-        ? bearingDeg(xyAt(spec.ref, startVert + 1)[1], xyAt(spec.ref, startVert + 1)[0],
-            csS.inland[1], csS.inland[0])
-        : (csS.br + 90) % 360;
-      var eastBr = endVert > 0
-        ? bearingDeg(xyAt(spec.ref, endVert - 1)[1], xyAt(spec.ref, endVert - 1)[0],
-            csE.inland[1], csE.inland[0])
-        : (csE.br + 90) % 360;
-      var csSOut = shiftCross(csS, westBr, 11);
-      var csEOut = shiftCross(csE, eastBr, 11);
-      /* Rectangular caps — same cross-section duplicated along-shore. */
-      pushSandBox(sandPos, sandCol, colors.sand,
-        csSOut.inland, csSOut.seaward, csS.inland, csS.seaward, topIn, topOut, toeZ);
-      pushSandBox(sandPos, sandCol, colors.sand,
-        csE.inland, csE.seaward, csEOut.inland, csEOut.seaward, topIn, topOut, toeZ);
-      var lastEastLng = Math.max(csEOut.inland[0], csEOut.seaward[0]);
-      /* Interior only. Skip the last real HWL/ref pair — it converges to a wedge. */
-      var i;
-      for (i = run.start; i < run.end; i++) {
-        var r0 = xyAt(spec.ref, i);
-        var r1 = xyAt(spec.ref, i + 1);
-        if (r0[0] > lastEastLng && r1[0] > lastEastLng) continue;
-        var h0 = xyAt(spec.hwl, i);
-        var h1 = xyAt(spec.hwl, i + 1);
-        var l0 = xyAt(land, i);
-        var l1 = xyAt(land, i + 1);
-        var a = mercatorVtx(r0[0], r0[1], topIn);
-        var b = mercatorVtx(r1[0], r1[1], topIn);
-        var c = mercatorVtx(h1[0], h1[1], topOut);
-        var d = mercatorVtx(h0[0], h0[1], topOut);
-        var e = mercatorVtx(h0[0], h0[1], toeZ);
-        var f = mercatorVtx(h1[0], h1[1], toeZ);
-        pushQuad(sandPos, sandCol, a, b, c, d, colors.sand);
-        pushQuad(sandPos, sandCol, d, c, f, e, colors.sand);
-        var ib0 = toward(r0, l0, 4);
-        var ib1 = toward(r1, l1, 4);
-        if (ib0[0] <= lastEastLng && ib1[0] <= lastEastLng) {
-          pushQuad(tillPos, tillCol,
-            a, b,
-            mercatorVtx(ib1[0], ib1[1], altZ(tillHeight(r1[0]))),
-            mercatorVtx(ib0[0], ib0[1], altZ(tillHeight(r0[0]))),
-            colors.till);
-        }
-      }
-    }
-    var sand = makeColorMesh(sandPos, sandCol, 1);
-    var till = makeColorMesh(tillPos, tillCol, 1);
-    if (sand) group.add(sand);
-    if (till) group.add(till);
-    northRibbonMeshes(colors).forEach(function (m) { group.add(m); });
+    addSiteSandBoxes(group, spec, colors);
     return group;
   }
 
