@@ -257,6 +257,13 @@
           "sourceUrl": "https://www.easthamptonstar.com/archive/whats-name-culloden-point"
         },
         {
+          "year": 1961,
+          "title": "Culloden Shores map filed",
+          "text": "August 28, 1961 map of Culloden Shores: 44 acres, scale 1 inch = 100 feet, Zone C, No. 1929 (Frank Tuma Jr. / Geoffrey H. Bass). In copyright \u2014 not reused as an image.",
+          "status": "sourced",
+          "sourceUrl": "https://nyheritage.contentdm.oclc.org/digital/collection/p15281coll78/id/126"
+        },
+        {
           "year": 1998,
           "title": "February 5 northeaster breaches a Soundview bulkhead",
           "text": "Wind-driven Block Island Sound waves opened a 20-foot-wide hole in a bulkhead shared by seven Soundview Drive houses and put one house in jeopardy. Fill behind the wall \u201ccame tumbling out.\u201d Residents had been asking the town and USACE to dredge the harbor and put sand on beaches east and west of the channel.",
@@ -266,9 +273,9 @@
         {
           "year": 2007,
           "title": "Town LWRP records downdrift scouring on Soundview",
-          "text": "The final Local Waterfront Revitalization Program, approved by the New York Secretary of State in 2007, stated that the jetties caused downdrift scouring to beaches along Soundview Drive. That finding is recited in the Second Circuit\u2019s Cangemi opinion.",
+          "text": "The final Local Waterfront Revitalization Program, approved by the New York Secretary of State in 2007, stated that the jetties caused downdrift scouring to beaches along Soundview Drive (recited in the Second Circuit Cangemi opinion). LWRP Reach 6 is Montauk\u2019s north side from Culloden Point to Shagwong; the Soundview Drive area is printed as one of the most vulnerable storm-induced erosion areas in that reach. Reach 5 is Hither Woods / Fort Pond Bay.",
           "status": "sourced",
-          "sourceUrl": "https://law.justia.com/cases/federal/appellate-courts/ca2/19-1076/19-1076-2021-09-07.html"
+          "sourceUrl": "https://dos.ny.gov/system/files/documents/2019/04/section-iv.pdf"
         },
         {
           "year": 2011,
@@ -451,7 +458,8 @@
         "Gosman\u2019s Dock",
         "Gin Beach",
         "Lake Montauk west jetty",
-        "Coastal Erosion Overlay Zone 4"
+        "Coastal Erosion Overlay Zone 4",
+        "LWRP Reach 6 (Culloden Point to Shagwong)"
       ]
     },
     {
@@ -483,6 +491,13 @@
           "sourceUrl": "https://montauklibrary.org/throwback-thursday-dredging-up-the-past/"
         },
         {
+          "year": 1943,
+          "title": "Navy takes over the Fort Pond Bay fishing village",
+          "text": "NY Heritage caption: \u201cThe Military takes over the fishing village, 1943\u201d (Fort Pond Bay / Navy torpedo range). Photo is in copyright \u2014 link only. NORTH shore, not Ditch or downtown ocean.",
+          "status": "sourced",
+          "sourceUrl": "https://nyheritage.contentdm.oclc.org/digital/collection/p15281coll78/id/203"
+        },
+        {
           "year": 1945,
           "title": "Federal Navigation Project authorized; 1942 Navy/US easement already in place",
           "text": "The town took title in 1941 and granted a permanent federal easement in 1942; the Navy paid for a 231-foot shoreward extension of the west jetty. The Rivers and Harbors Act of 1945 (Pub. L. 79-14) authorized the 12-foot, 150-foot-wide channel to the Star Island yacht basin, the 10-foot northwest boat basin, and both jetties.",
@@ -502,6 +517,13 @@
           "text": "USACE\u2019s Lake Montauk Harbor Reconnaissance Study found navigation impaired by east-jetty deterioration and recommended jetty rehab, channel deepening, and use of dredged/bypassed sand on the eroded western shoreline. A town Gin Beach-to-Soundview bypass of 5,000\u201310,000 cy was later permitted but never built.",
           "status": "sourced",
           "sourceUrl": "https://law.justia.com/cases/federal/appellate-courts/ca2/19-1076/19-1076-2021-09-07.html"
+        },
+        {
+          "year": 2011,
+          "title": "2011 maintenance dredge of the federal channel",
+          "text": "USACE/NYSDEC 2012-06-21 Lake Montauk Harbor posters: existing federal channel \u221212 ft MLW, basin \u221210 ft MLW; 2011 maintenance dredge 11,915 cy. Table total maintenance 486,701 cy (1945\u20132011). East jetty 750 ft, jetties 500 ft apart; 1968 east-jetty shoreward +350 ft to 1,100 ft; west jetty 981 ft, crest +8 ft MLW.",
+          "status": "sourced",
+          "sourceUrl": "https://www.ehamptonny.gov/DocumentCenter/View/1332/Lake-Montauk-Harbor--Feasibility-Study-PDF"
         },
         {
           "year": 2025,
