@@ -522,7 +522,6 @@ body {
   border-top: 1px solid #1c140c;
   padding-top: 12px;
 }
-#app.is-change .gis-panel,
 #app.is-change .compare-bar,
 #app.is-change .year-banner { display: none !important; }
 #app.is-change .dock-source { visibility: hidden; }
