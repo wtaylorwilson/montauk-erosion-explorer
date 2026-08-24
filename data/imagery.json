@@ -14,7 +14,7 @@
       "name": "OpenStreetMap",
       "type": "xyz",
       "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      "attribution": "\u00a9 OpenStreetMap contributors",
+      "attribution": "© OpenStreetMap contributors",
       "maxZoom": 19
     }
   ],
@@ -144,6 +144,7 @@
     }
   ],
   "sliderYears": [
+    1928,
     1938,
     1976,
     1984,
@@ -164,7 +165,8 @@
     2022,
     2023,
     2024,
-    2025
+    2025,
+    2026
   ],
   "photoCompare": {
     "harbor_jetties": {

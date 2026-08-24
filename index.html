@@ -36,6 +36,7 @@
       <div class="top-meta">
         <span id="cursor-ll" class="ll-readout">41.0400°N  71.9400°W</span>
         <button id="btn-photo-compare" class="ghost" type="button">1976 vs 1984</button>
+        <button id="btn-ceha" class="ghost" type="button">CEHA sheets</button>
         <button id="btn-compare" class="ghost" type="button" aria-pressed="false">Compare tiles</button>
       </div>
     </header>
@@ -55,7 +56,7 @@
         </div>
 
         <footer class="panel-credits">
-          <p>Tiles: Esri World Imagery Wayback · NYS ITS Geospatial Services (NYSDOP). Overlays: Town of East Hampton GIS (Coastal Erosion Overlay Zones); USGS OFR 2010-1119 Himmelstoss et al. 2010 (south-shore LT rates). Photos: family collection, BJ Old Montauk aerials (24 MAR 76 / Apr 1984) · USACE 1938 · USGS DS 858 (5 Nov 2012) · Library of Congress (Highsmith). Site-box rates computed from the official shapefile — not published USGS site averages.</p>
+          <p>Tiles: Esri World Imagery Wayback · NYS ITS Geospatial Services (NYSDOP). Overlays: Town of East Hampton GIS (Coastal Erosion Overlay Zones); USGS OFR 2010-1119 Himmelstoss et al. 2010 (south-shore LT rates). Photos: family collection, BJ Old Montauk aerials (24 MAR 76 / Apr 1984) · USACE 1938/1941 · USGS DS 858/958/995/1030 (2012–2016) · Library of Congress · DVIDS · Wikimedia Commons. CEHA legal sheets: NYSDEC. 27east / East Hampton Star events are link-only (news photos not reused). Site-box rates computed from the official shapefile — not published USGS site averages.</p>
         </footer>
       </aside>
 
@@ -112,7 +113,7 @@
               <p class="gis-note">Atlantic / Point only. Not Soundview.</p>
             </div>
           </div>
-          <p class="gis-caption">Town of East Hampton GIS; USGS OFR 2010-1119 Himmelstoss et al. 2010. Site-box rates are computed from the official shapefile, not published USGS site averages.</p>
+          <p class="gis-caption">Town of East Hampton GIS; USGS OFR 2010-1119 Himmelstoss et al. 2010 (south shore / Point only — never Soundview). North-shore rates: Town CARP 2022. CEHA sheets: NYSDEC.</p>
         </aside>
       </main>
     </div>
@@ -148,6 +149,19 @@
         </label>
       </div>
     </footer>
+  </div>
+
+
+  <div id="ceha-viewer" class="ceha-viewer" hidden>
+    <div class="ceha-chrome">
+      <div>
+        <p class="panel-kicker">NYSDEC legal maps</p>
+        <h2>Coastal Erosion Hazard Area sheets</h2>
+        <p class="lede">East Hampton Town, Suffolk County. Credit: New York State Department of Environmental Conservation. Site pins: sheet 13 downtown ocean (SOUTH), sheet 14 Ditch Plains (SOUTH), sheet 22-N Soundview (NORTH). Harbor inlet and the lighthouse point are not inside a CEHA polygon.</p>
+      </div>
+      <button type="button" id="ceha-close" class="ghost">Close</button>
+    </div>
+    <div id="ceha-grid" class="ceha-grid"></div>
   </div>
 
   <div id="lightbox" class="lightbox" hidden>

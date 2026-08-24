@@ -1,0 +1,121 @@
+{
+  "credit": "NYSDEC Coastal Erosion Hazard Area maps — legal sheets for the Town of East Hampton, Suffolk County. https://www.dec.ny.gov/",
+  "source": "https://www.dec.ny.gov/fs/projects/coastal/Suffolk/",
+  "note": "Site pins assigned only when the named point falls inside a NYSDEC sheet polygon. Harbor jetties (inlet water) and lighthouse (inland of the CEHA strip) are not pinned.",
+  "sheets": [
+    {
+      "file": "assets/ceha/ehamptont11of59.jpg",
+      "label": "11 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 11 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont12of59.jpg",
+      "label": "12 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 12 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont13of59.jpg",
+      "label": "13 of 59",
+      "siteId": "ocean_beaches",
+      "caption": "East Hampton sheet 13 of 59 — downtown / ocean beaches (SOUTH)"
+    },
+    {
+      "file": "assets/ceha/ehamptont14of59.jpg",
+      "label": "14 of 59",
+      "siteId": "ditch_plains",
+      "caption": "East Hampton sheet 14 of 59 — Ditch Plains (SOUTH)"
+    },
+    {
+      "file": "assets/ceha/ehamptont15of59.jpg",
+      "label": "15 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 15 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont16of59.jpg",
+      "label": "16 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 16 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont17of59.jpg",
+      "label": "17 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 17 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont18of59.jpg",
+      "label": "18 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 18 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont19of59.jpg",
+      "label": "19 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 19 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont20of59.jpg",
+      "label": "20 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 20 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont21of59.jpg",
+      "label": "21 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 21 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont22of59.jpg",
+      "label": "22 of 59",
+      "siteId": "soundview",
+      "caption": "East Hampton sheet 22-N of 59 — Soundview (NORTH)"
+    },
+    {
+      "file": "assets/ceha/ehamptont23of59.jpg",
+      "label": "23 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 23 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont24of59.jpg",
+      "label": "24 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 24 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont25of59.jpg",
+      "label": "25 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 25 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont26of59.jpg",
+      "label": "26 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 26 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont27of59.jpg",
+      "label": "27 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 27 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont28of59.jpg",
+      "label": "28 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 28 of 59"
+    },
+    {
+      "file": "assets/ceha/ehamptont29of59.jpg",
+      "label": "29 of 59",
+      "siteId": null,
+      "caption": "East Hampton sheet 29 of 59"
+    }
+  ]
+}

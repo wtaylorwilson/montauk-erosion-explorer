@@ -464,10 +464,18 @@
       span.type = "button";
       span.className = "pill" + (near ? " on" : "") + (ev.status === "placeholder" ? " placeholder" : "");
       span.textContent = ev.year + " · " + ev.title;
-      span.addEventListener("click", function () {
+      if (ev.sourceUrl) {
+        span.title = ev.sourceUrl;
+        span.dataset.href = ev.sourceUrl;
+      }
+      span.addEventListener("click", function (e) {
+        if (e.altKey && ev.sourceUrl) { window.open(ev.sourceUrl, "_blank", "noopener"); return; }
         const idx = state.years.indexOf(ev.year);
         if (idx >= 0) { state.yearIndex = idx; $("#year-slider").value = String(idx); onYearChange(); }
         if (ev.siteId) selectSite(ev.siteId, true);
+      });
+      span.addEventListener("dblclick", function () {
+        if (ev.sourceUrl) window.open(ev.sourceUrl, "_blank", "noopener");
       });
       wrap.appendChild(span);
     });
@@ -757,6 +765,34 @@
     });
   }
 
+
+  function initCehaViewer() {
+    const grid = $("#ceha-grid");
+    const sheets = (state.cehaSheets && state.cehaSheets.sheets) || [];
+    grid.innerHTML = sheets.map(function (s, i) {
+      const assigned = s.siteId ? " is-assigned" : "";
+      const cap = (s.caption || s.label || "") + " · NYSDEC";
+      return '<button type="button" class="ceha-card' + assigned + '" data-i="' + i + '">' +
+        '<img src="' + escapeHtml(s.file) + '" alt="' + escapeHtml(cap) + '" />' +
+        "<p>" + escapeHtml(cap) + (s.siteId ? " · pinned" : "") + "</p></button>";
+    }).join("");
+    grid.querySelectorAll(".ceha-card").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const s = sheets[Number(btn.dataset.i)];
+        if (!s) return;
+        openLightbox(s.file, (s.caption || s.label) + " — NYSDEC CEHA legal map");
+        if (s.siteId) selectSite(s.siteId, true);
+      });
+    });
+    function show() { $("#ceha-viewer").hidden = false; }
+    function hide() { $("#ceha-viewer").hidden = true; }
+    $("#btn-ceha").addEventListener("click", function () {
+      if ($("#ceha-viewer").hidden) show();
+      else hide();
+    });
+    $("#ceha-close").addEventListener("click", hide);
+  }
+
   function initChrome() {
     document.querySelectorAll(".tab").forEach(function (tab) {
       tab.addEventListener("click", function () {
@@ -812,6 +848,8 @@
     const localStudies = await loadFirst(["data/studies.json"]);
     const waybackDoc = await loadFirst(["/research/esri_wayback_releases.json", "data/wayback.json"], "wayback");
     const events = await loadFirst(["data/events.json"], "events.json");
+    const cehaSheets = await loadFirst(["data/ceha-sheets.json"], "ceha-sheets.json");
+    state.cehaSheets = cehaSheets || { sheets: [] };
 
     if (!localImagery || !localImagery.basemaps) {
       document.body.innerHTML = "<p style='padding:2rem;font-family:sans-serif'>Could not load data/imagery.json. Run python3 serve.py in this folder.</p>";
@@ -853,6 +891,7 @@
     await addGisOverlays();
     initRateStrip();
     initAerialCompare();
+    initCehaViewer();
     highlightEvents();
     $("#year-source").textContent = sourceLabel(currentYear(), state.layerPref);
     applyHash();

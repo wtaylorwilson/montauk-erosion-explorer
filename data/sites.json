@@ -50,35 +50,49 @@
           "text": "After a July 2025 DEC permit and homeowner easements, Bistrian Materials placed about 20,000 cubic yards along ~2,200 feet. The Town Board marked completion of the 16-foot emergency dune on 15 January 2026 (from east of the dirt lot to west of the Seaside Avenue lot). Two houses lacked easements, so the fill stopped short of the jetty. In July 2026 the board authorized $14,700 emergency removal of the old Rheinstein-estate septic protruding from the bluff.",
           "status": "sourced",
           "sourceUrl": "https://www.easthamptonstar.com/government/2026115/bolstered-ditch-plain-dune-complete"
+        },
+        {
+          "year": 2024,
+          "title": "June 2024: 5,800 cy recreational fill",
+          "text": "After the 2023–24 winter left Ditch down to hardpan (FIMP sand went downtown, not here), the town placed about 5,800 cubic yards of DEC-approved white sand on the recreational beach starting 17 June 2024.",
+          "status": "sourced",
+          "sourceUrl": "https://www.27east.com/east-hampton-press/ditch-plains-beach-restoration-work-begins-2262828/"
+        },
+        {
+          "year": 2025,
+          "title": "Engineered dune: 20,000 cy along ~2,200 ft; crest +16 ft NAVD",
+          "text": "Bistrian placed about 20,000 cubic yards along ~2,200 feet (fall 2025). Town 2024 Ditch-dune figures: 2020 remnant 1,925 cy above MSL had fallen to 544 cy by February 2024; rebuilt maximum 20,000 cy, crest +16 ft NAVD. First winter (2025–26) scarred the new dune about 10–12 ft west of the west lot.",
+          "status": "sourced",
+          "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_26ae5338-6857-4c82-906f-88f541724935.html"
+        },
+        {
+          "year": 2026,
+          "title": "Rheinstein / McCaffray septic pulled from the bluff",
+          "text": "The 1928 McCaffray house sat on this till bluff; the town bought the dangling estate in 1972. In August 2026 crews removed the long-defunct septic from the Rheinstein Preserve bluff ($14,700 emergency).",
+          "status": "sourced",
+          "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_a8f5f6da-570e-4106-8625-d21491f9f456.html"
         }
       ],
       "photos": [
         {
           "year": 1900,
           "src": "assets/photos/loc_1900_ditch_plain_lss.jpg",
-          "caption": "Ditch Plain Life-Saving Station, circa 1900",
-          "credit": "Library of Congress",
+          "caption": "U.S. Life-Saving Service station at Ditch Plain",
+          "credit": "Library of Congress, c. 1900",
           "kind": "loc"
         },
         {
           "year": 1955,
           "src": "assets/photos/loc_1955_frissell_ditch_plains.jpg",
-          "caption": "Toni Frissell, Ditch Plains, 1955",
-          "credit": "Library of Congress",
+          "caption": "Toni Frissell — Ditch Plains beach",
+          "credit": "Library of Congress, Toni Frissell, 1955",
           "kind": "loc"
-        },
-        {
-          "year": 1962,
-          "src": "assets/photos/usace_1962_ditch_plains_055.jpg",
-          "caption": "USACE Ash Wednesday vertical, 8 Mar 1962 — Ditch Plains",
-          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board",
-          "kind": "usace"
         },
         {
           "year": 2007,
           "src": "assets/photos/commons_ditch_plains_2007_association-bluffs.jpg",
-          "caption": "Ditch Plains association bluffs, 2007",
-          "credit": "Wikimedia Commons",
+          "caption": "Ditch Plains association bluffs (south / Atlantic)",
+          "credit": "Wikimedia Commons, 2007",
           "kind": "commons"
         },
         {
@@ -89,18 +103,39 @@
           "kind": "usgs"
         },
         {
+          "year": 2012,
+          "src": "assets/photos/usgs_ds858_2012_1105_134026d.jpg",
+          "caption": "USGS DS 858 oblique, 5 Nov 2012 — Ditch Plains (adjacent frame)",
+          "credit": "U.S. Geological Survey, DS 858, 2012-11-05",
+          "kind": "usgs"
+        },
+        {
           "year": 2014,
           "src": "assets/photos/usgs_ds958_2014_ditch_plains.jpg",
-          "caption": "USGS DS 958 oblique, 2014 — Ditch Plains baseline",
-          "credit": "U.S. Geological Survey, DS 958",
+          "caption": "USGS DS 958 baseline oblique, 6 Oct 2014 — Ditch Plains",
+          "credit": "U.S. Geological Survey, DS 958, 2014-10-06",
+          "kind": "usgs"
+        },
+        {
+          "year": 2015,
+          "src": "assets/photos/usgs_ds995_2015_1008_171048d.jpg",
+          "caption": "USGS DS 995 post-Joaquin oblique, 8 Oct 2015 — Ditch Plains",
+          "credit": "U.S. Geological Survey, DS 995, 2015-10-08",
           "kind": "usgs"
         },
         {
           "year": 2016,
           "src": "assets/photos/usgs_ds1030_2016_ditch_plains.jpg",
-          "caption": "USGS DS 1030 oblique, 9 Mar 2016 — Ditch Plains",
-          "credit": "U.S. Geological Survey, DS 1030",
+          "caption": "USGS DS 1030 winter oblique, 9 Mar 2016 — Ditch Plains",
+          "credit": "U.S. Geological Survey, DS 1030, 2016-03-09",
           "kind": "usgs"
+        },
+        {
+          "year": null,
+          "src": "assets/ceha/ehamptont14of59.jpg",
+          "caption": "NYSDEC Coastal Erosion Hazard Area — East Hampton sheet 14 of 59 (Ditch Plains)",
+          "credit": "NYSDEC CEHA legal map",
+          "kind": "ceha"
         }
       ],
       "keyNumbers": [
@@ -131,6 +166,20 @@
           "unit": "",
           "status": "sourced",
           "note": "Corps cost-benefit left Ditch out. Town engineered dune 2024–26."
+        },
+        {
+          "label": "2020 remnant → Feb 2024",
+          "value": "1,925 → 544",
+          "unit": "cy",
+          "status": "sourced",
+          "note": "Town 2024 Ditch dune memo: cubic yards above MSL. South / Atlantic only."
+        },
+        {
+          "label": "Rebuilt dune",
+          "value": "20,000",
+          "unit": "cy",
+          "status": "sourced",
+          "note": "Maximum permitted fill; crest +16 ft NAVD along ~2,200 ft (Town 2024 / 2025–26 as-built)."
         }
       ],
       "related": [
@@ -199,14 +248,35 @@
           "text": "The Second Circuit (13 F.4th 115) affirmed dismissal. Plaintiffs had alleged the jetties caused the western scour. The court held USACE—not the town—controls the federal navigation project, and no trial evidence showed the town knew in 1942 that handing over the jetties would erode the private beaches to the west.",
           "status": "sourced",
           "sourceUrl": "https://www.easthamptonstar.com/government/2021916/town-prevails-protracted-montauk-erosion-lawsuit"
+        },
+        {
+          "year": 2012,
+          "title": "Sandy: rocks on Soundview Drive; house undermined",
+          "text": "Block Island Sound threw former shore-protection rocks onto Soundview Drive pavement and undermined at least one house. North shore — not the Atlantic.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-shoreline-took-severe-beating"
+        },
+        {
+          "year": 2024,
+          "title": "184 Soundview: more than 24 ft of bluff lost",
+          "text": "At a 9 July 2024 Town Board session, counsel said the Iudicones at 184 Soundview Drive had lost more than 24 feet of bluff that year. Zone 4 runs from the west harbor jetty to just east of 180 Soundview.",
+          "status": "sourced",
+          "sourceUrl": "https://www.27east.com/east-hampton-press/article_03b20884-6ce5-5533-a7f6-8985909231ed.html"
+        },
+        {
+          "year": 2024,
+          "title": "16 May 2024: Culloden Point lawn on an eroding precipice",
+          "text": "The East Hampton Star photographed a lawn dripping off an eroding precipice at Culloden Point; the shoreline to the east is almost completely hardened.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/government/2024516/about-eroding-bluff"
         }
       ],
       "photos": [
         {
           "year": 1941,
           "src": "assets/photos/usace_1941_fort_pond_bay.jpg",
-          "caption": "USACE 1941 vertical — Fort Pond Bay / Soundview shore",
-          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board",
+          "caption": "USACE 1941 Fort Pond Bay — north-shore bay west of the Lake Montauk inlet (Soundview / Culloden)",
+          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1941",
           "kind": "usace"
         },
         {
@@ -226,23 +296,37 @@
         {
           "year": 2006,
           "src": "assets/photos/commons_soundview_2006_culloden-point-bluff.jpg",
-          "caption": "Culloden Point bluff, 2006",
-          "credit": "Wikimedia Commons",
+          "caption": "Culloden Point bluff, Fort Pond Bay (NORTH / Block Island Sound)",
+          "credit": "Wikimedia Commons, 2006",
+          "kind": "commons"
+        },
+        {
+          "year": null,
+          "src": "assets/photos/commons_logan_soundview.jpg",
+          "caption": "Soundview / Fort Pond Bay shore (NORTH)",
+          "credit": "Wikimedia Commons (Logan)",
           "kind": "commons"
         },
         {
           "year": 2013,
           "src": "assets/photos/commons_soundview_2013_fort-pond-bay.jpg",
-          "caption": "Fort Pond Bay, 2013",
-          "credit": "Wikimedia Commons",
+          "caption": "Fort Pond Bay looking along the north shore",
+          "credit": "Wikimedia Commons, 2013",
           "kind": "commons"
         },
         {
           "year": 2022,
           "src": "assets/photos/commons_soundview_2022_soundview-shore.jpg",
-          "caption": "Soundview shore, 2022",
-          "credit": "Wikimedia Commons",
+          "caption": "Soundview Drive shore (NORTH / Block Island Sound)",
+          "credit": "Wikimedia Commons, 2022",
           "kind": "commons"
+        },
+        {
+          "year": null,
+          "src": "assets/ceha/ehamptont22of59.jpg",
+          "caption": "NYSDEC Coastal Erosion Hazard Area — East Hampton sheet 22-N of 59 (Soundview / north shore)",
+          "credit": "NYSDEC CEHA legal map",
+          "kind": "ceha"
         }
       ],
       "keyNumbers": [
@@ -266,6 +350,20 @@
           "unit": "cy",
           "status": "sourced",
           "note": "Federal deepening sand onto the west / Soundview beach (USACE)."
+        },
+        {
+          "label": "CARP Soundview",
+          "value": "1–5",
+          "unit": "ft/yr",
+          "status": "sourced",
+          "note": "Town of East Hampton CARP 2022, 1983–2016. NORTH / Block Island Sound. Not a USGS OFR 2010-1119 rate."
+        },
+        {
+          "label": "CARP Culloden",
+          "value": "1–2.5",
+          "unit": "ft/yr",
+          "status": "sourced",
+          "note": "Town CARP 2022. NORTH headland west of Soundview. Do not apply USGS 2010-1119 south-shore LRR here."
         }
       ],
       "related": [
@@ -334,9 +432,30 @@
           "text": "After a 2022 PPA with East Hampton, USACE awarded H&L Contracting $8.9 million on 18 September 2025 to deepen the channel from −12 to −17 ft MLLW, maintain an east-side deposition basin, place about 110,000 cubic yards of sand on the downdrift shore west of the west jetty, and send rock to a state reef. Work was scheduled through 31 January 2026.",
           "status": "sourced",
           "sourceUrl": "https://www.nan.usace.army.mil/Media/Fact-Sheets/Fact-Sheet-Article-View/Article/487490/fact-sheet-lake-montauk-harbor-navigation-improvement-project-ny/"
+        },
+        {
+          "year": 2025,
+          "title": "Emergency 10,500 cy west of west jetty; ~150,000 cy toward Mermaid Beach",
+          "text": "February 2025 emergency dredge placed 10,500 cy on the beach immediately west of the inlet. The full deepening targeted about 150,000 cy to Mermaid Beach (west of the west jetty). NORTH shore feeder — not downtown FIMP.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/government/2025124/lake-montauk-dredge-hits-snag"
+        },
+        {
+          "year": 2026,
+          "title": "Nearly 90,000 cy gone; Sunset Beach feeder then ~12 ft blizzard cut",
+          "text": "By 15 January 2026 the Town Board was told nearly 90,000 cy had been removed from the Lake Montauk dredge. Inlet-floor sand piled on Sunset Beach west of the jetty totaled 95,000-plus cy; a March 2026 blizzard cut the new feeder beach about 12 feet. NORTH harbor.",
+          "status": "sourced",
+          "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_9c15de50-a658-4b91-8248-dc04d71cfc5e.html"
         }
       ],
       "photos": [
+        {
+          "year": 1909,
+          "src": "assets/photos/commons_1909_great_pond.jpg",
+          "caption": "Great Pond (Lake Montauk) before / around the harbor era — 1909",
+          "credit": "Wikimedia Commons, 1909",
+          "kind": "commons"
+        },
         {
           "year": 1938,
           "src": "assets/photos/usace_1938_lake_montauk.jpg",
@@ -345,30 +464,30 @@
           "kind": "usace"
         },
         {
+          "year": 1938,
+          "src": "assets/photos/usace_1938_fort_pond.jpg",
+          "caption": "USACE 1938 Fort Pond mosaic — village isthmus between the ocean and Fort Pond Bay",
+          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1938-07-06",
+          "kind": "usace"
+        },
+        {
           "year": 1941,
           "src": "assets/photos/usace_1941_lake_montauk.jpg",
-          "caption": "USACE 1941 — Lake Montauk inlet and jetties",
-          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board",
+          "caption": "USACE 1941 Lake Montauk — inlet and jetties ~13–15 years after the 1926–28 cut",
+          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1941",
           "kind": "usace"
-        },
-        {
-          "year": 1962,
-          "src": "assets/photos/usace_1962_lake_montauk.jpg",
-          "caption": "USACE 1962 Ash Wednesday — Lake Montauk",
-          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board",
-          "kind": "usace"
-        },
-        {
-          "year": 1976,
-          "src": "assets/aerials/1976-harbor-jetties.jpg",
-          "caption": "24 MAR 76 — closer crop of jetties and Star Island; sand on the north side of the north jetty",
-          "credit": "Family collection, BJ Old Montauk aerials (survey stamp 24 MAR 76)",
-          "kind": "user-aerial"
         },
         {
           "year": 1976,
           "src": "assets/aerials/1976-harbor-wide.jpg",
           "caption": "24 MAR 76 — Montauk Harbor inlet, jetties, Star Island, Soundview/Culloden shore",
+          "credit": "Family collection, BJ Old Montauk aerials (survey stamp 24 MAR 76)",
+          "kind": "user-aerial"
+        },
+        {
+          "year": 1976,
+          "src": "assets/aerials/1976-harbor-jetties.jpg",
+          "caption": "24 MAR 76 — closer crop of jetties and Star Island",
           "credit": "Family collection, BJ Old Montauk aerials (survey stamp 24 MAR 76)",
           "kind": "user-aerial"
         },
@@ -380,10 +499,31 @@
           "kind": "user-aerial"
         },
         {
+          "year": 2006,
+          "src": "assets/photos/dvids_harbor_jetties_2006_breakwater_squall.jpg",
+          "caption": "USCG / DVIDS — Montauk Harbor breakwater in a squall",
+          "credit": "DVIDS / U.S. Coast Guard, 2006",
+          "kind": "dvids"
+        },
+        {
+          "year": 2017,
+          "src": "assets/photos/commons_harbor_jetties_2017_south-jetty.jpg",
+          "caption": "Lake Montauk inlet south jetty (NORTH / Block Island Sound)",
+          "credit": "Wikimedia Commons, 2017",
+          "kind": "commons"
+        },
+        {
           "year": 2021,
           "src": "assets/photos/commons_harbor_jetties_2021_lake-montauk-inlet.jpg",
-          "caption": "Lake Montauk inlet, 2021",
-          "credit": "Wikimedia Commons",
+          "caption": "Lake Montauk inlet (NORTH)",
+          "credit": "Wikimedia Commons, 2021",
+          "kind": "commons"
+        },
+        {
+          "year": 2022,
+          "src": "assets/photos/commons_harbor_jetties_2022_montauk-inlet.jpg",
+          "caption": "Montauk Harbor inlet (NORTH)",
+          "credit": "Wikimedia Commons, 2022",
           "kind": "commons"
         }
       ],
@@ -458,10 +598,10 @@
         },
         {
           "year": 2024,
-          "title": "Winter storms expose the 2015 bags; FIMP pumps ~0.46–0.50 million cubic yards",
-          "text": "December 2023–January 2024 storms uncovered the geotextile cubes on motel row. FIMP placement ran 6–late February 2024 via the dredge Ellis Island. Reported fill: ~462,000 cy (town), ~475,000 cy (Star), 500,000 cy along 4,100 feet (USACE), against a 450,000 cy plan from Benson Reservation to east of Surfside Place. Renourishment is planned about every four years for 30 years.",
+          "title": "Feb 2024 FIMP: 450,000 cy / 6,000 ft / 20 days",
+          "text": "Ellis Island pumped the downtown Atlantic beach (South Eton Street to Surfside Place / Kirk Park). Official fill 450,000 cubic yards along 6,000 feet; work finished in 20 days (~6–25 Feb 2024). Town/press totals later 462,000–475,000 cy. Ditch was not included.",
           "status": "sourced",
-          "sourceUrl": "https://www.easthamptonstar.com/government/2024229/presto-montauk-has-downtown-beach-again"
+          "sourceUrl": "https://www.27east.com/east-hampton-press/montauk-beach-nourishment-work-completed-in-20-days-2234792.html"
         },
         {
           "year": 2012,
@@ -469,9 +609,30 @@
           "text": "Sea Grant’s south-shore primer documents that even modest storms cut visible scarps, that most sand removed above the waterline often remains in the beach system, and that surveyed south-shore beaches usually rebuild within about a month. Downtown’s 2023–24 scarps that exposed the 2015 bags are the local instance of that process on a nourished, geotextile-cored dune.",
           "status": "sourced",
           "sourceUrl": "https://www.seagrant.sunysb.edu/cprocesses/pdfs/LIDynamicSouthShore.pdf"
+        },
+        {
+          "year": 2012,
+          "title": "Gurney’s Inn beach food-service building lost to Sandy",
+          "text": "A food-service building on the beach at Gurney’s Inn was lost to Hurricane Sandy’s 29 October 2012 assault. SOUTH / Atlantic motel row — not Soundview.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-shoreline-took-severe-beating"
+        },
+        {
+          "year": 2015,
+          "title": "October 2015: about 20 ft of dry sand left before geotextile",
+          "text": "Just before the Army Corps sandbag dune, people walked a narrow strip of dry sand on downtown Montauk’s ocean beach — about 20 feet of dry sand left at the motel-row toe.",
+          "status": "sourced",
+          "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-beach-project-looms"
         }
       ],
       "photos": [
+        {
+          "year": 1919,
+          "src": "assets/photos/loc_ocean_beaches_1919_hither_hills.jpg",
+          "caption": "Hither Hills / south-shore ocean beach, 1919",
+          "credit": "Library of Congress, 1919",
+          "kind": "loc"
+        },
         {
           "year": 1938,
           "src": "assets/photos/usace_1938_montauk_beach.jpg",
@@ -480,10 +641,10 @@
           "kind": "usace"
         },
         {
-          "year": 1962,
-          "src": "assets/photos/usace_1962_montauk_beach.jpg",
-          "caption": "USACE 1962 Ash Wednesday — Montauk Beach",
-          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board",
+          "year": 1941,
+          "src": "assets/photos/usace_1941_hither_hills_l20_5.jpg",
+          "caption": "USACE 1941 Hither Hills south-shore frame L20-5",
+          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1941",
           "kind": "usace"
         },
         {
@@ -494,18 +655,46 @@
           "kind": "usgs"
         },
         {
+          "year": 2012,
+          "src": "assets/photos/usgs_ds858_2012_1105_134804d.jpg",
+          "caption": "USGS DS 858 oblique, 5 Nov 2012 — downtown / Kirk Park ocean reach",
+          "credit": "U.S. Geological Survey, DS 858, 2012-11-05",
+          "kind": "usgs"
+        },
+        {
           "year": 2014,
           "src": "assets/photos/usgs_ds958_2014_ocean_beaches.jpg",
-          "caption": "USGS DS 958, 2014 — downtown ocean beach",
-          "credit": "U.S. Geological Survey, DS 958",
+          "caption": "USGS DS 958 baseline oblique, 6 Oct 2014 — downtown ocean",
+          "credit": "U.S. Geological Survey, DS 958, 2014-10-06",
+          "kind": "usgs"
+        },
+        {
+          "year": 2015,
+          "src": "assets/photos/usgs_ds995_2015_1008_170945d.jpg",
+          "caption": "USGS DS 995 post-Joaquin oblique, 8 Oct 2015 — downtown ocean",
+          "credit": "U.S. Geological Survey, DS 995, 2015-10-08",
           "kind": "usgs"
         },
         {
           "year": 2016,
           "src": "assets/photos/usgs_ds1030_2016_ocean_beaches.jpg",
-          "caption": "USGS DS 1030, 2016 — downtown ocean beach",
-          "credit": "U.S. Geological Survey, DS 1030",
+          "caption": "USGS DS 1030 winter oblique, 9 Mar 2016 — downtown ocean",
+          "credit": "U.S. Geological Survey, DS 1030, 2016-03-09",
           "kind": "usgs"
+        },
+        {
+          "year": null,
+          "src": "assets/photos/commons_south_edison_02.jpg",
+          "caption": "South Edison / downtown oceanfront (SOUTH / Atlantic)",
+          "credit": "Wikimedia Commons",
+          "kind": "commons"
+        },
+        {
+          "year": null,
+          "src": "assets/ceha/ehamptont13of59.jpg",
+          "caption": "NYSDEC Coastal Erosion Hazard Area — East Hampton sheet 13 of 59 (downtown / ocean beaches)",
+          "credit": "NYSDEC CEHA legal map",
+          "kind": "ceha"
         }
       ],
       "keyNumbers": [
@@ -601,11 +790,18 @@
       ],
       "photos": [
         {
-          "year": 1930,
-          "src": "assets/photos/nara_lighthouse_1930_18-AA-89-25.jpg",
-          "caption": "Montauk Light, circa 1930",
-          "credit": "U.S. National Archives",
-          "kind": "nara"
+          "year": 1871,
+          "src": "assets/photos/loc_1871_montauk_light.jpg",
+          "caption": "Montauk Point Light, 1871",
+          "credit": "Library of Congress, 1871",
+          "kind": "loc"
+        },
+        {
+          "year": 1919,
+          "src": "assets/photos/loc_1919_montauk_point_light.jpg",
+          "caption": "Montauk Point Light, 1919",
+          "credit": "Library of Congress, 1919",
+          "kind": "loc"
         },
         {
           "year": 1938,
@@ -615,25 +811,46 @@
           "kind": "usace"
         },
         {
-          "year": 1962,
-          "src": "assets/photos/usace_1962_camp_hero.jpg",
-          "caption": "USACE 1962 Ash Wednesday — Camp Hero / Point",
-          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board",
+          "year": 1941,
+          "src": "assets/photos/usace_1941_montauk_pt.jpg",
+          "caption": "USACE 1941 Montauk Point — lighthouse bluff and Turtle Cove",
+          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1941",
           "kind": "usace"
+        },
+        {
+          "year": 1941,
+          "src": "assets/photos/usace_1941_montauk_park.jpg",
+          "caption": "USACE 1941 Montauk Park (Camp Hero / Point State Park reach)",
+          "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1941",
+          "kind": "usace"
+        },
+        {
+          "year": 1968,
+          "src": "assets/photos/dvids_1968_eroded_cliffs.jpg",
+          "caption": "Eroded Turtle Hill cliffs, 1968",
+          "credit": "DVIDS / U.S. government, 1968",
+          "kind": "dvids"
         },
         {
           "year": 1997,
           "src": "assets/photos/commons_uscg_1997_montauk_light.jpg",
-          "caption": "USCG Montauk Light, 1997",
-          "credit": "U.S. Coast Guard / Wikimedia Commons",
+          "caption": "USCG Montauk Point Light, 1997",
+          "credit": "U.S. Coast Guard / Wikimedia Commons, 1997",
           "kind": "commons"
         },
         {
-          "year": 2012,
-          "src": "assets/photos/usgs_2012_camp_hero.jpg",
-          "caption": "USGS DS 858 oblique, 5 Nov 2012 — Camp Hero / Turtle Cove",
-          "credit": "U.S. Geological Survey, DS 858, 2012-11-05 (134539d)",
-          "kind": "usgs"
+          "year": 2006,
+          "src": "assets/photos/commons_2006_montauk_point_light.jpg",
+          "caption": "Montauk Point Light, 2006",
+          "credit": "Wikimedia Commons, 2006",
+          "kind": "commons"
+        },
+        {
+          "year": null,
+          "src": "assets/photos/loc_lighthouse.jpg",
+          "caption": "Montauk Point Light, Turtle Hill (Carol M. Highsmith)",
+          "credit": "Library of Congress, Prints & Photographs, Carol M. Highsmith",
+          "kind": "loc"
         },
         {
           "year": 2012,
@@ -643,25 +860,39 @@
           "kind": "usgs"
         },
         {
+          "year": 2012,
+          "src": "assets/photos/usgs_2012_camp_hero.jpg",
+          "caption": "USGS DS 858 oblique, 5 Nov 2012 — Camp Hero / Turtle Cove",
+          "credit": "U.S. Geological Survey, DS 858, 2012-11-05 (134539d)",
+          "kind": "usgs"
+        },
+        {
+          "year": 2014,
+          "src": "assets/photos/usgs_ds958_2014_lighthouse.jpg",
+          "caption": "USGS DS 958 baseline oblique, 6 Oct 2014 — Montauk Point",
+          "credit": "U.S. Geological Survey, DS 958, 2014-10-06",
+          "kind": "usgs"
+        },
+        {
+          "year": 2014,
+          "src": "assets/photos/usgs_ds958_2014_camp_hero.jpg",
+          "caption": "USGS DS 958 baseline oblique, 6 Oct 2014 — Camp Hero / Turtle Cove",
+          "credit": "U.S. Geological Survey, DS 958, 2014-10-06",
+          "kind": "usgs"
+        },
+        {
           "year": 2016,
           "src": "assets/photos/usgs_ds1030_2016_lighthouse.jpg",
-          "caption": "USGS DS 1030, 2016 — Montauk Point",
-          "credit": "U.S. Geological Survey, DS 1030",
+          "caption": "USGS DS 1030 winter oblique, 9 Mar 2016 — Montauk Point",
+          "credit": "U.S. Geological Survey, DS 1030, 2016-03-09",
           "kind": "usgs"
         },
         {
           "year": 2023,
           "src": "assets/photos/dvids_2023_aerial_revetment.jpg",
-          "caption": "USACE 2023 aerial of the finished Point revetment",
-          "credit": "U.S. Army Corps of Engineers, DVIDS",
+          "caption": "USACE / DVIDS aerial of the completed lighthouse revetment, 2023",
+          "credit": "DVIDS / U.S. Army Corps of Engineers, 2023",
           "kind": "dvids"
-        },
-        {
-          "year": null,
-          "src": "assets/photos/loc_lighthouse.jpg",
-          "caption": "Montauk Point Light, Turtle Hill (Carol M. Highsmith)",
-          "credit": "Library of Congress, Prints & Photographs, Carol M. Highsmith",
-          "kind": "loc"
         }
       ],
       "keyNumbers": [

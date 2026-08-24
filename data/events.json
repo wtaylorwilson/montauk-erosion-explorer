@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "events": [
     {
       "year": 1796,
@@ -14,10 +14,11 @@
       "siteId": "harbor_jetties"
     },
     {
-      "year": 1927,
-      "title": "Lake Montauk inlet opened",
+      "year": 1928,
+      "title": "McCaffray house on Ditch bluff",
       "status": "sourced",
-      "siteId": "harbor_jetties"
+      "siteId": "ditch_plains",
+      "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_6b4796af-9754-4c2d-8588-7722de3d2d97.html"
     },
     {
       "year": 1938,
@@ -39,27 +40,85 @@
     },
     {
       "year": 1996,
-      "title": "Lighthouse deeded \u2014 tower unmoved",
+      "title": "Lighthouse deeded — tower unmoved",
       "status": "sourced",
       "siteId": "lighthouse"
     },
     {
       "year": 2012,
-      "title": "Hurricane Sandy",
+      "title": "Sandy: Gurney’s building lost",
       "status": "sourced",
-      "siteId": "ocean_beaches"
+      "siteId": "ocean_beaches",
+      "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-shoreline-took-severe-beating"
+    },
+    {
+      "year": 2012,
+      "title": "Sandy: Soundview rocks / house undermined",
+      "status": "sourced",
+      "siteId": "soundview",
+      "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-shoreline-took-severe-beating"
+    },
+    {
+      "year": 2015,
+      "title": "Downtown ~20 ft dry sand left",
+      "status": "sourced",
+      "siteId": "ocean_beaches",
+      "sourceUrl": "https://www.easthamptonstar.com/archive/montauk-beach-project-looms"
     },
     {
       "year": 2024,
-      "title": "FIMP downtown ~500,000 cy",
+      "title": "FIMP 450,000 cy / 6,000 ft / 20 days",
       "status": "sourced",
-      "siteId": "ocean_beaches"
+      "siteId": "ocean_beaches",
+      "sourceUrl": "https://www.27east.com/east-hampton-press/montauk-beach-nourishment-work-completed-in-20-days-2234792.html"
+    },
+    {
+      "year": 2024,
+      "title": "Ditch 5,800 cy fill",
+      "status": "sourced",
+      "siteId": "ditch_plains",
+      "sourceUrl": "https://www.27east.com/east-hampton-press/ditch-plains-beach-restoration-work-begins-2262828/"
+    },
+    {
+      "year": 2024,
+      "title": "184 Soundview: >24 ft bluff lost",
+      "status": "sourced",
+      "siteId": "soundview",
+      "sourceUrl": "https://www.27east.com/east-hampton-press/article_03b20884-6ce5-5533-a7f6-8985909231ed.html"
+    },
+    {
+      "year": 2024,
+      "title": "Culloden lawn on precipice",
+      "status": "sourced",
+      "siteId": "soundview",
+      "sourceUrl": "https://www.easthamptonstar.com/government/2024516/about-eroding-bluff"
     },
     {
       "year": 2025,
-      "title": "Harbor deepening; ~110k cy west",
+      "title": "Ditch 20,000 cy / 2,200 ft dune",
+      "status": "sourced",
+      "siteId": "ditch_plains",
+      "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_26ae5338-6857-4c82-906f-88f541724935.html"
+    },
+    {
+      "year": 2025,
+      "title": "Harbor: 10,500 cy emergency; ~150k to Mermaid",
       "status": "sourced",
       "siteId": "harbor_jetties"
+    },
+    {
+      "year": 2026,
+      "title": "Sunset Beach ~95k cy then ~12 ft blizzard cut",
+      "status": "sourced",
+      "siteId": "harbor_jetties",
+      "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_9c15de50-a658-4b91-8248-dc04d71cfc5e.html"
+    },
+    {
+      "year": 2026,
+      "title": "Rheinstein septic pulled",
+      "status": "sourced",
+      "siteId": "ditch_plains",
+      "sourceUrl": "https://www.27east.com/east-hampton-press/news/environment/article_a8f5f6da-570e-4106-8625-d21491f9f456.html"
     }
   ]
 }

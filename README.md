@@ -41,8 +41,11 @@ No tile for 1938 / 1976 / 1984 / 1996 / 2012 — those years highlight photos or
 
 - Family collection, BJ Old Montauk aerials — 24 MAR 76 (two stitches) and Apr 1984 (harbor / Soundview)
 - USACE 1938 verticals (Lake Montauk, Montauk Beach, Montauk Point)
-- USGS DS 858, 5 Nov 2012 (Ditch, Point, Camp Hero/Turtle Cove, Montauk Beach)
-- Library of Congress, Carol M. Highsmith (lighthouse)
+- USGS DS 858 / 958 / 995 / 1030 obliques (2012, 2014, 2015, 2016) — south shore and Point only
+- USACE 1938 and 1941 Beach Erosion Board verticals
+- Library of Congress, DVIDS, Wikimedia Commons historic stills
+- NYSDEC CEHA legal sheets (East Hampton 11–29 of 59). Pinned: sheet 13 ocean_beaches, 14 Ditch Plains, 22-N Soundview. Harbor and lighthouse points are not inside a sheet polygon.
+- 27east / East Hampton Star dated events are link-only; news photos were not downloaded
 
 ## GIS overlays
 
@@ -57,8 +60,10 @@ Toggleable on the map (south-shore USGS rates are **not** for Soundview / Block 
 - USGS OFR 2010-1119 LRR site boxes (computed from the official shapefile, not published USGS site averages): Point/Turtle Cove −0.20 m/yr (−0.67 ft/yr); Ditch Plains −0.08 m/yr (−0.25 ft/yr); Downtown south −0.04 m/yr (−0.14 ft/yr); Montauk south shore −0.11 m/yr (−0.35 ft/yr). South shore / Point only.
 - CARP (GZA) 1983–2016 Downtown & Ditch: 0.5–2.5 ft/yr (different method).
 - Shadmoor bluff 1962–2023: 0.94 ft/yr.
-- Downtown FIMP 2024 as-built ~500,000 cy.
-- Jetties 1926 (E 750 / W 981 ft); 2025 deepening ~110,000 cy onto the west / Soundview beach.
+- Downtown FIMP Feb 2024: 450,000 cy / 6,000 ft / 20 days (27east); later town/press totals 462–500k cy.
+- Town 2024 Ditch dune: 2020 remnant 1,925 cy above MSL → Feb 2024 544 cy; rebuilt max 20,000 cy, crest +16 ft NAVD.
+- Town CARP 2022 north shore (not USGS 2010-1119): Soundview 1–5 ft/yr (1983–2016); Culloden 1–2.5 ft/yr.
+- Jetties 1926 (E 750 / W 981 ft); 2025 emergency 10,500 cy west of west jetty; ~150,000 cy toward Mermaid Beach; nearly 90,000 cy reported gone by Jan 2026.
 
 1996 at the lighthouse is a **deed to the Montauk Historical Society**. The tower was not moved.
 
