@@ -797,11 +797,32 @@
           "kind": "loc"
         },
         {
+          "year": 1892,
+          "src": "assets/photos/noaa_1892_montauk_high_water_line.jpg",
+          "caption": "C&GS sheet 851: 1838 (black) vs 1892 (red) high-water line at Montauk Point",
+          "credit": "U.S. Coast and Geodetic Survey / NOAA",
+          "kind": "noaa"
+        },
+        {
           "year": 1919,
           "src": "assets/photos/loc_1919_montauk_point_light.jpg",
           "caption": "Montauk Point Light, 1919",
           "credit": "Library of Congress, 1919",
           "kind": "loc"
+        },
+        {
+          "year": 1928,
+          "src": "assets/photos/nara_lighthouse_1928_18-AA-89-27.jpg",
+          "caption": "NARA Airscapes, 10 Aug 1928 — pre-armor bluff and wooden landings",
+          "credit": "U.S. National Archives",
+          "kind": "nara"
+        },
+        {
+          "year": 1937,
+          "src": "assets/photos/nara_lighthouse_1937_18-AA-89-24.jpg",
+          "caption": "NARA, 20 Feb 1937 — surf at the bluff toe",
+          "credit": "U.S. National Archives",
+          "kind": "nara"
         },
         {
           "year": 1938,
@@ -812,15 +833,15 @@
         },
         {
           "year": 1941,
-          "src": "assets/photos/usace_1941_montauk_pt.jpg",
-          "caption": "USACE 1941 Montauk Point — lighthouse bluff and Turtle Cove",
+          "src": "assets/photos/usace_1941_montauk_park.jpg",
+          "caption": "USACE 1941 Montauk Park (Camp Hero / Point State Park reach)",
           "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1941",
           "kind": "usace"
         },
         {
           "year": 1941,
-          "src": "assets/photos/usace_1941_montauk_park.jpg",
-          "caption": "USACE 1941 Montauk Park (Camp Hero / Point State Park reach)",
+          "src": "assets/photos/usace_1941_montauk_pt.jpg",
+          "caption": "USACE 1941 Montauk Point — lighthouse bluff and Turtle Cove",
           "credit": "U.S. Army Corps of Engineers, Beach Erosion Board, 1941",
           "kind": "usace"
         },
@@ -829,6 +850,13 @@
           "src": "assets/photos/dvids_1968_eroded_cliffs.jpg",
           "caption": "Eroded Turtle Hill cliffs, 1968",
           "credit": "DVIDS / U.S. government, 1968",
+          "kind": "dvids"
+        },
+        {
+          "year": 1968,
+          "src": "assets/photos/dvids_lighthouse_1968_eroded_cliffs.jpg",
+          "caption": "USACE 1968 — eroded cliffs and early riprap",
+          "credit": "U.S. Army Corps of Engineers, DVIDS",
           "kind": "dvids"
         },
         {
@@ -846,11 +874,11 @@
           "kind": "commons"
         },
         {
-          "year": null,
-          "src": "assets/photos/loc_lighthouse.jpg",
-          "caption": "Montauk Point Light, Turtle Hill (Carol M. Highsmith)",
-          "credit": "Library of Congress, Prints & Photographs, Carol M. Highsmith",
-          "kind": "loc"
+          "year": 2012,
+          "src": "assets/photos/usgs_2012_camp_hero.jpg",
+          "caption": "USGS DS 858 oblique, 5 Nov 2012 — Camp Hero / Turtle Cove",
+          "credit": "U.S. Geological Survey, DS 858, 2012-11-05 (134539d)",
+          "kind": "usgs"
         },
         {
           "year": 2012,
@@ -860,23 +888,16 @@
           "kind": "usgs"
         },
         {
-          "year": 2012,
-          "src": "assets/photos/usgs_2012_camp_hero.jpg",
-          "caption": "USGS DS 858 oblique, 5 Nov 2012 — Camp Hero / Turtle Cove",
-          "credit": "U.S. Geological Survey, DS 858, 2012-11-05 (134539d)",
+          "year": 2014,
+          "src": "assets/photos/usgs_ds958_2014_camp_hero.jpg",
+          "caption": "USGS DS 958 baseline oblique, 6 Oct 2014 — Camp Hero / Turtle Cove",
+          "credit": "U.S. Geological Survey, DS 958, 2014-10-06",
           "kind": "usgs"
         },
         {
           "year": 2014,
           "src": "assets/photos/usgs_ds958_2014_lighthouse.jpg",
           "caption": "USGS DS 958 baseline oblique, 6 Oct 2014 — Montauk Point",
-          "credit": "U.S. Geological Survey, DS 958, 2014-10-06",
-          "kind": "usgs"
-        },
-        {
-          "year": 2014,
-          "src": "assets/photos/usgs_ds958_2014_camp_hero.jpg",
-          "caption": "USGS DS 958 baseline oblique, 6 Oct 2014 — Camp Hero / Turtle Cove",
           "credit": "U.S. Geological Survey, DS 958, 2014-10-06",
           "kind": "usgs"
         },
@@ -893,6 +914,13 @@
           "caption": "USACE / DVIDS aerial of the completed lighthouse revetment, 2023",
           "credit": "DVIDS / U.S. Army Corps of Engineers, 2023",
           "kind": "dvids"
+        },
+        {
+          "year": null,
+          "src": "assets/photos/loc_lighthouse.jpg",
+          "caption": "Montauk Point Light, Turtle Hill (Carol M. Highsmith)",
+          "credit": "Library of Congress, Prints & Photographs, Carol M. Highsmith",
+          "kind": "loc"
         }
       ],
       "keyNumbers": [
