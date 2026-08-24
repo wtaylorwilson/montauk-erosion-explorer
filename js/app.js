@@ -578,6 +578,7 @@
     const ceha = await tryFetch("data/eh_ceha_zones.geojson");
     const usgs = await tryFetch("data/usgs_lt_montauk.geojson");
     const shore = await tryFetch("data/eh_shoreline.geojson");
+    const cusp = await tryFetch("data/cusp_montauk.geojson");
 
     if (ceha && ceha.features && ceha.features.length) {
       overlayLayers.ceha = L.geoJSON(ceha, {
@@ -630,17 +631,32 @@
       });
     }
 
+    if (cusp && cusp.features && cusp.features.length) {
+      overlayLayers.cusp = L.geoJSON(cusp, {
+        style: { color: "#7ec8ff", weight: 2, opacity: 0.88 },
+        onEachFeature: function (feat, layer) {
+          const p = feat.properties || {};
+          layer.bindPopup(
+            "<strong>NOAA CUSP shoreline</strong><br>" +
+            escapeHtml(p.SRC_DATE || p.SOURCE || "2014 NGS") +
+            "<br>NOAA Digital Coast / NGS"
+          );
+        },
+      });
+    }
+
     const overlays = {};
     if (overlayLayers.ceha) overlays["E. Hampton CEHA zones"] = overlayLayers.ceha;
     if (overlayLayers.usgs) overlays["USGS LT rates (south shore)"] = overlayLayers.usgs;
     if (overlayLayers.shore) overlays["Town shoreline"] = overlayLayers.shore;
+    if (overlayLayers.cusp) overlays["NOAA CUSP 2014"] = overlayLayers.cusp;
     L.control.layers(baseLayers, overlays, { position: "topright", collapsed: true }).addTo(map);
 
     if (overlayLayers.ceha && $("#tog-ceha").checked) overlayLayers.ceha.addTo(map);
     if (overlayLayers.usgs && $("#tog-usgs").checked) overlayLayers.usgs.addTo(map);
     if (overlayLayers.shore && $("#tog-shore").checked) overlayLayers.shore.addTo(map);
 
-    ["ceha", "usgs", "shore"].forEach(function (id) {
+    ["ceha", "usgs", "shore", "cusp"].forEach(function (id) {
       const el = $("#tog-" + id);
       if (!el) return;
       if (!overlayLayers[id]) {
@@ -657,16 +673,17 @@
       if (el) el.checked = on;
     }
     map.on("overlayadd", function (e) {
-      ["ceha", "usgs", "shore"].forEach(function (id) { syncToggle(e.layer, id, true); });
+      ["ceha", "usgs", "shore", "cusp"].forEach(function (id) { syncToggle(e.layer, id, true); });
     });
     map.on("overlayremove", function (e) {
-      ["ceha", "usgs", "shore"].forEach(function (id) { syncToggle(e.layer, id, false); });
+      ["ceha", "usgs", "shore", "cusp"].forEach(function (id) { syncToggle(e.layer, id, false); });
     });
 
     const loaded = [];
     if (overlayLayers.ceha) loaded.push("CEHA " + ceha.features.length);
     if (overlayLayers.usgs) loaded.push("USGS LT " + usgs.features.length);
     if (overlayLayers.shore) loaded.push("shoreline");
+    if (overlayLayers.cusp) loaded.push("CUSP " + cusp.features.length);
     state.dataOrigin.overlays = loaded.join(", ") || "none";
   }
 
