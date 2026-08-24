@@ -834,6 +834,13 @@
           "text": "A 9 January 2024 storm eroded the recreational sand cover and damaged the 2015 geotextile-bag dune. NYSDEC Enclosure 2 (letter dated 12 Jan 2024) shows the bags fully exposed with a scarp and motel-row stair. This is the DEC enclosure, not the Town Natural Resources late-January vs post-fill pair the Star published. February FIMP fill followed.",
           "status": "sourced",
           "sourceUrl": "https://extapps.dec.ny.gov/fs/programs/press/USACE/usaceletter-dec.pdf"
+        },
+        {
+          "year": 2024,
+          "title": "March 2024: USACE photographs FIMP fill on downtown / motel row",
+          "text": "Photo day 8 March 2024. NY District stills show pipe discharge, dozers fitting the design profile, and a wider beach in front of an oceanfront hotel after placement. Mid/after-fill construction, not the Town Natural Resources late-January vs post-fill pair.",
+          "status": "sourced",
+          "sourceUrl": "https://www.nan.usace.army.mil/Media/News-Stories/Story-Article-View/Article/3709954/army-corps-completes-coastal-project-ahead-of-schedule-engages-community/"
         }
       ],
       "photos": [
@@ -920,6 +927,41 @@
           "caption": "Downtown Montauk after the 9 January 2024 storm — 2015 geobags exposed, scarp, motel-row stair",
           "credit": "NYSDEC Enclosure 2, P.L. 84-99 letter (12 Jan 2024)",
           "kind": "nysdec"
+        },
+        {
+          "year": 2024,
+          "src": "assets/photos/usace_2024_03_08_downtown_240308-D-A1420-001.jpg",
+          "caption": "After sand placement, Downtown Montauk has a wider, more resilient shoreline…",
+          "credit": "USACE PHOTO / U.S. Army Corps of Engineers, New York District",
+          "kind": "usace"
+        },
+        {
+          "year": 2024,
+          "src": "assets/photos/usace_2024_03_08_downtown_240308-D-A1420-002.jpg",
+          "caption": "Heavy equipment moves sand into place to fit the design profile of the beach.",
+          "credit": "USACE PHOTO / U.S. Army Corps of Engineers, New York District",
+          "kind": "usace"
+        },
+        {
+          "year": 2024,
+          "src": "assets/photos/usace_2024_03_08_downtown_240308-D-A1420-003.jpg",
+          "caption": "Newly-placed sand before an oceanfront hotel.",
+          "credit": "USACE PHOTO / U.S. Army Corps of Engineers, New York District",
+          "kind": "usace"
+        },
+        {
+          "year": 2024,
+          "src": "assets/photos/usace_2024_03_08_downtown_240308-D-A1420-004.jpg",
+          "caption": "Heavy equipment moves a section of pipe along the beach.",
+          "credit": "USACE PHOTO / U.S. Army Corps of Engineers, New York District",
+          "kind": "usace"
+        },
+        {
+          "year": 2024,
+          "src": "assets/photos/usace_2024_03_08_downtown_240308-D-A1420-005.jpg",
+          "caption": "A mixture of sand and water pours from a pipe onshore as a bulldozer positions the sand into place.",
+          "credit": "USACE PHOTO / U.S. Army Corps of Engineers, New York District",
+          "kind": "usace"
         }
       ],
       "keyNumbers": [
